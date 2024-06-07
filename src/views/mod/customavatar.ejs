@@ -1,4 +1,5 @@
 <%- include('../partials/header') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
 <style>
     .myContainer {
@@ -71,13 +72,36 @@
     <br>
     <br>
 
-    <% if(locals.customAvatarRequests){ %>
+    <% if(updatedAvatarRequests){ %>
 
-        <% customAvatarRequests.forEach(function(avreq){ %>
+        <% updatedAvatarRequests.forEach(function(avreq){ %>
 
             <div class="panel panel-default rootRequest singleReq" reqId="<%= avreq.id %>">
                 <div class="panel-heading"><h2>For user: <%= avreq.forUsername %></h2></div>
+
                 <div class="panel-body">
+
+                    <div class="panel <%= avreq.overallValid ? "panel-success" : "panel-danger"%>">
+                        <div class="panel-heading">
+                            <p>
+                                Last approved avatar date:
+                                <span class="lastApprovedAvatarDate" data-date="<%= avreq.lastApprovedAvatarDate %>"></span>
+                            </p>
+
+                            <%= avreq.hasLibrarySpace ?
+                                    `✅ User avatar library is not full.` :
+                                    `❌ User avatar library is full. Please check the user's avatar library before and after approval.` %>
+                            <br />
+
+                            <% if (!avreq.hasLibrarySpace) { %>
+                                <%= avreq.enoughTimeElapsed ?
+                                        `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR} since last avatar approval.` :
+                                        `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR} since last avatar approval.`
+                                %>
+                            <% } %>
+
+                        </div>
+                    </div>
 
 
                     <div class="row">
@@ -138,7 +162,7 @@
 
     <% } %>
 
-    <% if(customAvatarRequests.length === 0){ %>
+    <% if(updatedAvatarRequests.length === 0){ %>
         <div class="well">No requests!</div>
     <% } %>
 
@@ -154,6 +178,15 @@
                $(element).replaceWith(img);
            }
         });
+
+        $('.lastApprovedAvatarDate').each(function() {
+            const date = $(this).data('date');
+            if (date) {
+                this.textContent = moment(date).format('LL');
+            } else {
+                this.textContent = 'N/A';
+            }
+          })
 
         $('.approve').on('click', function(e) {
           var id = $(e.target).closest('.rootRequest').attr('reqid');

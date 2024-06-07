@@ -24,6 +24,7 @@ import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 import userAdapter from '../../databaseAdapters/user';
+import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
@@ -31,6 +32,8 @@ const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
 const MAX_FILESIZE_STR = '1MB';
+const MIN_TIME_SINCE_LAST_AVATAR_APPROVAL = 3 * 30 * 24 * 60 * 60 * 1000; // 3 months
+const MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR = '3 months';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -67,13 +70,54 @@ router.get('/avatargetlinktutorial', (req, res) => {
 
 // Show the mod approving rejecting page
 router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
-  const customAvatarRequests = await avatarRequest.find({ processed: false });
   const avatarLookupReact = renderToString(<AvatarLookup />);
+  const customAvatarRequests = await avatarRequest.find({ processed: false });
+
+  interface UpdatedAvatarRequest {
+    id: string;
+    forUsername: string;
+    resLink: string;
+    spyLink: string;
+    lastApprovedAvatarDate: Date | null;
+    enoughTimeElapsed: boolean;
+    hasLibrarySpace: boolean;
+    overallValid: boolean;
+  }
+
+  const updatedAvatarRequests: Promise<UpdatedAvatarRequest[]> =
+    await Promise.all(
+      customAvatarRequests.map(async (avatarReq) => {
+        const user = await userAdapter.getUser(avatarReq.forUsername);
+        const librarySize = await getAvatarLibrarySizeForUser(
+          user.usernameLower,
+        );
+        const enoughTimeElapsed = user.lastApprovedAvatarDate
+          ? user.lastApprovedAvatarDate <
+            new Date() - MIN_TIME_SINCE_LAST_AVATAR_APPROVAL
+          : true;
+        const hasLibrarySpace = user.avatarLibrary.length < librarySize;
+        const overallValid = enoughTimeElapsed && hasLibrarySpace;
+
+        return {
+          id: avatarReq.id,
+          forUsername: avatarReq.forUsername,
+          resLink: avatarReq.resLink,
+          spyLink: avatarReq.spyLink,
+          lastApprovedAvatarDate: user.lastApprovedAvatarDate
+            ? user.lastApprovedAvatarDate
+            : null,
+          enoughTimeElapsed,
+          hasLibrarySpace,
+          overallValid,
+        };
+      }),
+    );
 
   res.render('mod/customavatar', {
-    customAvatarRequests,
+    updatedAvatarRequests,
     MAX_FILESIZE_STR,
     VALID_DIMENSIONS_STR,
+    MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR,
     avatarLookupReact,
   });
 });
@@ -262,9 +306,14 @@ router.post(
 
       await avatarReq.save();
 
+      const librarySize = await getAvatarLibrarySizeForUser(
+        userRequestingAvatar.usernameLower,
+      );
+
       await userAdapter.setAvatarAndUpdateLibrary(
-        userRequestingAvatar.username,
+        userRequestingAvatar.usernameLower,
         approvedAvatarLinks,
+        librarySize,
       );
 
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
@@ -329,12 +378,19 @@ router.post(
 router.get(
   '/:profileUsername/customavatar',
   checkProfileOwnership,
-  (req, res) => {
+  async (req, res) => {
+    const maxLibrarySize = await getAvatarLibrarySizeForUser(
+      req.user.usernameLower,
+    );
+
     res.render('profile/customavatar', {
       username: req.user.username,
       MAX_FILESIZE_STR,
       VALID_DIMENSIONS,
       VALID_DIMENSIONS_STR,
+      maxLibrarySize,
+      currentLibrarySize: req.user.avatarLibrary.length,
+      currentLibrary: req.user.avatarLibrary,
     });
   },
 );
