@@ -1,7 +1,6 @@
 import User from '../models/user';
 import { IUser } from '../gameplay/types';
 import { S3AvatarSet } from '../clients/s3/S3Agent';
-import { getAvatarLibrarySizeForUser } from '../rewards/getRewards';
 
 interface DatabaseAdapter {
   getUser(username: string): Promise<IUser>;
@@ -62,7 +61,7 @@ class MongoUserAdapter implements DatabaseAdapter {
   async removeAvatar(username: string, avatarSet: S3AvatarSet) {
     const user = await this.getUser(username);
     user.avatarLibrary = user.avatarLibrary.filter(
-        (id) => id !== avatarSet.avatarSetId,
+      (id) => id !== avatarSet.avatarSetId,
     );
 
     if (user.avatarImgRes === avatarSet.resLink) {
