@@ -28,6 +28,7 @@ import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
+const MIN_GAMES_REQUIRED_FOR_TOURNEY = 20;
 const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
@@ -582,10 +583,13 @@ async function validateUploadAvatarRequest(
   );
 
   // Check: Min game count satisfied. If user is a paid Patron, they can bypass this check
-  if (!patreonRewards && user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+  if (
+    !patreonRewards &&
+    user.totalGamesPlayed < MIN_GAMES_REQUIRED_FOR_TOURNEY
+  ) {
     return {
       valid: false,
-      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
+      errMsg: `You must play at least ${MIN_GAMES_REQUIRED_FOR_TOURNEY} game(s) to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
     };
   }
 
