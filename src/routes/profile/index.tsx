@@ -79,6 +79,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     resLink: string;
     spyLink: string;
     lastApprovedAvatarDate: Date | null;
+    totalGamesPlayed: number;
     enoughTimeElapsed: boolean;
     hasLibrarySpace: boolean;
     overallValid: boolean;
@@ -106,6 +107,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
           lastApprovedAvatarDate: user.lastApprovedAvatarDate
             ? user.lastApprovedAvatarDate
             : null,
+          totalGamesPlayed: user.totalGamesPlayed,
           enoughTimeElapsed,
           hasLibrarySpace,
           overallValid,
@@ -118,6 +120,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     MAX_FILESIZE_STR,
     VALID_DIMENSIONS_STR,
     MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR,
+    MIN_GAMES_REQUIRED,
     avatarLookupReact,
   });
 });
