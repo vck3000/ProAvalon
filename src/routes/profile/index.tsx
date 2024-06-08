@@ -28,7 +28,7 @@ import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
-const MIN_GAMES_REQUIRED_FOR_TOURNEY = 20;
+const MIN_GAMES_REQUIRED_FOR_TOURNEY = 20; // This should be less than MIN_GAMES_REQUIRED
 const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
@@ -389,6 +389,9 @@ router.get(
 
     res.render('profile/customavatar', {
       username: req.user.username,
+      totalGamesPlayed: req.user.totalGamesPlayed,
+      MIN_GAMES_REQUIRED,
+      MIN_GAMES_REQUIRED_FOR_TOURNEY,
       MAX_FILESIZE_STR,
       VALID_DIMENSIONS,
       VALID_DIMENSIONS_STR,

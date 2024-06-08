@@ -140,6 +140,31 @@ $(document).ready(() => {
             return;
         }
 
+        const MIN_GAMES_REQUIRED = <%= MIN_GAMES_REQUIRED %>;
+        const MIN_GAMES_REQUIRED_FOR_TOURNEY = <%= MIN_GAMES_REQUIRED_FOR_TOURNEY %>;
+        const totalGamesPlayed = <%= totalGamesPlayed %>;
+
+        if (totalGamesPlayed < MIN_GAMES_REQUIRED_FOR_TOURNEY) {
+            Swal.fire({
+                title: `You must play at least ${MIN_GAMES_REQUIRED_FOR_TOURNEY} game(s) to submit a custom avatar request.`,
+                type: "error"
+            });
+            return;
+        }
+
+        if (totalGamesPlayed < MIN_GAMES_REQUIRED) {
+            const swal = await Swal.fire({
+                title: `You must play at least ${MIN_GAMES_REQUIRED} game(s) to submit a custom avatar request apart from tourney avatars.`,
+                type: "error",
+                showCancelButton: true,
+                confirmButtonText: "Submit tourney avatar"
+            });
+
+            if (!swal.value) {
+                return;
+            }
+        }
+
         // Server side
         const formElement = document.querySelector('#customAvatarSubmissionForm');
         const bodyFormData = new FormData(formElement);
