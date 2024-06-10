@@ -221,40 +221,6 @@ socketServer(io);
   // await promAgent.test();
 })();
 
-async function pushMetricsToVictoriaMetrics() {
-  const metrics = await promClient.register.metrics();
-
-  const vmURL = 'http://localhost:8428/api/v1/import/prometheus';
-
-  console.log('Metrics:', metrics);
-
-  try {
-    const response = await fetch(vmURL, {
-      method: 'POST',
-      body: metrics,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `Failed to push metrics: ${response.status} - ${response.statusText}`,
-      );
-    }
-
-    const responseBody = await response.text(); // Define responseBody here
-    console.log(
-      'Response:',
-      response.status,
-      response.statusText,
-      responseBody,
-    );
-  } catch (error) {
-    console.error('Error pushing metrics:', error);
-  }
-}
-
 // Periodically push metrics to VictoriaMetrics
 // setInterval(async () => {
 //   console.log('HIT');
