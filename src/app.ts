@@ -35,6 +35,7 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
+import { promAgent } from './clients/victoriaMetrics/promAgent'; // TODO-kev: Remember to delete
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -214,13 +215,11 @@ io.use(
 socketServer(io);
 
 // TODO-kev: Test - remove all lines below this once extracted out
-// https://www.npmjs.com/package/prom-client/v/11.5.3
-const promClient = require('prom-client');
 
-const testCounter = new promClient.Counter({
-  name: 'test_counter',
-  help: 'helper message',
-});
+(async () => {
+  await promAgent.incrementCounter('test_counter', 2);
+  // await promAgent.test();
+})();
 
 async function pushMetricsToVictoriaMetrics() {
   const metrics = await promClient.register.metrics();
@@ -257,12 +256,12 @@ async function pushMetricsToVictoriaMetrics() {
 }
 
 // Periodically push metrics to VictoriaMetrics
-setInterval(async () => {
-  console.log('HIT');
-
-  let randomInt = Math.floor(Math.random() * 10);
-  testCounter.inc(randomInt);
-
-  await pushMetricsToVictoriaMetrics();
-  await promClient.register.resetMetrics();
-}, 5000); // Push every 5sec
+// setInterval(async () => {
+//   console.log('HIT');
+//
+//   let randomInt = Math.floor(Math.random() * 10);
+//   testCounter.inc(randomInt);
+//
+//   await pushMetricsToVictoriaMetrics();
+//   await promClient.register.resetMetrics();
+// }, 5000); // Push every 5sec
