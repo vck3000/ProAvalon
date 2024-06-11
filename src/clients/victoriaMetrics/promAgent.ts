@@ -1,22 +1,31 @@
 // TODO-kev: Think of a new name to call this file
 
 import promClient, { Counter } from 'prom-client';
+import { allSockets } from '../../sockets/sockets';
 
 export const counters = {
   TEST: 'test_counter',
   AVATAR_SUBMISSIONS: 'custom_avatar_submissions_total',
 };
 
-type CounterName = keyof typeof counters;
+export const gauges = {
+  PLAYERS_ONLINE: 'players_online_total',
+};
+
+type CounterName = typeof counters[keyof typeof counters];
+type GaugeName = typeof gauges[keyof typeof gauges];
 
 const VM_IMPORT_PROMETHEUS_URL =
   'http://localhost:8428/api/v1/import/prometheus';
 
 class PromAgent {
   constructor() {
-    new promClient.Counter({
-      name: 'test_counter',
-      help: 'This is a test counter',
+    new promClient.Gauge({
+      name: 'players_online_total',
+      help: 'Number of players online in the lobby.',
+      collect() {
+        this.set(allSockets.length); // TODO-kev: Better way to do this?
+      },
     });
 
     new promClient.Counter({
@@ -38,49 +47,51 @@ class PromAgent {
   }
 
   public async pushMetricsToVictoriaMetrics() {
-    const metrics = await promClient.register.metrics();
+    const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
 
-    try {
-      const response = await fetch(VM_IMPORT_PROMETHEUS_URL, {
-        method: 'POST',
-        body: metrics,
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-      });
+    // TODO-kev: should i do try/catch, will it crash program, how to repush?
+    const response = await fetch(VM_IMPORT_PROMETHEUS_URL, {
+      method: 'POST',
+      body: metrics,
+      headers: {
+        'Content-Type': 'text/plain',
+      },
+    });
 
-      if (!response.ok) {
-        throw new Error(
-          `Failed to push metrics: ${response.status} - ${response.statusText}`,
-        );
-      }
-
-      const responseBody = await response.text();
-      console.log(
-        'Response:',
-        response.status,
-        response.statusText,
-        responseBody,
+    if (!response.ok) {
+      throw new Error(
+        `Failed to push metrics: ${response.status} - ${response.statusText}`,
       );
-    } catch (error) {
-      console.error('Error pushing metrics:', error); // TODO-kev: should i throw error, will it crash program, how to repush?
     }
 
+    // TODO-kev: Error logging purposes, remove later
+    const responseBody = await response.text();
+    console.log(
+      'Response:',
+      response.status,
+      response.statusText,
+      responseBody,
+    );
+
+    // Reset metrics
     await promClient.register.resetMetrics();
   }
 
   // TODO-kev: Delete
-  public async getMetric(metricName: CounterName) {
+  public async getMetric(metricName: CounterName | GaugeName) {
     return await promClient.register.getSingleMetricAsString(metricName);
   }
 
   // TODO-kev: Delete
   public async test() {
-    const metrics = await promClient.register.metrics();
-    const metricssdfsf = await promClient.register;
+    const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
 
-    console.log(metrics);
-    // console.log(promClient.register.getSingleMetric('test_counter2').get());
+    const gauge = await this.getMetric(gauges.PLAYERS_ONLINE);
+
+    // console.log(metrics);
+
+    // Reset metrics
+    await promClient.register.resetMetrics();
   }
 }
 

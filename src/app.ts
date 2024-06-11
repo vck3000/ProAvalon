@@ -217,15 +217,17 @@ socketServer(io);
 // TODO-kev: Test - remove all lines below this once extracted out
 
 (async () => {
-  await promAgent.incrementCounter('test_counter', 2);
+  // await promAgent.incrementCounter('test_counter', 2);
   // await promAgent.test();
 })();
 
 setInterval(async () => {
-  const metric = await promAgent.getMetric(counters.PATREON_LINK_ATTEMPTS);
-  promAgent.incrementCounter(counters.PATREON_LINK_ATTEMPTS, 2);
-  console.log(metric);
-}, 5000); // Push every 5sec
+  // const metric = await promAgent.getMetric(counters.PATREON_LINK_ATTEMPTS);
+  // promAgent.incrementCounter(counters.PATREON_LINK_ATTEMPTS, 2);
+  // console.log(metric);
+
+  await promAgent.test();
+}, 2000); // Push every 5sec
 
 // Periodically push metrics to VictoriaMetrics
 // setInterval(async () => {
