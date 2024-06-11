@@ -35,7 +35,7 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { promAgent } from './clients/victoriaMetrics/promAgent'; // TODO-kev: Remember to delete
+import { counters, promAgent } from './clients/victoriaMetrics/promAgent'; // TODO-kev: Remember to delete
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -220,6 +220,12 @@ socketServer(io);
   await promAgent.incrementCounter('test_counter', 2);
   // await promAgent.test();
 })();
+
+setInterval(async () => {
+  const metric = await promAgent.getMetric(counters.PATREON_LINK_ATTEMPTS);
+  promAgent.incrementCounter(counters.PATREON_LINK_ATTEMPTS, 2);
+  console.log(metric);
+}, 5000); // Push every 5sec
 
 // Periodically push metrics to VictoriaMetrics
 // setInterval(async () => {

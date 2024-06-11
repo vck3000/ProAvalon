@@ -2,8 +2,9 @@
 
 import promClient, { Counter } from 'prom-client';
 
-const counters = {
-  TEST_COUNTER: 'test_counter',
+export const counters = {
+  TEST: 'test_counter',
+  AVATAR_SUBMISSIONS: 'custom_avatar_submissions_total',
 };
 
 type CounterName = keyof typeof counters;
@@ -19,8 +20,8 @@ class PromAgent {
     });
 
     new promClient.Counter({
-      name: 'test_counter2',
-      help: 'This is a test counter again',
+      name: 'custom_avatar_submissions_total',
+      help: 'Number of custom avatar submissions.',
     });
   }
 
@@ -66,6 +67,11 @@ class PromAgent {
     }
 
     await promClient.register.resetMetrics();
+  }
+
+  // TODO-kev: Delete
+  public async getMetric(metricName: CounterName) {
+    return await promClient.register.getSingleMetricAsString(metricName);
   }
 
   // TODO-kev: Delete
