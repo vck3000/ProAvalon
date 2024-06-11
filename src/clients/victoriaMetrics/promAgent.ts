@@ -6,6 +6,8 @@ const counters = {
   TEST_COUNTER: 'test_counter',
 };
 
+type CounterName = keyof typeof counters;
+
 const VM_IMPORT_PROMETHEUS_URL =
   'http://localhost:8428/api/v1/import/prometheus';
 
@@ -22,9 +24,8 @@ class PromAgent {
     });
   }
 
-  public incrementCounter(counterName: string, num: number) {
-    // TODO-kev: Consider what if its not a Counter<string>
-    const counter = promClient.register.getSingleMetric(
+  public incrementCounter(counterName: CounterName, num: number) {
+    const counter: Counter<string> = promClient.register.getSingleMetric(
       counterName,
     ) as Counter<string>;
 
@@ -37,10 +38,9 @@ class PromAgent {
 
   public async pushMetricsToVictoriaMetrics() {
     const metrics = await promClient.register.metrics();
-    const vmURL = 'http://localhost:8428/api/v1/import/prometheus';
 
     try {
-      const response = await fetch(vmURL, {
+      const response = await fetch(VM_IMPORT_PROMETHEUS_URL, {
         method: 'POST',
         body: metrics,
         headers: {
