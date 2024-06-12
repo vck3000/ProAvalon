@@ -29,6 +29,11 @@ class PromAgent {
     });
 
     new promClient.Counter({
+      name: 'test_counter',
+      help: 'Help message',
+    });
+
+    new promClient.Counter({
       name: 'custom_avatar_submissions_total',
       help: 'Number of custom avatar submissions.',
     });
@@ -72,9 +77,6 @@ class PromAgent {
       response.statusText,
       responseBody,
     );
-
-    // Reset metrics
-    await promClient.register.resetMetrics();
   }
 
   // TODO-kev: Delete
@@ -85,13 +87,25 @@ class PromAgent {
   // TODO-kev: Delete
   public async test() {
     const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
-
-    const gauge = await this.getMetric(gauges.PLAYERS_ONLINE);
+    // const currentTimestamp = Date.now();
+    //
+    // const metricsWithTimestamp = metrics
+    //   .split('\n')
+    //   .map((line: string) => {
+    //     // Ignore comment lines and empty lines
+    //     if (line.startsWith('#') || line.trim() === '') {
+    //       return line;
+    //     }
+    //     return `${line} ${currentTimestamp}`;
+    //   })
+    //   .join('\n');
+    //
+    // console.log(metricsWithTimestamp);
 
     // console.log(metrics);
 
     // Reset metrics
-    await promClient.register.resetMetrics();
+    // await promClient.register.resetMetrics();
   }
 }
 

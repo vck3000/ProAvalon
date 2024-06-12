@@ -221,13 +221,17 @@ socketServer(io);
   // await promAgent.test();
 })();
 
-setInterval(async () => {
-  // const metric = await promAgent.getMetric(counters.PATREON_LINK_ATTEMPTS);
-  // promAgent.incrementCounter(counters.PATREON_LINK_ATTEMPTS, 2);
-  // console.log(metric);
-
-  await promAgent.test();
-}, 2000); // Push every 5sec
+// setInterval(async () => {
+//   // const metric = await promAgent.getMetric(counters.PATREON_LINK_ATTEMPTS);
+//   // promAgent.incrementCounter(counters.PATREON_LINK_ATTEMPTS, 2);
+//   // console.log(metric);
+//   // let randomInt = Math.floor(Math.random() * 10);
+//   // console.log(counter);
+//   // promAgent.incrementCounter(counters.TEST, counter);
+//   //
+//   // await promAgent.pushMetricsToVictoriaMetrics();
+//   // counter++;
+// }, 2000); // Push every 5sec
 
 // Periodically push metrics to VictoriaMetrics
 // setInterval(async () => {
