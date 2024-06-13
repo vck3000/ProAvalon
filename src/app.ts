@@ -35,8 +35,7 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { counters, promAgent } from './clients/victoriaMetrics/promAgent';
-import { PromMetricGaugeFactory } from './clients/victoriaMetrics/promMetricGaugeFactory'; // TODO-kev: Remember to delete
+import promClient from 'prom-client'; // TODO-kev: Remember to delete
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -217,22 +216,13 @@ socketServer(io);
 
 // TODO-kev: Test - remove all lines below this once extracted out
 
-(async () => {
-  // await promAgent.incrementCounter('test_counter', 2);
-  // await promAgent.test();
-})();
+(async () => {})();
 
-// setInterval(async () => {
-//   // const metric = await promAgent.getMetric(counters.PATREON_LINK_ATTEMPTS);
-//   // promAgent.incrementCounter(counters.PATREON_LINK_ATTEMPTS, 2);
-//   // console.log(metric);
-//   // let randomInt = Math.floor(Math.random() * 10);
-//   // console.log(counter);
-//   // promAgent.incrementCounter(counters.TEST, counter);
-//   //
-//   // await promAgent.pushMetricsToVictoriaMetrics();
-//   // counter++;
-// }, 2000); // Push every 5sec
+setInterval(async () => {
+  console.log('Interval ran:');
+  const metrics = await promClient.register.metrics();
+  console.log(metrics);
+}, 2000); // Push every 5sec
 
 // Periodically push metrics to VictoriaMetrics
 // setInterval(async () => {
