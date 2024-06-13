@@ -35,7 +35,8 @@ import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
-import { counters, promAgent } from './clients/victoriaMetrics/promAgent'; // TODO-kev: Remember to delete
+import { counters, promAgent } from './clients/victoriaMetrics/promAgent';
+import { PromMetricGaugeFactory } from './clients/victoriaMetrics/promMetricGaugeFactory'; // TODO-kev: Remember to delete
 
 const assetsPath = path.join(__dirname, '../assets');
 

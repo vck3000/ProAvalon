@@ -1,7 +1,8 @@
 // TODO-kev: Think of a new name to call this file
 
-import promClient, { Counter } from 'prom-client';
+import promClient, { Counter, Gauge } from 'prom-client';
 import { allSockets } from '../../sockets/sockets';
+import assert from 'assert';
 
 export const counters = {
   TEST: 'test_counter',
@@ -19,7 +20,11 @@ const VM_IMPORT_PROMETHEUS_URL =
   'http://localhost:8428/api/v1/import/prometheus';
 
 class PromAgent {
+  private metricNames: Set<string>;
+
   constructor() {
+    this.metricNames = new Set<string>();
+
     new promClient.Gauge({
       name: 'players_online_total',
       help: 'Number of players online in the lobby.',
@@ -37,6 +42,15 @@ class PromAgent {
       name: 'custom_avatar_submissions_total',
       help: 'Number of custom avatar submissions.',
     });
+  }
+
+  public addMetric(metricName: string) {
+    assert(
+      !this.metricNames.has(metricName),
+      `Metric name already exists: ${metricName}`,
+    );
+
+    this.metricNames.add(metricName);
   }
 
   public incrementCounter(counterName: CounterName, num: number) {
