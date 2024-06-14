@@ -2,12 +2,13 @@ import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
 import User from '../../../models/user';
 import { Command } from '../types';
+import { config } from '../../../config';
 
 export const acreatetestaccounts: Command = {
   command: 'acreatetestaccounts',
   help: '/acreatetestaccounts: Creates test accounts: 1 to 10. Passwords are the username.',
   run: async (args: string[], socket: SocketUser) => {
-    if (process.env.ENV === 'prod') {
+    if (config.getEnv() === 'prod') {
       sendReplyToCommand(socket, 'Cannot create test accounts in prod.');
       return;
     }

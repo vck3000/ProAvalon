@@ -12,11 +12,12 @@ import { allowedHtmlAttributes, allowedHtmlTags } from './sanitizeRestrictions';
 import { createNotification } from '../../myFunctions/createNotification';
 import REWARDS from '../../rewards/constants';
 import { userHasReward } from '../../rewards/getRewards';
+import { config } from '../../config';
 
 const router = new Router();
 
 const newCommentLimiter =
-  process.env.ENV === 'local'
+  config.getEnv() === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })

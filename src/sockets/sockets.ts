@@ -46,6 +46,7 @@ import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
+import { config } from '../config';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -1954,7 +1955,7 @@ function joinQueue(): boolean {
     return false;
   }
 
-  if (process.env.ENV !== 'local') {
+  if (config.getEnv() !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
       this.emit('allChatToClient', {
         message: 'You require 3 games to join the ranked queue.',
