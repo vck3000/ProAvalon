@@ -10,17 +10,12 @@ const VM_IMPORT_PROMETHEUS_URL =
 const MAX_PUSH_METRICS_ERRORS = 5;
 const PUSH_METRICS_ERRORS_DURATION = 60 * 60 * 1000; // 1 hour
 
-class PromAgent {
+export class PromAgent {
   private metricNames: Set<string>;
   private pushMetricsErrorsTimestamps: number[] = [];
 
   constructor() {
     this.metricNames = new Set<string>();
-
-    new promClient.Counter({
-      name: 'test_counter',
-      help: 'Help message',
-    });
   }
 
   public addMetricName(metricName: string) {
@@ -30,6 +25,11 @@ class PromAgent {
     );
 
     this.metricNames.add(metricName);
+  }
+
+  // TODO-kev: Below is purely for testing. Keep or remove?
+  public getMetricNames(): Set<string> {
+    return this.metricNames;
   }
 
   public async pushMetricsToVictoriaMetrics() {
