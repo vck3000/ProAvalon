@@ -5,6 +5,9 @@ class Config {
   private readonly env: string;
   private readonly nodeEnv: string;
   private readonly serverDomain: string;
+  private readonly port: string;
+  private readonly ip: string;
+  private readonly mySecretKey: string;
 
   private readonly proAvalonEmailAddressDomain: string;
   private readonly proAvalonEmailAddress: string;
@@ -59,6 +62,9 @@ class Config {
     this.env = process.env.ENV;
     this.nodeEnv = process.env.NODE_ENV;
     this.serverDomain = process.env.SERVER_DOMAIN;
+    this.port = process.env.PORT;
+    this.ip = process.env.IP;
+    this.mySecretKey = process.env.MY_SECRET_KEY;
 
     this.proAvalonEmailAddress = process.env.PROAVALON_EMAIL_ADDRESS;
     this.proAvalonEmailAddressDomain =
@@ -96,6 +102,18 @@ class Config {
 
   public getServerDomain() {
     return this.serverDomain;
+  }
+
+  public getPort() {
+    return this.port;
+  }
+
+  public getIp() {
+    return this.ip;
+  }
+
+  public getMySecretKey() {
+    return this.mySecretKey;
   }
 
   public getProAvalonEmailAddress() {

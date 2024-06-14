@@ -83,7 +83,7 @@ if (config.getEnv() === 'local') {
   );
 }
 
-const port = process.env.PORT || 3000;
+const port = config.getPort() || 3000;
 const dbLoc = config.getDatabaseUrl();
 console.log(`Using database url: ${dbLoc}`);
 
@@ -130,7 +130,7 @@ process
   });
 
 // authentication
-const secretKey = process.env.MY_SECRET_KEY || 'MySecretKey';
+const secretKey = config.getMySecretKey() || 'MySecretKey';
 app.use(
   session({
     secret: secretKey,
@@ -183,7 +183,7 @@ app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
 app.use('/profile', profileRoutes);
 
-const IP = process.env.IP || '127.0.0.1';
+const IP = config.getIp() || '127.0.0.1';
 const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
 });
