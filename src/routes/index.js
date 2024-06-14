@@ -12,7 +12,7 @@ import { emailExists, validEmail } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
 import { disallowVPNs } from '../util/vpnDetection';
-import Settings from '../settings';
+import { settingsSingleton } from '../settings';
 import { Alliance } from '../gameplay/types';
 import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
@@ -963,7 +963,7 @@ function sanitiseEmail(req, res, next) {
 }
 
 function disableRegistrationMiddleware(req, res, next) {
-  if (Settings.getDisableRegistration()) {
+  if (settingsSingleton.getDisableRegistration()) {
     req.flash(
       'error',
       'Registration is temporarily disabled. Please contact a moderator via discord if you would like to create an account.',

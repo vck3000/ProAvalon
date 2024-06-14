@@ -21,6 +21,4 @@ class Settings {
   }
 }
 
-const settingsSingleton = new Settings();
-
-export default settingsSingleton;
+export const settingsSingleton = new Settings();
