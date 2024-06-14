@@ -1,97 +1,68 @@
 const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
 class Config {
-  private readonly env: string;
-  private readonly nodeEnv: string;
-  private readonly serverDomain: string;
-  private readonly port: string;
-  private readonly ip: string;
-  private readonly mySecretKey: string;
+  private readonly env: string = process.env.ENV;
+  private readonly nodeEnv: string = process.env.NODE_ENV;
+  private readonly serverDomain: string = process.env.SERVER_DOMAIN;
+  private readonly port: string = process.env.PORT;
+  private readonly ip: string = process.env.IP;
+  private readonly mySecretKey: string = process.env.MY_SECRET_KEY;
 
-  private readonly proAvalonEmailAddressDomain: string;
-  private readonly proAvalonEmailAddress: string;
-  private readonly mailgunApiKey: string;
+  private readonly proAvalonEmailAddressDomain: string =
+    process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
+  private readonly proAvalonEmailAddress: string =
+    process.env.PROAVALON_EMAIL_ADDRESS;
+  private readonly mailgunApiKey: string = process.env.MAILGUN_API_KEY;
 
-  private readonly vpnDetectionToken: string;
-  private readonly whitelistedVpnUsernames: string;
-  private readonly googleCaptchaKey: string;
-  private readonly databaseUrl: string;
+  private readonly vpnDetectionToken: string = process.env.VPN_DETECTION_TOKEN;
+  private readonly whitelistedVpnUsernames: string =
+    process.env.WHITELISTED_VPN_USERNAMES;
+  private readonly googleCaptchaKey: string =
+    process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+  private readonly databaseUrl: string = process.env.DATABASEURL;
 
-  private readonly s3PublicFileLinkPrefix: string;
-  private readonly s3BucketName: string;
-  private readonly s3Region: string;
-  private readonly s3Endpoint: string;
+  private readonly s3PublicFileLinkPrefix: string =
+    process.env.S3_PUBLIC_FILE_LINK_PREFIX;
+  private readonly s3BucketName: string = process.env.S3_BUCKET_NAME;
+  private readonly s3Region: string = process.env.S3_REGION;
+  private readonly s3Endpoint: string = process.env.S3_ENDPOINT;
 
-  private readonly patreonClientId: string;
-  private readonly patreonClientSecret: string;
-  private readonly patreonRedirectUrl: string;
+  private readonly patreonClientId: string = process.env.patreon_client_ID;
+  private readonly patreonClientSecret: string =
+    process.env.patreon_client_secret;
+  private readonly patreonRedirectUrl: string = process.env.patreon_redirectURL;
 
-  private readonly discordBotToken: string;
-  private readonly discordAdminChannelId: string;
-  private readonly discordModChannelId: string;
-  private readonly discordAdminRoleId: string;
-  private readonly discordModRoleId: string;
+  private readonly discordBotToken: string = process.env.discord_bot_token;
+  private readonly discordAdminChannelId: string =
+    process.env.discord_admin_channel_id;
+  private readonly discordModChannelId: string =
+    process.env.discord_mod_channel_id;
+  private readonly discordAdminRoleId: string =
+    process.env.discord_admin_role_id;
+  private readonly discordModRoleId: string = process.env.discord_mod_role_id;
 
   constructor() {
     // Run validation checks outside test environment
-    if (process.env.NODE_ENV !== 'test') {
-      if (!VALID_ENVIRONMENTS.has(process.env.ENV)) {
+    if (this.nodeEnv !== 'test') {
+      if (!VALID_ENVIRONMENTS.has(this.env)) {
         // TODO-kev: Prefer the console.error then process exit or throw an error?
         console.error(`Bad environment variable given: ${process.env.ENV}`);
         throw new Error(`Invalid settings: ENV=${process.env.ENV}`);
         process.exit(1);
       }
 
-      if (
-        process.env.ENV === 'staging' &&
-        process.env.S3_BUCKET_NAME !== 'proavalon-staging'
-      ) {
+      if (this.env === 'staging' && this.s3BucketName !== 'proavalon-staging') {
         throw new Error(
           `Invalid settings: ENV=staging S3_BUCKET_NAME=${process.env.S3_BUCKET_NAME}`,
         );
       }
 
-      if (
-        process.env.ENV === 'prod' &&
-        process.env.S3_BUCKET_NAME !== 'proavalon'
-      ) {
+      if (this.env === 'prod' && this.s3BucketName !== 'proavalon') {
         throw new Error(
           `Invalid settings: ENV=prod S3_BUCKET_NAME=${process.env.S3_BUCKET_NAME}`,
         );
       }
     }
-
-    this.env = process.env.ENV;
-    this.nodeEnv = process.env.NODE_ENV;
-    this.serverDomain = process.env.SERVER_DOMAIN;
-    this.port = process.env.PORT;
-    this.ip = process.env.IP;
-    this.mySecretKey = process.env.MY_SECRET_KEY;
-
-    this.proAvalonEmailAddress = process.env.PROAVALON_EMAIL_ADDRESS;
-    this.proAvalonEmailAddressDomain =
-      process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
-    this.mailgunApiKey = process.env.MAILGUN_API_KEY;
-
-    this.vpnDetectionToken = process.env.VPN_DETECTION_TOKEN;
-    this.whitelistedVpnUsernames = process.env.WHITELISTED_VPN_USERNAMES;
-    this.googleCaptchaKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
-    this.databaseUrl = process.env.DATABASEURL;
-
-    this.s3PublicFileLinkPrefix = process.env.S3_PUBLIC_FILE_LINK_PREFIX;
-    this.s3BucketName = process.env.S3_BUCKET_NAME;
-    this.s3Region = process.env.S3_REGION;
-    this.s3Endpoint = process.env.S3_ENDPOINT;
-
-    this.patreonClientId = process.env.patreon_client_ID;
-    this.patreonClientSecret = process.env.patreon_client_secret;
-    this.patreonRedirectUrl = process.env.patreon_redirectURL;
-
-    this.discordBotToken = process.env.discord_bot_token;
-    this.discordAdminChannelId = process.env.discord_admin_channel_id;
-    this.discordModChannelId = process.env.discord_mod_channel_id;
-    this.discordAdminRoleId = process.env.discord_admin_role_id;
-    this.discordModRoleId = process.env.discord_mod_role_id;
   }
 
   public getEnv() {
