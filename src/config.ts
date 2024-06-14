@@ -4,6 +4,11 @@ const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 class Config {
   private readonly env: string;
   private readonly nodeEnv: string;
+  private readonly serverDomain: string;
+
+  private readonly proAvalonEmailAddressDomain: string;
+  private readonly proAvalonEmailAddress: string;
+  private readonly mailgunApiKey: string;
 
   private readonly googleCaptchaKey: string;
   private readonly databaseUrl: string;
@@ -45,6 +50,12 @@ class Config {
 
     this.env = process.env.ENV;
     this.nodeEnv = process.env.NODE_ENV;
+    this.serverDomain = process.env.SERVER_DOMAIN;
+
+    this.proAvalonEmailAddress = process.env.PROAVALON_EMAIL_ADDRESS;
+    this.proAvalonEmailAddressDomain =
+      process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
+    this.mailgunApiKey = process.env.MAILGUN_API_KEY;
 
     this.googleCaptchaKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
     this.databaseUrl = process.env.DATABASEURL;
@@ -65,6 +76,22 @@ class Config {
 
   public getNodeEnv() {
     return this.nodeEnv;
+  }
+
+  public getServerDomain() {
+    return this.serverDomain;
+  }
+
+  public getProAvalonEmailAddress() {
+    return this.proAvalonEmailAddress;
+  }
+
+  public getProAvalonEmailAddressDomain() {
+    return this.proAvalonEmailAddressDomain;
+  }
+
+  public getMailgunApiKey() {
+    return this.mailgunApiKey;
   }
 
   public getGoogleCaptchaKey() {

@@ -2,10 +2,11 @@ import uuid from 'uuid';
 import ejs from 'ejs';
 import emailTemplateResetPassword from './emailTemplateResetPassword';
 import { sendEmail } from './sendEmail';
+import { config } from '../config';
 
 const TOKEN_TIMEOUT = 60 * 60 * 1000; // 1 hour
 
-const serverDomain = process.env.SERVER_DOMAIN;
+const serverDomain = config.getServerDomain();
 
 export const sendResetPassword = async (user: any, email: string) => {
   const token = uuid.v4();
