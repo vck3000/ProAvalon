@@ -3,9 +3,10 @@ import { config } from '../config';
 
 const VPN_TIMEOUT = 1000 * 60 * 60 * 12; // 12 hours
 
+// TODO-kev: check if this still works
 let whitelistedUsernames: string[] = [];
-if (process.env.WHITELISTED_VPN_USERNAMES) {
-  whitelistedUsernames = process.env.WHITELISTED_VPN_USERNAMES.split(',');
+if (config.getWhitelistedVpnUsernames()) {
+  whitelistedUsernames = config.getWhitelistedVpnUsernames().split(',');
 }
 
 class VpnEntry {
@@ -83,7 +84,7 @@ const isVPN = async (ip: string): Promise<boolean> => {
 
 const isVpnCheck1 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
-    `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
+    `https://vpnapi.io/api/${ip}?key=${config.getVpnDetectionToken()}`,
   );
 
   const data = await vpnResponse.json();

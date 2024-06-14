@@ -10,6 +10,8 @@ class Config {
   private readonly proAvalonEmailAddress: string;
   private readonly mailgunApiKey: string;
 
+  private readonly vpnDetectionToken: string;
+  private readonly whitelistedVpnUsernames: string;
   private readonly googleCaptchaKey: string;
   private readonly databaseUrl: string;
 
@@ -63,6 +65,8 @@ class Config {
       process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
     this.mailgunApiKey = process.env.MAILGUN_API_KEY;
 
+    this.vpnDetectionToken = process.env.VPN_DETECTION_TOKEN;
+    this.whitelistedVpnUsernames = process.env.WHITELISTED_VPN_USERNAMES;
     this.googleCaptchaKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
     this.databaseUrl = process.env.DATABASEURL;
 
@@ -104,6 +108,14 @@ class Config {
 
   public getMailgunApiKey() {
     return this.mailgunApiKey;
+  }
+
+  public getVpnDetectionToken() {
+    return this.vpnDetectionToken;
+  }
+
+  public getWhitelistedVpnUsernames() {
+    return this.whitelistedVpnUsernames;
   }
 
   public getGoogleCaptchaKey() {
