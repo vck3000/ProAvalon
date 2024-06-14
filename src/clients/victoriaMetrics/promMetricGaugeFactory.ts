@@ -5,7 +5,7 @@ export class PromMetricGaugeFactory {
   private gauge: Gauge;
 
   constructor(name: string, help: string, collect?: () => void) {
-    promAgent.addMetric(name);
+    promAgent.addMetricName(name);
 
     const gaugeConfig: {
       name: string;

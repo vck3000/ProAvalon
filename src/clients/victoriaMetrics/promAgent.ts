@@ -1,13 +1,18 @@
 // TODO-kev: Think of a new name to call this file
 
-import promClient, { Counter, Gauge } from 'prom-client';
+import promClient from 'prom-client';
 import assert from 'assert';
+import { sendToDiscordAdmins } from '../discord';
 
 const VM_IMPORT_PROMETHEUS_URL =
   'http://localhost:8428/api/v1/import/prometheus';
 
+const MAX_PUSH_METRICS_ERRORS = 5;
+const PUSH_METRICS_ERRORS_DURATION = 60 * 60 * 1000; // 1 hour
+
 class PromAgent {
   private metricNames: Set<string>;
+  private pushMetricsErrorsTimestamps: number[] = [];
 
   constructor() {
     this.metricNames = new Set<string>();
@@ -18,7 +23,7 @@ class PromAgent {
     });
   }
 
-  public addMetric(metricName: string) {
+  public addMetricName(metricName: string) {
     assert(
       !this.metricNames.has(metricName),
       `Metric name already exists: ${metricName}`,
@@ -27,22 +32,9 @@ class PromAgent {
     this.metricNames.add(metricName);
   }
 
-  // public incrementCounter(counterName: CounterName, num: number) {
-  //   const counter: Counter<string> = promClient.register.getSingleMetric(
-  //     counterName,
-  //   ) as Counter<string>;
-  //
-  //   if (!counter) {
-  //     throw new Error(`Metric counter does not exist: ${counterName}`);
-  //   }
-  //
-  //   counter.inc(num);
-  // }
-
   public async pushMetricsToVictoriaMetrics() {
     const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
 
-    // TODO-kev: should i do try/catch, will it crash program, how to repush?
     const response = await fetch(VM_IMPORT_PROMETHEUS_URL, {
       method: 'POST',
       body: metrics,
@@ -52,24 +44,23 @@ class PromAgent {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Failed to push metrics: ${response.status} - ${response.statusText}`,
-      );
+      // Alert while errors are less than MAX_PUSH_METRICS_ERRORS
+      const now = Date.now();
+      this.pushMetricsErrorsTimestamps.push(now);
+      this.pushMetricsErrorsTimestamps =
+        this.pushMetricsErrorsTimestamps.filter(
+          (timestamp) => now - timestamp <= PUSH_METRICS_ERRORS_DURATION,
+        );
+
+      // TODO-kev: Check below. Particularly error stack?. Consider what to do in cases where it exceeds
+      if (this.pushMetricsErrorsTimestamps.length <= MAX_PUSH_METRICS_ERRORS) {
+        sendToDiscordAdmins(
+          `Failed to push metrics: status=${response.status} text=${response.statusText}`,
+        );
+      }
+    } else {
+      this.pushMetricsErrorsTimestamps = [];
     }
-
-    // TODO-kev: Error logging purposes, remove later
-    const responseBody = await response.text();
-    console.log(
-      'Response:',
-      response.status,
-      response.statusText,
-      responseBody,
-    );
-  }
-
-  // TODO-kev: Delete
-  public async getMetric(metricName: string) {
-    return await promClient.register.getSingleMetricAsString(metricName);
   }
 
   // TODO-kev: Delete
