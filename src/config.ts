@@ -22,6 +22,12 @@ class Config {
   private readonly patreonClientSecret: string;
   private readonly patreonRedirectUrl: string;
 
+  private readonly discordBotToken: string;
+  private readonly discordAdminChannelId: string;
+  private readonly discordModChannelId: string;
+  private readonly discordAdminRoleId: string;
+  private readonly discordModRoleId: string;
+
   constructor() {
     if (!VALID_ENVIRONMENTS.has(process.env.ENV)) {
       // TODO-kev: Prefer the console.error then process exit or throw an error?
@@ -68,6 +74,12 @@ class Config {
     this.patreonClientId = process.env.patreon_client_ID;
     this.patreonClientSecret = process.env.patreon_client_secret;
     this.patreonRedirectUrl = process.env.patreon_redirectURL;
+
+    this.discordBotToken = process.env.discord_bot_token;
+    this.discordAdminChannelId = process.env.discord_admin_channel_id;
+    this.discordModChannelId = process.env.discord_mod_channel_id;
+    this.discordAdminRoleId = process.env.discord_admin_role_id;
+    this.discordModRoleId = process.env.discord_mod_role_id;
   }
 
   public getEnv() {
@@ -128,6 +140,26 @@ class Config {
 
   public getPatreonRedirectUrl() {
     return this.patreonRedirectUrl;
+  }
+
+  public getDiscordBotToken() {
+    return this.discordBotToken;
+  }
+
+  public getDiscordAdminChannelId() {
+    return this.discordAdminChannelId;
+  }
+
+  public getDiscordModChannelId() {
+    return this.discordModChannelId;
+  }
+
+  public getDiscordAdminRoleId() {
+    return this.discordAdminRoleId;
+  }
+
+  public getDiscordModRoleId() {
+    return this.discordModRoleId;
   }
 }
 

@@ -4,21 +4,21 @@ import { config } from '../../config';
 const client = new Discord.Client();
 
 if (config.getEnv() === 'prod') {
-  client.login(process.env.discord_bot_token);
+  client.login(config.getDiscordBotToken());
 }
 
 export function sendToDiscordAdmins(message: string, ping?: boolean): void {
   if (ping) {
     message = `${getAdminPing()} ${message}`;
   }
-  sendToChannel(message, process.env.discord_admin_channel_id);
+  sendToChannel(message, config.getDiscordAdminChannelId());
 }
 
 export function sendToDiscordMods(message: string, ping?: boolean): void {
   if (ping) {
     message = `${getModPing()} ${message}`;
   }
-  sendToChannel(message, process.env.discord_mod_channel_id);
+  sendToChannel(message, config.getDiscordModChannelId());
 }
 
 function sendToChannel(message: string, channelId: string): void {
@@ -30,9 +30,9 @@ function sendToChannel(message: string, channelId: string): void {
 }
 
 function getAdminPing(): string {
-  return `<@&${process.env.discord_admin_role_id}>`;
+  return `<@&${config.getDiscordAdminRoleId()}>`;
 }
 
 function getModPing(): string {
-  return `<@&${process.env.discord_mod_role_id}>`;
+  return `<@&${config.getDiscordModRoleId()}>`;
 }
