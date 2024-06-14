@@ -4,6 +4,8 @@ const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 class Config {
   private readonly env: string;
 
+  private readonly googleCaptchaKey: string;
+
   private readonly s3PublicFileLinkPrefix: string;
   private readonly s3BucketName: string;
   private readonly s3Region: string;
@@ -37,6 +39,8 @@ class Config {
 
     this.env = process.env.ENV;
 
+    this.googleCaptchaKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+
     this.s3PublicFileLinkPrefix = process.env.S3_PUBLIC_FILE_LINK_PREFIX;
     this.s3BucketName = process.env.S3_BUCKET_NAME;
     this.s3Region = process.env.S3_REGION;
@@ -45,6 +49,10 @@ class Config {
 
   public getEnv() {
     return this.env;
+  }
+
+  public getGoogleCaptchaKey() {
+    return this.googleCaptchaKey;
   }
 
   public getS3PublicFileLinkPrefix() {

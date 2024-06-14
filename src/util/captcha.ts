@@ -19,7 +19,7 @@ export const captchaMiddleware: RequestHandler = async (req, res, next) => {
     return;
   }
 
-  const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+  const secretKey = config.getGoogleCaptchaKey();
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
   const response = await axios.post(verifyUrl);
 
