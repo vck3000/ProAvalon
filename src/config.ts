@@ -3,8 +3,10 @@ const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 // TODO-kev: Should i import this into app.ts?
 class Config {
   private readonly env: string;
+  private readonly nodeEnv: string;
 
   private readonly googleCaptchaKey: string;
+  private readonly databaseUrl: string;
 
   private readonly s3PublicFileLinkPrefix: string;
   private readonly s3BucketName: string;
@@ -42,8 +44,10 @@ class Config {
     }
 
     this.env = process.env.ENV;
+    this.nodeEnv = process.env.NODE_ENV;
 
     this.googleCaptchaKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+    this.databaseUrl = process.env.DATABASEURL;
 
     this.s3PublicFileLinkPrefix = process.env.S3_PUBLIC_FILE_LINK_PREFIX;
     this.s3BucketName = process.env.S3_BUCKET_NAME;
@@ -59,8 +63,16 @@ class Config {
     return this.env;
   }
 
+  public getNodeEnv() {
+    return this.nodeEnv;
+  }
+
   public getGoogleCaptchaKey() {
     return this.googleCaptchaKey;
+  }
+
+  public getDatabaseUrl() {
+    return this.databaseUrl;
   }
 
   public getS3PublicFileLinkPrefix() {

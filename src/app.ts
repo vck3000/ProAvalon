@@ -84,7 +84,7 @@ if (config.getEnv() === 'local') {
 }
 
 const port = process.env.PORT || 3000;
-const dbLoc = process.env.DATABASEURL;
+const dbLoc = config.getDatabaseUrl();
 console.log(`Using database url: ${dbLoc}`);
 
 mongoose.connect(dbLoc, {

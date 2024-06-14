@@ -55,7 +55,7 @@ const matchmakingQueue = new MatchmakingQueue(matchFound);
 const joinQueueFilter = new JoinQueueFilter(() => new Date());
 const readyPrompt = new ReadyPrompt();
 
-if (process.env.NODE_ENV !== 'test') {
+if (config.getNodeEnv() !== 'test') {
   setInterval(() => {
     chatSpamFilter.tick();
   }, 1000);
@@ -149,7 +149,7 @@ function deleteSaveGameFromDb(room) {
   }
 }
 
-if (process.env.NODE_ENV !== 'test') {
+if (config.getNodeEnv() !== 'test') {
   setTimeout(async () => {
     let run = true;
     let i = 0;

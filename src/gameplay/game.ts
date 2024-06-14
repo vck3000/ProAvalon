@@ -32,6 +32,7 @@ import { millisToStr } from '../util/time';
 import shuffleArray from '../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../sockets/sockets';
+import { config } from '../config';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -1561,7 +1562,7 @@ class Game extends Room {
         });
       }
 
-      if (process.env.NODE_ENV !== 'test') {
+      if (config.getNodeEnv() !== 'test') {
         this.playersInGame.forEach((player) => {
           User.findById(player.userId)
             .populate('notifications')
