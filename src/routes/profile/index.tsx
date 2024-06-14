@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server';
 import imageSize from 'image-size';
 import multer from 'multer';
 import sanitizeHtml from 'sanitize-html';
+import assert from 'assert';
 
 import avatarRoutes from './avatarRoutes';
 import { checkProfileOwnership, isModMiddleware } from '../middleware';
@@ -28,7 +29,7 @@ import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
-const MIN_GAMES_REQUIRED_FOR_TOURNEY = 20; // This should be less than MIN_GAMES_REQUIRED
+const MIN_GAMES_REQUIRED_FOR_TOURNEY = 25;
 const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
@@ -57,6 +58,11 @@ const sanitizeHtmlAllowedAttributesForumThread = {
   span: ['style'],
   b: ['style'],
 };
+
+assert(
+  MIN_GAMES_REQUIRED_FOR_TOURNEY <= MIN_GAMES_REQUIRED,
+  `Min games configured incorrectly.`,
+);
 
 const router = express.Router();
 router.use(avatarRoutes);
