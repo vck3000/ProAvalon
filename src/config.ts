@@ -11,6 +11,10 @@ class Config {
   private readonly s3Region: string;
   private readonly s3Endpoint: string;
 
+  private readonly patreonClientId: string;
+  private readonly patreonClientSecret: string;
+  private readonly patreonRedirectUrl: string;
+
   constructor() {
     if (!VALID_ENVIRONMENTS.has(process.env.ENV)) {
       // TODO-kev: Prefer the console.error then process exit or throw an error?
@@ -45,6 +49,10 @@ class Config {
     this.s3BucketName = process.env.S3_BUCKET_NAME;
     this.s3Region = process.env.S3_REGION;
     this.s3Endpoint = process.env.S3_ENDPOINT;
+
+    this.patreonClientId = process.env.patreon_client_ID;
+    this.patreonClientSecret = process.env.patreon_client_secret;
+    this.patreonRedirectUrl = process.env.patreon_redirectURL;
   }
 
   public getEnv() {
@@ -69,6 +77,18 @@ class Config {
 
   public getS3Endpoint() {
     return this.s3Endpoint;
+  }
+
+  public getPatreonClientId() {
+    return this.patreonClientId;
+  }
+
+  public getPatreonClientSecret() {
+    return this.patreonClientSecret;
+  }
+
+  public getPatreonRedirectUrl() {
+    return this.patreonRedirectUrl;
   }
 }
 
