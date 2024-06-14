@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server';
 import imageSize from 'image-size';
 import multer from 'multer';
 import sanitizeHtml from 'sanitize-html';
+import assert from 'assert';
 
 import avatarRoutes from './avatarRoutes';
 import { checkProfileOwnership, isModMiddleware } from '../middleware';
@@ -28,6 +29,7 @@ import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
+const MIN_GAMES_REQUIRED_FOR_TOURNEY = 25;
 const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
@@ -57,6 +59,11 @@ const sanitizeHtmlAllowedAttributesForumThread = {
   b: ['style'],
 };
 
+assert(
+  MIN_GAMES_REQUIRED_FOR_TOURNEY <= MIN_GAMES_REQUIRED,
+  `Min games configured incorrectly.`,
+);
+
 const router = express.Router();
 router.use(avatarRoutes);
 
@@ -79,6 +86,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     resLink: string;
     spyLink: string;
     lastApprovedAvatarDate: Date | null;
+    totalGamesPlayed: number;
     enoughTimeElapsed: boolean;
     hasLibrarySpace: boolean;
     overallValid: boolean;
@@ -106,6 +114,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
           lastApprovedAvatarDate: user.lastApprovedAvatarDate
             ? user.lastApprovedAvatarDate
             : null,
+          totalGamesPlayed: user.totalGamesPlayed,
           enoughTimeElapsed,
           hasLibrarySpace,
           overallValid,
@@ -118,6 +127,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
     MAX_FILESIZE_STR,
     VALID_DIMENSIONS_STR,
     MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR,
+    MIN_GAMES_REQUIRED,
     avatarLookupReact,
   });
 });
@@ -385,6 +395,9 @@ router.get(
 
     res.render('profile/customavatar', {
       username: req.user.username,
+      totalGamesPlayed: req.user.totalGamesPlayed,
+      MIN_GAMES_REQUIRED,
+      MIN_GAMES_REQUIRED_FOR_TOURNEY,
       MAX_FILESIZE_STR,
       VALID_DIMENSIONS,
       VALID_DIMENSIONS_STR,
@@ -579,10 +592,13 @@ async function validateUploadAvatarRequest(
   );
 
   // Check: Min game count satisfied. If user is a paid Patron, they can bypass this check
-  if (!patreonRewards && user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+  if (
+    !patreonRewards &&
+    user.totalGamesPlayed < MIN_GAMES_REQUIRED_FOR_TOURNEY
+  ) {
     return {
       valid: false,
-      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
+      errMsg: `You must play at least ${MIN_GAMES_REQUIRED_FOR_TOURNEY} game(s) to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
     };
   }
 

@@ -88,6 +88,11 @@
                                 <span class="lastApprovedAvatarDate" data-date="<%= avreq.lastApprovedAvatarDate %>"></span>
                             </p>
 
+                            <%= avreq.totalGamesPlayed >= MIN_GAMES_REQUIRED ?
+                                    `✅ Total game(s) played: ${avreq.totalGamesPlayed}.` :
+                                    `❌ Total game(s) played: ${avreq.totalGamesPlayed}. Only tourney avatars may be approved in this case.` %>
+                            <br />
+
                             <%= avreq.hasLibrarySpace ?
                                     `✅ User avatar library is not full.` :
                                     `❌ User avatar library is full. Please check the user's avatar library before and after approval.` %>
