@@ -42,6 +42,9 @@ export class PromAgent {
     });
 
     if (!response.ok) {
+      // TODO-kev: Remove below
+      console.log('ERROR PUSHING METRICS');
+
       // Alert while errors are less than MAX_PUSH_METRICS_ERRORS
       const now = Date.now();
       this.pushMetricsErrorsTimestamps.push(now);

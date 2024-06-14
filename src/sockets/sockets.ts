@@ -63,7 +63,11 @@ const onlinePlayersMetric = new PromMetricGaugeFactory(
   `online_players_total`,
   `Number of online players`,
   function collect() {
-    this.set(allSockets.length);
+    // TODO-kev: uncomment below line once pushed
+    let randomInt = Math.floor(Math.random() * 40) + 1;
+    this.set(randomInt);
+
+    // this.set(allSockets.length);
   },
 );
 

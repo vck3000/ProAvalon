@@ -223,3 +223,9 @@ if (process.env.ENV === 'prod') {
 
 // TODO-kev: Test - remove all lines below this once extracted out
 (async () => {})();
+
+// Periodically push metrics every 15 seconds to VictoriaMetrics
+setInterval(async () => {
+  // console.log('Pushing metrics:');
+  // await promAgent.pushMetricsToVictoriaMetrics();
+}, 2000);
