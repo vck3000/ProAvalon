@@ -2,12 +2,21 @@
 
 class Settings {
   private disableRegistration = false;
+  private readonly env: string;
 
-  getDisableRegistration(): boolean {
+  constructor() {
+    this.env = process.env.ENV;
+  }
+
+  public getEnv() {
+    return this.env;
+  }
+
+  public getDisableRegistration(): boolean {
     return this.disableRegistration;
   }
 
-  toggleDisableRegistration() {
+  public toggleDisableRegistration() {
     this.disableRegistration = !this.disableRegistration;
   }
 }
