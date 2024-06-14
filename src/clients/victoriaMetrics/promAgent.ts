@@ -1,5 +1,3 @@
-// TODO-kev: Think of a new name to call this file
-
 import promClient from 'prom-client';
 import assert from 'assert';
 import { sendToDiscordAdmins } from '../discord';
@@ -8,7 +6,7 @@ const VM_IMPORT_PROMETHEUS_URL =
   'http://localhost:8428/api/v1/import/prometheus';
 
 const MAX_PUSH_METRICS_ERRORS = 5;
-const PUSH_METRICS_ERRORS_DURATION = 60 * 60 * 1000; // 1 hour
+const PUSH_METRICS_ERRORS_RATE_LIMIT = 60 * 60 * 1000; // 1 hour
 
 export class PromAgent {
   private metricNames: Set<string>;
@@ -49,7 +47,7 @@ export class PromAgent {
       this.pushMetricsErrorsTimestamps.push(now);
       this.pushMetricsErrorsTimestamps =
         this.pushMetricsErrorsTimestamps.filter(
-          (timestamp) => now - timestamp <= PUSH_METRICS_ERRORS_DURATION,
+          (timestamp) => now - timestamp <= PUSH_METRICS_ERRORS_RATE_LIMIT,
         );
 
       // TODO-kev: Check below. Particularly error stack?. Consider what to do in cases where it exceeds

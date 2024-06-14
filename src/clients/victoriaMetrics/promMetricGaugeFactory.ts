@@ -23,15 +23,15 @@ export class PromMetricGaugeFactory {
     this.gauge = new promClient.Gauge(gaugeConfig);
   }
 
-  public set(num: number) {
+  public gaugeSet(num: number) {
     this.gauge.set(num);
   }
 
-  public inc(num: number) {
+  public gaugeInc(num: number) {
     this.gauge.inc(num);
   }
 
-  public dec(num: number) {
+  public gaugeDec(num: number) {
     this.gauge.dec(num);
   }
 }
