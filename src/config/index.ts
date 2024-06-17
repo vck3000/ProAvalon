@@ -9,8 +9,6 @@ const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 class Config {
   private readonly env: string = process.env.ENV;
 
-  private readonly databaseUrl: string = process.env.DATABASEURL;
-
   constructor() {
     // Run validation checks outside test environment
     if (process.env.NODE_ENV !== 'test') {
@@ -25,10 +23,6 @@ class Config {
 
   public getEnv() {
     return this.env;
-  }
-
-  public getDatabaseUrl() {
-    return this.databaseUrl;
   }
 }
 
