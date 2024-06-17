@@ -27,9 +27,9 @@ export const config: Readonly<ConfigNew> = Object.freeze({
   ENV: validateEnv(),
   NODE_ENV: process.env.NODE_ENV,
   SERVER_DOMAIN: process.env.SERVER_DOMAIN,
-  PORT: process.env.PORT,
-  IP: process.env.IP,
-  MY_SECRET_KEY: getRequiredEnvVariable('MY_SECRET_KEY'),
+  PORT: process.env.PORT || '3000',
+  IP: process.env.IP || '127.0.0.1',
+  MY_SECRET_KEY: process.env.MY_SECRET_KEY || 'MySecretKey',
 
   GOOGLE_CAPTCHA_KEY: process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY,
   DATABASE_URL: getRequiredEnvVariable('DATABASEURL'), // TODO-kev: Consider renaming env variable
