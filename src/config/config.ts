@@ -29,11 +29,6 @@ class Config {
   private readonly s3Region: string = process.env.S3_REGION;
   private readonly s3Endpoint: string = process.env.S3_ENDPOINT;
 
-  private readonly patreonClientId: string = process.env.patreon_client_ID;
-  private readonly patreonClientSecret: string =
-    process.env.patreon_client_secret;
-  private readonly patreonRedirectUrl: string = process.env.patreon_redirectURL;
-
   private readonly discordBotToken: string = process.env.discord_bot_token;
   private readonly discordAdminChannelId: string =
     process.env.discord_admin_channel_id;
@@ -133,18 +128,6 @@ class Config {
 
   public getS3Endpoint() {
     return this.s3Endpoint;
-  }
-
-  public getPatreonClientId() {
-    return this.patreonClientId;
-  }
-
-  public getPatreonClientSecret() {
-    return this.patreonClientSecret;
-  }
-
-  public getPatreonRedirectUrl() {
-    return this.patreonRedirectUrl;
   }
 
   public getDiscordBotToken() {
