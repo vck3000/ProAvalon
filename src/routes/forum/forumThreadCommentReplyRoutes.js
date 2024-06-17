@@ -3,7 +3,7 @@ import sanitizeHtml from 'sanitize-html';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 
-import { configOld } from '../../config';
+import { config } from '../../config';
 import forumThread from '../../models/forumThread';
 import forumThreadComment from '../../models/forumThreadComment';
 import forumThreadCommentReply from '../../models/forumThreadCommentReply';
@@ -40,7 +40,7 @@ const sanitizeHtmlAllowedAttributesForumThread = {
 };
 
 const newReplyLimiter =
-  configOld.getEnv() === 'local'
+  config.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })

@@ -1,10 +1,10 @@
 import Discord, { TextChannel } from 'discord.js';
 
-import { config, configOld } from '../../config';
+import { config } from '../../config';
 
 const client = new Discord.Client();
 
-if (configOld.getEnv() === 'prod') {
+if (config.ENV === 'prod') {
   client.login(config.discord.BOT_TOKEN);
 }
 
@@ -25,7 +25,7 @@ export function sendToDiscordMods(message: string, ping?: boolean): void {
 function sendToChannel(message: string, channelId: string): void {
   const channel = client.channels.cache.get(channelId) as TextChannel;
 
-  if (configOld.getEnv() === 'prod') {
+  if (config.ENV === 'prod') {
     channel.send(message);
   }
 }

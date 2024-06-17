@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { config, configOld } from '../config';
+import { config } from '../config';
 
 const VPN_TIMEOUT = 1000 * 60 * 60 * 12; // 12 hours
 
@@ -118,7 +118,7 @@ const isVpnCheck2 = async (ip: string): Promise<boolean> => {
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
-  if (configOld.getEnv() === 'local') {
+  if (config.ENV === 'local') {
     next();
     return;
   }

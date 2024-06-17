@@ -20,13 +20,10 @@ class Config {
       }
     }
   }
-
-  public getEnv() {
-    return this.env;
-  }
 }
 
 type ConfigNew = {
+  ENV: string;
   NODE_ENV: string;
   SERVER_DOMAIN: string;
   PORT: string;
@@ -44,6 +41,7 @@ type ConfigNew = {
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
+  ENV: process.env.ENV,
   NODE_ENV: process.env.NODE_ENV,
   SERVER_DOMAIN: process.env.SERVER_DOMAIN,
   PORT: process.env.PORT,
@@ -59,5 +57,3 @@ export const config: Readonly<ConfigNew> = Object.freeze({
   s3: S3Config,
   vpn: VpnConfig,
 });
-
-export const configOld = new Config();

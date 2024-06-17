@@ -12,7 +12,7 @@ import statsCumulative from '../models/statsCumulative';
 import { emailExists, validEmail } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
-import { configOld } from '../config';
+import { config } from '../config';
 import { disallowVPNs } from '../util/vpnDetection';
 import { settingsSingleton } from '../settings';
 import { Alliance } from '../gameplay/types';
@@ -32,11 +32,11 @@ router.get('/', (req, res) => {
 
 // register route
 router.get('/register', (req, res) => {
-  res.render('register', { platform: configOld.getEnv() });
+  res.render('register', { platform: config.ENV });
 });
 
 const registerLimiter =
-  configOld.getEnv() === 'local'
+  config.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -99,7 +99,7 @@ router.post(
           passport.authenticate('local')(req, res, () => {
             res.redirect('/lobby');
           });
-          if (configOld.getEnv() === 'prod') {
+          if (config.ENV === 'prod') {
             sendEmailVerification(user, req.body.emailAddress);
           } else {
             user.emailVerified = true;
@@ -113,7 +113,7 @@ router.post(
 );
 
 const loginLimiter =
-  configOld.getEnv() === 'local'
+  config.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -237,7 +237,7 @@ router.get('/statistics', (req, res) => {
 });
 
 router.get('/resetPassword', (req, res) => {
-  res.render('resetPassword', { platform: configOld.getEnv() });
+  res.render('resetPassword', { platform: config.ENV });
 });
 
 router.post(

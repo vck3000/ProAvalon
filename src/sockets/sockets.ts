@@ -2,6 +2,7 @@
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
+import { config } from '../config';
 import GameWrapper from '../gameplay/gameWrapper';
 
 import savedGameObj from '../models/savedGame';
@@ -46,7 +47,6 @@ import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
-import { config, configOld } from '../config';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -1955,7 +1955,7 @@ function joinQueue(): boolean {
     return false;
   }
 
-  if (configOld.getEnv() !== 'local') {
+  if (config.ENV !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
       this.emit('allChatToClient', {
         message: 'You require 3 games to join the ranked queue.',

@@ -2,6 +2,8 @@ import { Router } from 'express';
 import sanitizeHtml from 'sanitize-html';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
+
+import { config } from '../../config';
 import forumThread from '../../models/forumThread';
 import forumThreadComment from '../../models/forumThreadComment';
 import {
@@ -12,12 +14,11 @@ import { allowedHtmlAttributes, allowedHtmlTags } from './sanitizeRestrictions';
 import { createNotification } from '../../myFunctions/createNotification';
 import REWARDS from '../../rewards/constants';
 import { userHasReward } from '../../rewards/getRewards';
-import { configOld } from '../../config';
 
 const router = new Router();
 
 const newCommentLimiter =
-  configOld.getEnv() === 'local'
+  config.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })

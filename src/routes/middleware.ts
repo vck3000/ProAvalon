@@ -1,4 +1,7 @@
 // @ts-nocheck
+import { RequestHandler } from 'express';
+
+import { config } from '../config';
 import forumThread from '../models/forumThread';
 import forumThreadComment from '../models/forumThreadComment';
 import forumThreadCommentReply from '../models/forumThreadCommentReply';
@@ -6,9 +9,6 @@ import User from '../models/user';
 import Ban from '../models/ban';
 import { isMod } from '../modsadmins/mods';
 import { isAdmin } from '../modsadmins/admins';
-
-import { RequestHandler } from 'express';
-import { configOld } from '../config';
 
 // return a function that wraps an async middleware
 export const asyncMiddleware =
@@ -222,7 +222,7 @@ export const isAdminMiddleware = (req, res, next) => {
 };
 
 export const emailVerified = (req, res, next) => {
-  if (req.user.emailVerified === true || configOld.getEnv() != 'prod') {
+  if (req.user.emailVerified === true || config.ENV != 'prod') {
     next();
   } else {
     res.redirect('/emailVerification');

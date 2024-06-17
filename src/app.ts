@@ -20,7 +20,7 @@ import socket, { Server as SocketServer } from 'socket.io';
 import createProxyMiddleware from 'http-proxy-middleware';
 import morgan from 'morgan';
 
-import { config, configOld } from './config';
+import { config } from './config';
 import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
 import { emailVerified, isLoggedIn } from './routes/middleware';
@@ -75,7 +75,7 @@ app.use(
   ),
 );
 
-if (configOld.getEnv() === 'local') {
+if (config.ENV === 'local') {
   console.log('Routing dist_webpack to localhost:3010.');
   app.use(
     '/dist_webpack',
