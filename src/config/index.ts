@@ -3,6 +3,7 @@ import { DiscordConfig, DiscordConfigType } from './discordConfig';
 import { S3Config, S3ConfigType } from './s3Config';
 import { EmailConfig, EmailConfigType } from './emailConfig';
 import { VpnConfig, VpnConfigType } from './vpnConfig';
+import { getRequiredEnvVariable } from './utils';
 
 type ConfigNew = {
   ENV: string;
@@ -54,14 +55,4 @@ function validateEnv() {
   }
 
   return ENV;
-}
-
-export function getRequiredEnvVariable(variableName: string) {
-  const envVariable = process.env[variableName];
-
-  if (envVariable === undefined || envVariable === '') {
-    throw new Error(`Missing required environment variable: ${variableName}`);
-  }
-
-  return envVariable;
 }

@@ -1,9 +1,9 @@
 export type DiscordConfigType = {
-  BOT_TOKEN: string;
-  ADMIN_CHANNEL_ID: string;
-  MOD_CHANNEL_ID: string;
-  ADMIN_ROLE_ID: string;
-  MOD_ROLE_ID: string;
+  BOT_TOKEN?: string;
+  ADMIN_CHANNEL_ID?: string;
+  MOD_CHANNEL_ID?: string;
+  ADMIN_ROLE_ID?: string;
+  MOD_ROLE_ID?: string;
 };
 
 export const DiscordConfig: Readonly<DiscordConfigType> = Object.freeze({

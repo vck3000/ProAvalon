@@ -1,7 +1,7 @@
 export type EmailConfigType = {
-  PROAVALON_EMAIL_ADDRESS_DOMAIN: string;
-  PROAVALON_EMAIL_ADDRESS: string;
-  MAILGUN_API_KEY: string;
+  PROAVALON_EMAIL_ADDRESS_DOMAIN?: string;
+  PROAVALON_EMAIL_ADDRESS?: string;
+  MAILGUN_API_KEY?: string;
 };
 
 export const EmailConfig: Readonly<EmailConfigType> = Object.freeze({
