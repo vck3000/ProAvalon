@@ -7,10 +7,6 @@ const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
 class Config {
   private readonly env: string = process.env.ENV;
-  private readonly serverDomain: string = process.env.SERVER_DOMAIN;
-  private readonly port: string = process.env.PORT;
-  private readonly ip: string = process.env.IP;
-  private readonly mySecretKey: string = process.env.MY_SECRET_KEY;
 
   private readonly vpnDetectionToken: string = process.env.VPN_DETECTION_TOKEN;
   private readonly whitelistedVpnUsernames: string =
@@ -35,22 +31,6 @@ class Config {
     return this.env;
   }
 
-  public getServerDomain() {
-    return this.serverDomain;
-  }
-
-  public getPort() {
-    return this.port;
-  }
-
-  public getIp() {
-    return this.ip;
-  }
-
-  public getMySecretKey() {
-    return this.mySecretKey;
-  }
-
   public getVpnDetectionToken() {
     return this.vpnDetectionToken;
   }
@@ -70,6 +50,10 @@ class Config {
 
 type ConfigNew = {
   nodeEnv: string;
+  serverDomain: string;
+  port: string;
+  ip: string;
+  mySecretKey: string;
 
   discord: DiscordConfigType;
   email: EmailConfigType;
@@ -79,6 +63,10 @@ type ConfigNew = {
 
 export const config: Readonly<ConfigNew> = Object.freeze({
   nodeEnv: process.env.NODE_ENV,
+  serverDomain: process.env.SERVER_DOMAIN,
+  port: process.env.PORT,
+  ip: process.env.IP,
+  mySecretKey: process.env.MY_SECRET_KEY,
 
   discord: DiscordConfig,
   email: EmailConfig,

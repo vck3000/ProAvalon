@@ -20,7 +20,7 @@ import socket, { Server as SocketServer } from 'socket.io';
 import createProxyMiddleware from 'http-proxy-middleware';
 import morgan from 'morgan';
 
-import { configOld } from './config/config';
+import { config, configOld } from './config/config';
 import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
 import { emailVerified, isLoggedIn } from './routes/middleware';
@@ -83,7 +83,7 @@ if (configOld.getEnv() === 'local') {
   );
 }
 
-const port = configOld.getPort() || 3000;
+const port = config.port || 3000;
 const dbLoc = configOld.getDatabaseUrl();
 console.log(`Using database url: ${dbLoc}`);
 
@@ -130,7 +130,7 @@ process
   });
 
 // authentication
-const secretKey = configOld.getMySecretKey() || 'MySecretKey';
+const secretKey = config.mySecretKey || 'MySecretKey';
 app.use(
   session({
     secret: secretKey,
@@ -183,7 +183,7 @@ app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
 app.use('/profile', profileRoutes);
 
-const IP = configOld.getIp() || '127.0.0.1';
+const IP = config.ip || '127.0.0.1';
 const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
 });

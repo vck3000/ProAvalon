@@ -1,11 +1,12 @@
 import ejs from 'ejs';
-import emailTemplateEmailVerification from './emailTemplateEmailVerification';
 import uuid from 'uuid';
+
+import { config } from '../config/config';
+import emailTemplateEmailVerification from './emailTemplateEmailVerification';
 import disposableEmails from '../util/disposableEmails.js';
 import { sendEmail } from './sendEmail';
-import { configOld } from '../config/config';
 
-const serverDomain = configOld.getServerDomain();
+const serverDomain = config.serverDomain;
 
 const uuidv4 = uuid.v4;
 
