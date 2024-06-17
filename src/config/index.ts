@@ -1,5 +1,5 @@
 import { PatreonConfig, PatreonConfigType } from './patreonConfig';
-import { DiscordConfig, DiscordConfigType } from './discord';
+import { DiscordConfig, DiscordConfigType } from './discordConfig';
 import { S3Config, S3ConfigType } from './s3Config';
 import { EmailConfig, EmailConfigType } from './emailConfig';
 
