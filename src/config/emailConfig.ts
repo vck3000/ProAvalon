@@ -1,3 +1,5 @@
+import { getRequiredProdEnvVariable } from './utils';
+
 export type EmailConfigType = {
   PROAVALON_EMAIL_ADDRESS_DOMAIN?: string;
   PROAVALON_EMAIL_ADDRESS?: string;
@@ -5,7 +7,11 @@ export type EmailConfigType = {
 };
 
 export const EmailConfig: Readonly<EmailConfigType> = Object.freeze({
-  PROAVALON_EMAIL_ADDRESS_DOMAIN: process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN,
-  PROAVALON_EMAIL_ADDRESS: process.env.PROAVALON_EMAIL_ADDRESS,
-  MAILGUN_API_KEY: process.env.MAILGUN_API_KEY,
+  PROAVALON_EMAIL_ADDRESS_DOMAIN: getRequiredProdEnvVariable(
+    'PROAVALON_EMAIL_ADDRESS_DOMAIN',
+  ),
+  PROAVALON_EMAIL_ADDRESS: getRequiredProdEnvVariable(
+    'PROAVALON_EMAIL_ADDRESS',
+  ),
+  MAILGUN_API_KEY: getRequiredProdEnvVariable('MAILGUN_API_KEY'),
 });

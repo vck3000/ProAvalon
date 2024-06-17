@@ -1,3 +1,5 @@
+import { getRequiredProdEnvVariable } from './utils';
+
 export type PatreonConfigType = {
   CLIENT_ID?: string;
   CLIENT_SECRET?: string;
@@ -5,7 +7,7 @@ export type PatreonConfigType = {
 };
 
 export const PatreonConfig: Readonly<PatreonConfigType> = Object.freeze({
-  CLIENT_ID: process.env.patreon_client_ID,
-  CLIENT_SECRET: process.env.patreon_client_secret,
-  REDIRECT_URL: process.env.patreon_redirectURL,
+  CLIENT_ID: getRequiredProdEnvVariable('patreon_client_ID'),
+  CLIENT_SECRET: getRequiredProdEnvVariable('patreon_client_secret'),
+  REDIRECT_URL: getRequiredProdEnvVariable('patreon_redirectURL'),
 });

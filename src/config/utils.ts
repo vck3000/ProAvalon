@@ -1,3 +1,9 @@
+export function getRequiredProdEnvVariable(variableName: string) {
+  return process.env.ENV === `prod`
+    ? getRequiredEnvVariable(variableName)
+    : process.env[variableName];
+}
+
 export function getRequiredEnvVariable(variableName: string) {
   const envVariable = process.env[variableName];
 

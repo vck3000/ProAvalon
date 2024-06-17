@@ -1,3 +1,5 @@
+import { getRequiredEnvVariable, getRequiredProdEnvVariable } from './utils';
+
 export type DiscordConfigType = {
   BOT_TOKEN?: string;
   ADMIN_CHANNEL_ID?: string;
@@ -7,9 +9,9 @@ export type DiscordConfigType = {
 };
 
 export const DiscordConfig: Readonly<DiscordConfigType> = Object.freeze({
-  BOT_TOKEN: process.env.discord_bot_token,
-  ADMIN_CHANNEL_ID: process.env.discord_admin_channel_id,
-  MOD_CHANNEL_ID: process.env.discord_mod_channel_id,
-  ADMIN_ROLE_ID: process.env.discord_admin_role_id,
-  MOD_ROLE_ID: process.env.discord_mod_role_id,
+  BOT_TOKEN: getRequiredProdEnvVariable('discord_bot_token'),
+  ADMIN_CHANNEL_ID: getRequiredProdEnvVariable('discord_admin_channel_id'),
+  MOD_CHANNEL_ID: getRequiredProdEnvVariable('discord_mod_channel_id'),
+  ADMIN_ROLE_ID: getRequiredProdEnvVariable('discord_admin_role_id'),
+  MOD_ROLE_ID: getRequiredProdEnvVariable('discord_mod_role_id'),
 });
