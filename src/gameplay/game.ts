@@ -1562,7 +1562,7 @@ class Game extends Room {
         });
       }
 
-      if (config.nodeEnv !== 'test') {
+      if (config.NODE_ENV !== 'test') {
         this.playersInGame.forEach((player) => {
           User.findById(player.userId)
             .populate('notifications')

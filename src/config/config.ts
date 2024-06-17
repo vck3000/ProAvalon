@@ -49,11 +49,11 @@ class Config {
 }
 
 type ConfigNew = {
-  nodeEnv: string;
-  serverDomain: string;
-  port: string;
-  ip: string;
-  mySecretKey: string;
+  NODE_ENV: string;
+  SERVER_DOMAIN: string;
+  PORT: string;
+  IP: string;
+  MY_SECRET_KEY: string;
 
   discord: DiscordConfigType;
   email: EmailConfigType;
@@ -62,11 +62,11 @@ type ConfigNew = {
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
-  nodeEnv: process.env.NODE_ENV,
-  serverDomain: process.env.SERVER_DOMAIN,
-  port: process.env.PORT,
-  ip: process.env.IP,
-  mySecretKey: process.env.MY_SECRET_KEY,
+  NODE_ENV: process.env.NODE_ENV,
+  SERVER_DOMAIN: process.env.SERVER_DOMAIN,
+  PORT: process.env.PORT,
+  IP: process.env.IP,
+  MY_SECRET_KEY: process.env.MY_SECRET_KEY,
 
   discord: DiscordConfig,
   email: EmailConfig,

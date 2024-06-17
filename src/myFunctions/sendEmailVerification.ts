@@ -6,7 +6,7 @@ import emailTemplateEmailVerification from './emailTemplateEmailVerification';
 import disposableEmails from '../util/disposableEmails.js';
 import { sendEmail } from './sendEmail';
 
-const serverDomain = config.serverDomain;
+const serverDomain = config.SERVER_DOMAIN;
 
 const uuidv4 = uuid.v4;
 
