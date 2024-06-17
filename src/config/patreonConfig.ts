@@ -1,11 +1,11 @@
 export type PatreonConfigType = {
-  clientId: string;
-  clientSecret: string;
-  redirectUrl: string;
+  CLIENT_ID: string;
+  CLIENT_SECRET: string;
+  REDIRECT_URL: string;
 };
 
 export const PatreonConfig: Readonly<PatreonConfigType> = Object.freeze({
-  clientId: process.env.patreon_client_ID,
-  clientSecret: process.env.patreon_client_secret,
-  redirectUrl: process.env.patreon_redirectURL,
+  CLIENT_ID: process.env.patreon_client_ID,
+  CLIENT_SECRET: process.env.patreon_client_secret,
+  REDIRECT_URL: process.env.patreon_redirectURL,
 });

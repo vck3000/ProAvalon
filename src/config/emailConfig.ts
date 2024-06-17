@@ -1,11 +1,11 @@
 export type EmailConfigType = {
-  proAvalonEmailAddressDomain: string;
-  proAvalonEmailAddress: string;
-  mailgunApiKey: string;
+  PROAVALON_EMAIL_ADDRESS_DOMAIN: string;
+  PROAVALON_EMAIL_ADDRESS: string;
+  MAILGUN_API_KEY: string;
 };
 
 export const EmailConfig: Readonly<EmailConfigType> = Object.freeze({
-  proAvalonEmailAddressDomain: process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN,
-  proAvalonEmailAddress: process.env.PROAVALON_EMAIL_ADDRESS,
-  mailgunApiKey: process.env.MAILGUN_API_KEY,
+  PROAVALON_EMAIL_ADDRESS_DOMAIN: process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN,
+  PROAVALON_EMAIL_ADDRESS: process.env.PROAVALON_EMAIL_ADDRESS,
+  MAILGUN_API_KEY: process.env.MAILGUN_API_KEY,
 });

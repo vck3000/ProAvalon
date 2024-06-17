@@ -14,9 +14,9 @@ const PATREON_URLS = {
 };
 
 export class PatreonController implements IPatreonController {
-  private clientId = config.patreon.clientId;
-  private clientSecret = config.patreon.clientSecret;
-  private redirectUri = config.patreon.redirectUrl;
+  private clientId = config.patreon.CLIENT_ID;
+  private clientSecret = config.patreon.CLIENT_SECRET;
+  private redirectUri = config.patreon.REDIRECT_URL;
 
   public async getPatreonUserTokens(code: string): Promise<PatreonUserTokens> {
     const getPatreonUserTokensUrl = new URL(PATREON_URLS.GET_TOKENS);

@@ -1,15 +1,15 @@
 export type S3ConfigType = {
-  publicFileLinkPrefix: string;
-  bucketName: string;
-  region: string;
-  endpoint: string;
+  PUBLIC_FILE_LINK_PREFIX: string;
+  BUCKET_NAME: string;
+  REGION: string;
+  ENDPOINT: string;
 };
 
 export const S3Config: Readonly<S3ConfigType> = Object.freeze({
-  publicFileLinkPrefix: process.env.S3_PUBLIC_FILE_LINK_PREFIX,
-  bucketName: validateBucketName(),
-  region: process.env.S3_REGION,
-  endpoint: process.env.S3_ENDPOINT,
+  PUBLIC_FILE_LINK_PREFIX: process.env.S3_PUBLIC_FILE_LINK_PREFIX,
+  BUCKET_NAME: validateBucketName(),
+  REGION: process.env.S3_REGION,
+  ENDPOINT: process.env.S3_ENDPOINT,
 });
 
 function validateBucketName() {

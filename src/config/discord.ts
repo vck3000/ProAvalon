@@ -1,15 +1,15 @@
 export type DiscordConfigType = {
-  botToken: string;
-  adminChannelId: string;
-  modChannelId: string;
-  adminRoleId: string;
-  modRoleId: string;
+  BOT_TOKEN: string;
+  ADMIN_CHANNEL_ID: string;
+  MOD_CHANNEL_ID: string;
+  ADMIN_ROLE_ID: string;
+  MOD_ROLE_ID: string;
 };
 
 export const DiscordConfig: Readonly<DiscordConfigType> = Object.freeze({
-  botToken: process.env.discord_bot_token,
-  adminChannelId: process.env.discord_admin_channel_id,
-  modChannelId: process.env.discord_mod_channel_id,
-  adminRoleId: process.env.discord_admin_role_id,
-  modRoleId: process.env.discord_mod_role_id,
+  BOT_TOKEN: process.env.discord_bot_token,
+  ADMIN_CHANNEL_ID: process.env.discord_admin_channel_id,
+  MOD_CHANNEL_ID: process.env.discord_mod_channel_id,
+  ADMIN_ROLE_ID: process.env.discord_admin_role_id,
+  MOD_ROLE_ID: process.env.discord_mod_role_id,
 });

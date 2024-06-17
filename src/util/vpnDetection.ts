@@ -101,7 +101,7 @@ const isVpnCheck1 = async (ip: string): Promise<boolean> => {
 
 const isVpnCheck2 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
-    `https://check.getipintel.net/check.php?ip=${ip}&contact=${config.email.proAvalonEmailAddress}&flags=m`,
+    `https://check.getipintel.net/check.php?ip=${ip}&contact=${config.email.PROAVALON_EMAIL_ADDRESS}&flags=m`,
   );
 
   const data = await vpnResponse.json();

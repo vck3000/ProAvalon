@@ -17,12 +17,12 @@ export default class S3Controller implements IS3Controller {
   private bucket: string;
 
   constructor() {
-    this.publicFileLinkPrefix = config.s3.publicFileLinkPrefix;
-    this.bucket = config.s3.bucketName;
+    this.publicFileLinkPrefix = config.s3.PUBLIC_FILE_LINK_PREFIX;
+    this.bucket = config.s3.BUCKET_NAME;
 
     this.client = new S3Client({
-      region: config.s3.region,
-      endpoint: config.s3.endpoint,
+      region: config.s3.REGION,
+      endpoint: config.s3.ENDPOINT,
       credentials: fromEnv(),
     });
   }

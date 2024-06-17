@@ -3,8 +3,8 @@ import formData from 'form-data';
 
 import { config } from '../config/config';
 
-const api_key = config.email.mailgunApiKey;
-const domain = config.email.proAvalonEmailAddressDomain;
+const api_key = config.email.MAILGUN_API_KEY;
+const domain = config.email.PROAVALON_EMAIL_ADDRESS_DOMAIN;
 
 const mailgun = new Mailgun(formData);
 const mg = mailgun.client({ username: 'api', key: api_key });
@@ -15,7 +15,7 @@ export const sendEmail = (
   messageHtml: string,
 ) => {
   const data = {
-    from: 'ProAvalon <' + config.email.proAvalonEmailAddress + '>',
+    from: 'ProAvalon <' + config.email.PROAVALON_EMAIL_ADDRESS + '>',
     to: recipientEmail,
     subject: subject,
     html: messageHtml,
