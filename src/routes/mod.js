@@ -19,7 +19,7 @@ import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
 import { MongoClient } from 'mongodb';
 import { SESSIONS_COLLECTION_NAME } from '../constants';
-import { configOld } from '../config/config';
+import { configOld } from '../config';
 
 const router = new Router();
 

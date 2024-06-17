@@ -1,7 +1,7 @@
 import Mailgun from 'mailgun.js';
 import formData from 'form-data';
 
-import { config } from '../config/config';
+import { config } from '../config';
 
 const api_key = config.email.MAILGUN_API_KEY;
 const domain = config.email.PROAVALON_EMAIL_ADDRESS_DOMAIN;

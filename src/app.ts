@@ -1,6 +1,6 @@
 // @ts-nocheck
 import './env.js';
-import './config/config';
+import './config';
 import 'log-timestamp';
 import { sendToDiscordAdmins } from './clients/discord';
 import assert from 'assert';
@@ -20,7 +20,7 @@ import socket, { Server as SocketServer } from 'socket.io';
 import createProxyMiddleware from 'http-proxy-middleware';
 import morgan from 'morgan';
 
-import { config, configOld } from './config/config';
+import { config, configOld } from './config';
 import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
 import { emailVerified, isLoggedIn } from './routes/middleware';

@@ -1,6 +1,6 @@
 import uuid from 'uuid';
 
-import { config } from '../../config/config';
+import { config } from '../../config';
 import {
   IPatreonController,
   PatreonUserTokens,

@@ -1,5 +1,5 @@
 import { RequestHandler } from 'express';
-import { config, configOld } from '../config/config';
+import { config, configOld } from '../config';
 
 const VPN_TIMEOUT = 1000 * 60 * 60 * 12; // 12 hours
 

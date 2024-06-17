@@ -1,7 +1,7 @@
 import uuid from 'uuid';
 import ejs from 'ejs';
 
-import { config } from '../config/config';
+import { config } from '../config';
 import emailTemplateResetPassword from './emailTemplateResetPassword';
 import { sendEmail } from './sendEmail';
 

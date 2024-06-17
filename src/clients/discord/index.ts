@@ -1,6 +1,6 @@
 import Discord, { TextChannel } from 'discord.js';
 
-import { config, configOld } from '../../config/config';
+import { config, configOld } from '../../config';
 
 const client = new Discord.Client();
 

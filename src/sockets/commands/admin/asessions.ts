@@ -2,7 +2,7 @@ import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
 import { Command } from '../types';
 import { MongoClient } from 'mongodb';
-import { configOld } from '../../../config/config';
+import { configOld } from '../../../config';
 
 export const asessions: Command = {
   command: 'asessions',

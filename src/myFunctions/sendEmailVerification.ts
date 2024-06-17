@@ -1,7 +1,7 @@
 import ejs from 'ejs';
 import uuid from 'uuid';
 
-import { config } from '../config/config';
+import { config } from '../config';
 import emailTemplateEmailVerification from './emailTemplateEmailVerification';
 import disposableEmails from '../util/disposableEmails.js';
 import { sendEmail } from './sendEmail';

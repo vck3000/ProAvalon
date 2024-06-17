@@ -1,7 +1,7 @@
 // @ts-nocheck
 import _ from 'lodash';
 
-import { config } from '../config/config';
+import { config } from '../config';
 import Room, { RoomConfig } from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';

@@ -2,7 +2,7 @@ import { Router } from 'express';
 import sanitizeHtml from 'sanitize-html';
 import rateLimit from 'express-rate-limit';
 
-import { configOld } from '../../config/config';
+import { configOld } from '../../config';
 import { checkForumThreadOwnership, asyncMiddleware } from '../middleware';
 import getTimeDiffInString from '../../util/getTimeDiffInString';
 import lastIds from '../../models/lastIds';
