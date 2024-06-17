@@ -9,8 +9,6 @@ const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 class Config {
   private readonly env: string = process.env.ENV;
 
-  private readonly googleCaptchaKey: string =
-    process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
   private readonly databaseUrl: string = process.env.DATABASEURL;
 
   constructor() {
@@ -29,10 +27,6 @@ class Config {
     return this.env;
   }
 
-  public getGoogleCaptchaKey() {
-    return this.googleCaptchaKey;
-  }
-
   public getDatabaseUrl() {
     return this.databaseUrl;
   }
@@ -44,6 +38,9 @@ type ConfigNew = {
   PORT: string;
   IP: string;
   MY_SECRET_KEY: string;
+
+  GOOGLE_CAPTCHA_KEY: string;
+  DATABASE_URL: string;
 
   discord: DiscordConfigType;
   email: EmailConfigType;
@@ -58,6 +55,9 @@ export const config: Readonly<ConfigNew> = Object.freeze({
   PORT: process.env.PORT,
   IP: process.env.IP,
   MY_SECRET_KEY: process.env.MY_SECRET_KEY,
+
+  GOOGLE_CAPTCHA_KEY: process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY,
+  DATABASE_URL: process.env.DATABASEURL, // TODO-kev: Consider renaming env variable
 
   discord: DiscordConfig,
   email: EmailConfig,

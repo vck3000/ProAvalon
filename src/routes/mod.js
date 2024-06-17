@@ -1,7 +1,9 @@
 import React from 'react';
 import { Router } from 'express';
 import { renderToString } from 'react-dom/server';
+import { MongoClient } from 'mongodb';
 
+import { config } from '../config';
 import { isModMiddleware } from './middleware';
 import User from '../models/user';
 import Ban from '../models/ban';
@@ -17,9 +19,7 @@ import {
 
 import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
-import { MongoClient } from 'mongodb';
 import { SESSIONS_COLLECTION_NAME } from '../constants';
-import { configOld } from '../config';
 
 const router = new Router();
 
@@ -187,7 +187,7 @@ router.post('/ban', isModMiddleware, async (req, res) => {
     });
 
     // Delete all the sessions associated with this username
-    const dbResult = await MongoClient.connect(configOld.getDatabaseUrl());
+    const dbResult = await MongoClient.connect(config.DATABASE_URL);
     const mySessions = dbResult.db().collection(SESSIONS_COLLECTION_NAME);
     const deleteResult = await mySessions.deleteMany({
       'session.usernameLower': banPlayerUsername.toLowerCase(),
