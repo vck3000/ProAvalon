@@ -1,24 +1,25 @@
 import Discord, { TextChannel } from 'discord.js';
-import { configOld } from '../../config/config';
+
+import { config, configOld } from '../../config/config';
 
 const client = new Discord.Client();
 
 if (configOld.getEnv() === 'prod') {
-  client.login(configOld.getDiscordBotToken());
+  client.login(config.discord.botToken);
 }
 
 export function sendToDiscordAdmins(message: string, ping?: boolean): void {
   if (ping) {
     message = `${getAdminPing()} ${message}`;
   }
-  sendToChannel(message, configOld.getDiscordAdminChannelId());
+  sendToChannel(message, config.discord.adminChannelId);
 }
 
 export function sendToDiscordMods(message: string, ping?: boolean): void {
   if (ping) {
     message = `${getModPing()} ${message}`;
   }
-  sendToChannel(message, configOld.getDiscordModChannelId());
+  sendToChannel(message, config.discord.modChannelId);
 }
 
 function sendToChannel(message: string, channelId: string): void {
@@ -30,9 +31,9 @@ function sendToChannel(message: string, channelId: string): void {
 }
 
 function getAdminPing(): string {
-  return `<@&${configOld.getDiscordAdminRoleId()}>`;
+  return `<@&${config.discord.adminRoleId}>`;
 }
 
 function getModPing(): string {
-  return `<@&${configOld.getDiscordModRoleId()}>`;
+  return `<@&${config.discord.modRoleId}>`;
 }

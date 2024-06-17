@@ -1,4 +1,5 @@
 import { PatreonConfig, PatreonConfigType } from './patreonConfig';
+import { DiscordConfig, DiscordConfigType } from './discord';
 
 const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
@@ -28,15 +29,6 @@ class Config {
   private readonly s3BucketName: string = process.env.S3_BUCKET_NAME;
   private readonly s3Region: string = process.env.S3_REGION;
   private readonly s3Endpoint: string = process.env.S3_ENDPOINT;
-
-  private readonly discordBotToken: string = process.env.discord_bot_token;
-  private readonly discordAdminChannelId: string =
-    process.env.discord_admin_channel_id;
-  private readonly discordModChannelId: string =
-    process.env.discord_mod_channel_id;
-  private readonly discordAdminRoleId: string =
-    process.env.discord_admin_role_id;
-  private readonly discordModRoleId: string = process.env.discord_mod_role_id;
 
   constructor() {
     // Run validation checks outside test environment
@@ -129,34 +121,16 @@ class Config {
   public getS3Endpoint() {
     return this.s3Endpoint;
   }
-
-  public getDiscordBotToken() {
-    return this.discordBotToken;
-  }
-
-  public getDiscordAdminChannelId() {
-    return this.discordAdminChannelId;
-  }
-
-  public getDiscordModChannelId() {
-    return this.discordModChannelId;
-  }
-
-  public getDiscordAdminRoleId() {
-    return this.discordAdminRoleId;
-  }
-
-  public getDiscordModRoleId() {
-    return this.discordModRoleId;
-  }
 }
 
 type ConfigNew = {
   patreon: PatreonConfigType;
+  discord: DiscordConfigType;
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
   patreon: PatreonConfig,
+  discord: DiscordConfig,
 });
 
 export const configOld = new Config();
