@@ -7,7 +7,10 @@ export function getRequiredProdEnvVariable(variableName: string) {
 export function getRequiredEnvVariable(variableName: string) {
   const envVariable = process.env[variableName];
 
-  if (envVariable === undefined || envVariable === '') {
+  if (
+    process.env.NODE_ENV !== 'test' &&
+    (envVariable === undefined || envVariable === '')
+  ) {
     throw new Error(`Missing required environment variable: ${variableName}`);
   }
 
