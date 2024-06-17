@@ -12,7 +12,7 @@ import statsCumulative from '../models/statsCumulative';
 import { emailExists, validEmail } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
-import { config } from '../config';
+import { config } from '../config/config';
 import { disallowVPNs } from '../util/vpnDetection';
 import { settingsSingleton } from '../settings';
 import { Alliance } from '../gameplay/types';

@@ -4,7 +4,7 @@ import {
   PaidPatronFullDetails,
 } from './patreonAgent';
 import uuid from 'uuid';
-import { config } from '../../config';
+import { config } from '../../config/config';
 
 const PATREON_URLS = {
   AUTHORIZATION_LINK: 'https://www.patreon.com/oauth2/authorize',

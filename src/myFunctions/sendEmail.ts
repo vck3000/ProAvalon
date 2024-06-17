@@ -1,6 +1,6 @@
 import Mailgun from 'mailgun.js';
 import formData from 'form-data';
-import { config } from '../config';
+import { config } from '../config/config';
 
 const api_key = config.getMailgunApiKey();
 const domain = config.getProAvalonEmailAddressDomain();

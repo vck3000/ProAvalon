@@ -8,7 +8,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { IS3Controller } from './S3Agent';
-import { config } from '../../config';
+import { config } from '../../config/config';
 
 export default class S3Controller implements IS3Controller {
   private client: S3Client;

@@ -3,7 +3,7 @@ import sanitizeHtml from 'sanitize-html';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
 
-import { config } from '../../config';
+import { config } from '../../config/config';
 import forumThread from '../../models/forumThread';
 import forumThreadComment from '../../models/forumThreadComment';
 import forumThreadCommentReply from '../../models/forumThreadCommentReply';

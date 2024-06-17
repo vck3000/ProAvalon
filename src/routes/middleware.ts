@@ -8,7 +8,7 @@ import { isMod } from '../modsadmins/mods';
 import { isAdmin } from '../modsadmins/admins';
 
 import { RequestHandler } from 'express';
-import { config } from '../config';
+import { config } from '../config/config';
 
 // return a function that wraps an async middleware
 export const asyncMiddleware =

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import axios from 'axios';
-import { config } from '../config';
+import { config } from '../config/config';
 
 export const captchaMiddleware: RequestHandler = async (req, res, next) => {
   if (config.getEnv() !== 'prod') {

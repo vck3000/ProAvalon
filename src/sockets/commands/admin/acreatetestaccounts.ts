@@ -2,7 +2,7 @@ import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
 import User from '../../../models/user';
 import { Command } from '../types';
-import { config } from '../../../config';
+import { config } from '../../../config/config';
 
 export const acreatetestaccounts: Command = {
   command: 'acreatetestaccounts',

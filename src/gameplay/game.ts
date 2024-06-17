@@ -32,7 +32,7 @@ import { millisToStr } from '../util/time';
 import shuffleArray from '../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../sockets/sockets';
-import { config } from '../config';
+import { config } from '../config/config';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;

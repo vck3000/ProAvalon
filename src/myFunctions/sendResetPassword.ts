@@ -2,7 +2,7 @@ import uuid from 'uuid';
 import ejs from 'ejs';
 import emailTemplateResetPassword from './emailTemplateResetPassword';
 import { sendEmail } from './sendEmail';
-import { config } from '../config';
+import { config } from '../config/config';
 
 const TOKEN_TIMEOUT = 60 * 60 * 1000; // 1 hour
 

@@ -1,5 +1,5 @@
 import Discord, { TextChannel } from 'discord.js';
-import { config } from '../../config';
+import { config } from '../../config/config';
 
 const client = new Discord.Client();
 

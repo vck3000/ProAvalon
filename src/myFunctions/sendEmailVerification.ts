@@ -3,7 +3,7 @@ import emailTemplateEmailVerification from './emailTemplateEmailVerification';
 import uuid from 'uuid';
 import disposableEmails from '../util/disposableEmails.js';
 import { sendEmail } from './sendEmail';
-import { config } from '../config';
+import { config } from '../config/config';
 
 const serverDomain = config.getServerDomain();
 

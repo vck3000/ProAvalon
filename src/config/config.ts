@@ -1,3 +1,5 @@
+import { PatreonConfig, PatreonConfigType } from './patreonConfig';
+
 const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
 class Config {
@@ -165,5 +167,13 @@ class Config {
     return this.discordModRoleId;
   }
 }
+
+type ConfigNew = {
+  patreon: PatreonConfigType;
+};
+
+export const configNew: Readonly<ConfigNew> = Object.freeze({
+  patreon: PatreonConfig,
+});
 
 export const config = new Config();
