@@ -4,24 +4,6 @@ import { S3Config, S3ConfigType } from './s3Config';
 import { EmailConfig, EmailConfigType } from './emailConfig';
 import { VpnConfig, VpnConfigType } from './vpnConfig';
 
-const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
-
-class Config {
-  private readonly env: string = process.env.ENV;
-
-  constructor() {
-    // Run validation checks outside test environment
-    if (process.env.NODE_ENV !== 'test') {
-      if (!VALID_ENVIRONMENTS.has(this.env)) {
-        // TODO-kev: Prefer the console.error then process exit or throw an error?
-        console.error(`Bad environment variable given: ${process.env.ENV}`);
-        throw new Error(`Invalid settings: ENV=${process.env.ENV}`);
-        process.exit(1);
-      }
-    }
-  }
-}
-
 type ConfigNew = {
   ENV: string;
   NODE_ENV: string;
@@ -41,7 +23,7 @@ type ConfigNew = {
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
-  ENV: process.env.ENV,
+  ENV: validateEnv(),
   NODE_ENV: process.env.NODE_ENV,
   SERVER_DOMAIN: process.env.SERVER_DOMAIN,
   PORT: process.env.PORT,
@@ -57,3 +39,18 @@ export const config: Readonly<ConfigNew> = Object.freeze({
   s3: S3Config,
   vpn: VpnConfig,
 });
+
+function validateEnv() {
+  const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
+
+  if (process.env.NODE_ENV !== 'test') {
+    if (!VALID_ENVIRONMENTS.has(process.env.ENV)) {
+      // TODO-kev: Prefer the console.error then process exit or throw an error?
+      console.error(`Bad environment variable given: ${process.env.ENV}`);
+      throw new Error(`Invalid settings: ENV=${process.env.ENV}`);
+      process.exit(1);
+    }
+  }
+
+  return process.env.ENV;
+}
