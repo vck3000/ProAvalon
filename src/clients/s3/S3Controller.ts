@@ -7,8 +7,9 @@ import {
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3';
+
+import { config } from '../../config/config';
 import { IS3Controller } from './S3Agent';
-import { configOld } from '../../config/config';
 
 export default class S3Controller implements IS3Controller {
   private client: S3Client;
@@ -16,12 +17,12 @@ export default class S3Controller implements IS3Controller {
   private bucket: string;
 
   constructor() {
-    this.publicFileLinkPrefix = configOld.getS3PublicFileLinkPrefix();
-    this.bucket = configOld.getS3BucketName();
+    this.publicFileLinkPrefix = config.s3.publicFileLinkPrefix;
+    this.bucket = config.s3.bucketName;
 
     this.client = new S3Client({
-      region: configOld.getS3Region(),
-      endpoint: configOld.getS3Endpoint(),
+      region: config.s3.region,
+      endpoint: config.s3.endpoint,
       credentials: fromEnv(),
     });
   }

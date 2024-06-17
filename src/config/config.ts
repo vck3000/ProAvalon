@@ -1,5 +1,6 @@
 import { PatreonConfig, PatreonConfigType } from './patreonConfig';
 import { DiscordConfig, DiscordConfigType } from './discord';
+import { S3Config, S3ConfigType } from './s3Config';
 
 const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
@@ -24,12 +25,6 @@ class Config {
     process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
   private readonly databaseUrl: string = process.env.DATABASEURL;
 
-  private readonly s3PublicFileLinkPrefix: string =
-    process.env.S3_PUBLIC_FILE_LINK_PREFIX;
-  private readonly s3BucketName: string = process.env.S3_BUCKET_NAME;
-  private readonly s3Region: string = process.env.S3_REGION;
-  private readonly s3Endpoint: string = process.env.S3_ENDPOINT;
-
   constructor() {
     // Run validation checks outside test environment
     if (this.nodeEnv !== 'test') {
@@ -38,18 +33,6 @@ class Config {
         console.error(`Bad environment variable given: ${process.env.ENV}`);
         throw new Error(`Invalid settings: ENV=${process.env.ENV}`);
         process.exit(1);
-      }
-
-      if (this.env === 'staging' && this.s3BucketName !== 'proavalon-staging') {
-        throw new Error(
-          `Invalid settings: ENV=staging S3_BUCKET_NAME=${process.env.S3_BUCKET_NAME}`,
-        );
-      }
-
-      if (this.env === 'prod' && this.s3BucketName !== 'proavalon') {
-        throw new Error(
-          `Invalid settings: ENV=prod S3_BUCKET_NAME=${process.env.S3_BUCKET_NAME}`,
-        );
       }
     }
   }
@@ -105,32 +88,18 @@ class Config {
   public getDatabaseUrl() {
     return this.databaseUrl;
   }
-
-  public getS3PublicFileLinkPrefix() {
-    return this.s3PublicFileLinkPrefix;
-  }
-
-  public getS3BucketName() {
-    return this.s3BucketName;
-  }
-
-  public getS3Region() {
-    return this.s3Region;
-  }
-
-  public getS3Endpoint() {
-    return this.s3Endpoint;
-  }
 }
 
 type ConfigNew = {
-  patreon: PatreonConfigType;
   discord: DiscordConfigType;
+  patreon: PatreonConfigType;
+  s3: S3ConfigType;
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
-  patreon: PatreonConfig,
   discord: DiscordConfig,
+  patreon: PatreonConfig,
+  s3: S3Config,
 });
 
 export const configOld = new Config();
