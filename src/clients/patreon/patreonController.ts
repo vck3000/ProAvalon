@@ -3,7 +3,7 @@ import {
   PatreonUserTokens,
   PaidPatronFullDetails,
 } from './patreonAgent';
-import uuid from 'uuid';dd .
+import uuid from 'uuid';
 import { config } from '../../config/config';
 
 const PATREON_URLS = {
