@@ -1,6 +1,7 @@
 import { PatreonConfig, PatreonConfigType } from './patreonConfig';
 import { DiscordConfig, DiscordConfigType } from './discord';
 import { S3Config, S3ConfigType } from './s3Config';
+import { EmailConfig, EmailConfigType } from './emailConfig';
 
 const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
@@ -11,12 +12,6 @@ class Config {
   private readonly port: string = process.env.PORT;
   private readonly ip: string = process.env.IP;
   private readonly mySecretKey: string = process.env.MY_SECRET_KEY;
-
-  private readonly proAvalonEmailAddressDomain: string =
-    process.env.PROAVALON_EMAIL_ADDRESS_DOMAIN;
-  private readonly proAvalonEmailAddress: string =
-    process.env.PROAVALON_EMAIL_ADDRESS;
-  private readonly mailgunApiKey: string = process.env.MAILGUN_API_KEY;
 
   private readonly vpnDetectionToken: string = process.env.VPN_DETECTION_TOKEN;
   private readonly whitelistedVpnUsernames: string =
@@ -61,18 +56,6 @@ class Config {
     return this.mySecretKey;
   }
 
-  public getProAvalonEmailAddress() {
-    return this.proAvalonEmailAddress;
-  }
-
-  public getProAvalonEmailAddressDomain() {
-    return this.proAvalonEmailAddressDomain;
-  }
-
-  public getMailgunApiKey() {
-    return this.mailgunApiKey;
-  }
-
   public getVpnDetectionToken() {
     return this.vpnDetectionToken;
   }
@@ -92,12 +75,14 @@ class Config {
 
 type ConfigNew = {
   discord: DiscordConfigType;
+  email: EmailConfigType;
   patreon: PatreonConfigType;
   s3: S3ConfigType;
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
   discord: DiscordConfig,
+  email: EmailConfig,
   patreon: PatreonConfig,
   s3: S3Config,
 });
