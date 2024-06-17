@@ -2,15 +2,13 @@ import { PatreonConfig, PatreonConfigType } from './patreonConfig';
 import { DiscordConfig, DiscordConfigType } from './discordConfig';
 import { S3Config, S3ConfigType } from './s3Config';
 import { EmailConfig, EmailConfigType } from './emailConfig';
+import { VpnConfig, VpnConfigType } from './vpnConfig';
 
 const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
 class Config {
   private readonly env: string = process.env.ENV;
 
-  private readonly vpnDetectionToken: string = process.env.VPN_DETECTION_TOKEN;
-  private readonly whitelistedVpnUsernames: string =
-    process.env.WHITELISTED_VPN_USERNAMES;
   private readonly googleCaptchaKey: string =
     process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
   private readonly databaseUrl: string = process.env.DATABASEURL;
@@ -29,14 +27,6 @@ class Config {
 
   public getEnv() {
     return this.env;
-  }
-
-  public getVpnDetectionToken() {
-    return this.vpnDetectionToken;
-  }
-
-  public getWhitelistedVpnUsernames() {
-    return this.whitelistedVpnUsernames;
   }
 
   public getGoogleCaptchaKey() {
@@ -59,6 +49,7 @@ type ConfigNew = {
   email: EmailConfigType;
   patreon: PatreonConfigType;
   s3: S3ConfigType;
+  vpn: VpnConfigType;
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
@@ -72,6 +63,7 @@ export const config: Readonly<ConfigNew> = Object.freeze({
   email: EmailConfig,
   patreon: PatreonConfig,
   s3: S3Config,
+  vpn: VpnConfig,
 });
 
 export const configOld = new Config();
