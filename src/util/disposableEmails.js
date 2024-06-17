@@ -7461,7 +7461,7 @@ export default [
   'gamesportal.me',
   'gamestips.ru',
   'gamgling.com',
-  'gamno.config.work',
+  'gamno.configOld.work',
   'gamora274ey.cf',
   'gamora274ey.ga',
   'gamora274ey.gq',

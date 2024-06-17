@@ -172,8 +172,8 @@ type ConfigNew = {
   patreon: PatreonConfigType;
 };
 
-export const configNew: Readonly<ConfigNew> = Object.freeze({
+export const config: Readonly<ConfigNew> = Object.freeze({
   patreon: PatreonConfig,
 });
 
-export const config = new Config();
+export const configOld = new Config();

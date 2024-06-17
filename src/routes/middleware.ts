@@ -8,7 +8,7 @@ import { isMod } from '../modsadmins/mods';
 import { isAdmin } from '../modsadmins/admins';
 
 import { RequestHandler } from 'express';
-import { config } from '../config/config';
+import { configOld } from '../config/config';
 
 // return a function that wraps an async middleware
 export const asyncMiddleware =
@@ -222,7 +222,7 @@ export const isAdminMiddleware = (req, res, next) => {
 };
 
 export const emailVerified = (req, res, next) => {
-  if (req.user.emailVerified === true || config.getEnv() != 'prod') {
+  if (req.user.emailVerified === true || configOld.getEnv() != 'prod') {
     next();
   } else {
     res.redirect('/emailVerification');

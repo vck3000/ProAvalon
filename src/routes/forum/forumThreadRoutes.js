@@ -2,7 +2,7 @@ import { Router } from 'express';
 import sanitizeHtml from 'sanitize-html';
 import rateLimit from 'express-rate-limit';
 
-import { config } from '../../config/config';
+import { configOld } from '../../config/config';
 import { checkForumThreadOwnership, asyncMiddleware } from '../middleware';
 import getTimeDiffInString from '../../util/getTimeDiffInString';
 import lastIds from '../../models/lastIds';
@@ -130,7 +130,7 @@ lastIds.findOne({}).exec(async (err, returnedLastId) => {
 });
 
 const newForumLimiter =
-  config.getEnv() === 'local'
+  configOld.getEnv() === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })

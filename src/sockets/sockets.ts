@@ -46,7 +46,7 @@ import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
-import { config } from '../config/config';
+import { configOld } from '../config/config';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -55,7 +55,7 @@ const matchmakingQueue = new MatchmakingQueue(matchFound);
 const joinQueueFilter = new JoinQueueFilter(() => new Date());
 const readyPrompt = new ReadyPrompt();
 
-if (config.getNodeEnv() !== 'test') {
+if (configOld.getNodeEnv() !== 'test') {
   setInterval(() => {
     chatSpamFilter.tick();
   }, 1000);
@@ -149,7 +149,7 @@ function deleteSaveGameFromDb(room) {
   }
 }
 
-if (config.getNodeEnv() !== 'test') {
+if (configOld.getNodeEnv() !== 'test') {
   setTimeout(async () => {
     let run = true;
     let i = 0;
@@ -1955,7 +1955,7 @@ function joinQueue(): boolean {
     return false;
   }
 
-  if (config.getEnv() !== 'local') {
+  if (configOld.getEnv() !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
       this.emit('allChatToClient', {
         message: 'You require 3 games to join the ranked queue.',

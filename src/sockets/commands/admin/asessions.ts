@@ -2,7 +2,7 @@ import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
 import { Command } from '../types';
 import { MongoClient } from 'mongodb';
-import { config } from '../../../config/config';
+import { configOld } from '../../../config/config';
 
 export const asessions: Command = {
   command: 'asessions',
@@ -15,7 +15,7 @@ export const asessions: Command = {
       return;
     }
 
-    const dbResult = await MongoClient.connect(config.getDatabaseUrl());
+    const dbResult = await MongoClient.connect(configOld.getDatabaseUrl());
 
     const mySessions = dbResult.db().collection('mySessions');
     const entries = mySessions.find({ 'session.usernameLower': username });

@@ -8,7 +8,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { IS3Controller } from './S3Agent';
-import { config } from '../../config/config';
+import { configOld } from '../../config/config';
 
 export default class S3Controller implements IS3Controller {
   private client: S3Client;
@@ -16,12 +16,12 @@ export default class S3Controller implements IS3Controller {
   private bucket: string;
 
   constructor() {
-    this.publicFileLinkPrefix = config.getS3PublicFileLinkPrefix();
-    this.bucket = config.getS3BucketName();
+    this.publicFileLinkPrefix = configOld.getS3PublicFileLinkPrefix();
+    this.bucket = configOld.getS3BucketName();
 
     this.client = new S3Client({
-      region: config.getS3Region(),
-      endpoint: config.getS3Endpoint(),
+      region: configOld.getS3Region(),
+      endpoint: configOld.getS3Endpoint(),
       credentials: fromEnv(),
     });
   }

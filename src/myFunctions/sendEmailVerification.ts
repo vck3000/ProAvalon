@@ -3,9 +3,9 @@ import emailTemplateEmailVerification from './emailTemplateEmailVerification';
 import uuid from 'uuid';
 import disposableEmails from '../util/disposableEmails.js';
 import { sendEmail } from './sendEmail';
-import { config } from '../config/config';
+import { configOld } from '../config/config';
 
-const serverDomain = config.getServerDomain();
+const serverDomain = configOld.getServerDomain();
 
 const uuidv4 = uuid.v4;
 

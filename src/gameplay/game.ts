@@ -32,7 +32,7 @@ import { millisToStr } from '../util/time';
 import shuffleArray from '../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../sockets/sockets';
-import { config } from '../config/config';
+import { configOld } from '../config/config';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -129,7 +129,7 @@ class Game extends Room {
   constructor(gameConfig: GameConfig) {
     super(gameConfig.roomConfig);
 
-    // Expand config
+    // Expand configOld
     this.muteSpectators = gameConfig.muteSpectators;
     this.disableVoteHistory = gameConfig.disableVoteHistory;
     this.roomCreationType = gameConfig.roomCreationType;
@@ -1562,7 +1562,7 @@ class Game extends Room {
         });
       }
 
-      if (config.getNodeEnv() !== 'test') {
+      if (configOld.getNodeEnv() !== 'test') {
         this.playersInGame.forEach((player) => {
           User.findById(player.userId)
             .populate('notifications')

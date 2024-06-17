@@ -1,38 +1,38 @@
 import Discord, { TextChannel } from 'discord.js';
-import { config } from '../../config/config';
+import { configOld } from '../../config/config';
 
 const client = new Discord.Client();
 
-if (config.getEnv() === 'prod') {
-  client.login(config.getDiscordBotToken());
+if (configOld.getEnv() === 'prod') {
+  client.login(configOld.getDiscordBotToken());
 }
 
 export function sendToDiscordAdmins(message: string, ping?: boolean): void {
   if (ping) {
     message = `${getAdminPing()} ${message}`;
   }
-  sendToChannel(message, config.getDiscordAdminChannelId());
+  sendToChannel(message, configOld.getDiscordAdminChannelId());
 }
 
 export function sendToDiscordMods(message: string, ping?: boolean): void {
   if (ping) {
     message = `${getModPing()} ${message}`;
   }
-  sendToChannel(message, config.getDiscordModChannelId());
+  sendToChannel(message, configOld.getDiscordModChannelId());
 }
 
 function sendToChannel(message: string, channelId: string): void {
   const channel = client.channels.cache.get(channelId) as TextChannel;
 
-  if (config.getEnv() === 'prod') {
+  if (configOld.getEnv() === 'prod') {
     channel.send(message);
   }
 }
 
 function getAdminPing(): string {
-  return `<@&${config.getDiscordAdminRoleId()}>`;
+  return `<@&${configOld.getDiscordAdminRoleId()}>`;
 }
 
 function getModPing(): string {
-  return `<@&${config.getDiscordModRoleId()}>`;
+  return `<@&${configOld.getDiscordModRoleId()}>`;
 }
