@@ -7,7 +7,6 @@ const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
 
 class Config {
   private readonly env: string = process.env.ENV;
-  private readonly nodeEnv: string = process.env.NODE_ENV;
   private readonly serverDomain: string = process.env.SERVER_DOMAIN;
   private readonly port: string = process.env.PORT;
   private readonly ip: string = process.env.IP;
@@ -22,7 +21,7 @@ class Config {
 
   constructor() {
     // Run validation checks outside test environment
-    if (this.nodeEnv !== 'test') {
+    if (process.env.NODE_ENV !== 'test') {
       if (!VALID_ENVIRONMENTS.has(this.env)) {
         // TODO-kev: Prefer the console.error then process exit or throw an error?
         console.error(`Bad environment variable given: ${process.env.ENV}`);
@@ -34,10 +33,6 @@ class Config {
 
   public getEnv() {
     return this.env;
-  }
-
-  public getNodeEnv() {
-    return this.nodeEnv;
   }
 
   public getServerDomain() {
@@ -74,6 +69,8 @@ class Config {
 }
 
 type ConfigNew = {
+  nodeEnv: string;
+
   discord: DiscordConfigType;
   email: EmailConfigType;
   patreon: PatreonConfigType;
@@ -81,6 +78,8 @@ type ConfigNew = {
 };
 
 export const config: Readonly<ConfigNew> = Object.freeze({
+  nodeEnv: process.env.NODE_ENV,
+
   discord: DiscordConfig,
   email: EmailConfig,
   patreon: PatreonConfig,

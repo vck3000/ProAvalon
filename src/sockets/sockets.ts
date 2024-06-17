@@ -46,7 +46,7 @@ import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { PatreonController } from '../clients/patreon/patreonController';
-import { configOld } from '../config/config';
+import { config, configOld } from '../config/config';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -55,7 +55,7 @@ const matchmakingQueue = new MatchmakingQueue(matchFound);
 const joinQueueFilter = new JoinQueueFilter(() => new Date());
 const readyPrompt = new ReadyPrompt();
 
-if (configOld.getNodeEnv() !== 'test') {
+if (config.nodeEnv !== 'test') {
   setInterval(() => {
     chatSpamFilter.tick();
   }, 1000);
@@ -149,7 +149,7 @@ function deleteSaveGameFromDb(room) {
   }
 }
 
-if (configOld.getNodeEnv() !== 'test') {
+if (config.nodeEnv !== 'test') {
   setTimeout(async () => {
     let run = true;
     let i = 0;

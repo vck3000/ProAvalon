@@ -1,6 +1,7 @@
 // @ts-nocheck
 import _ from 'lodash';
 
+import { config } from '../config/config';
 import Room, { RoomConfig } from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
@@ -32,7 +33,6 @@ import { millisToStr } from '../util/time';
 import shuffleArray from '../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../sockets/sockets';
-import { configOld } from '../config/config';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -1562,7 +1562,7 @@ class Game extends Room {
         });
       }
 
-      if (configOld.getNodeEnv() !== 'test') {
+      if (config.nodeEnv !== 'test') {
         this.playersInGame.forEach((player) => {
           User.findById(player.userId)
             .populate('notifications')
