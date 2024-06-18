@@ -24,6 +24,9 @@ export class Log extends React.Component {
       case 'avatar':
         logText = avatarText(this.props.log);
         break;
+      case 'avatarDelete':
+        logText = avatarDeleteText(this.props.log);
+        break;
       case 'miplinkedaccs':
         logText = ipLinkedAccsText(this.props.log);
         break;
@@ -141,6 +144,19 @@ function avatarText(props) {
             </div>
           </div>
         </div>
+      </span>
+    ),
+  };
+}
+
+function avatarDeleteText(props) {
+  let data = props.data;
+  return {
+    title: `${props.modWhoMade.username} has DELETED ${data.username}'s avatar.`,
+    body: (
+      <span>
+        <p>Avatar ID: {data.avatarId}</p>
+        <p>Mod comment: {data.modComment}</p>
       </span>
     ),
   };

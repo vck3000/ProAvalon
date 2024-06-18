@@ -5,6 +5,7 @@ import { renderToString } from 'react-dom/server';
 import imageSize from 'image-size';
 import multer from 'multer';
 import sanitizeHtml from 'sanitize-html';
+import assert from 'assert';
 
 import avatarRoutes from './avatarRoutes';
 import { checkProfileOwnership, isModMiddleware } from '../middleware';
@@ -14,22 +15,27 @@ import ModLog from '../../models/modLog';
 import AvatarLookup from '../../views/components/avatar/avatarLookup';
 
 import S3Controller from '../../clients/s3/S3Controller';
-import { AllApprovedAvatars, S3Agent } from '../../clients/s3/S3Agent';
+import {
+  AllApprovedAvatars,
+  S3Agent,
+  S3AvatarSet,
+} from '../../clients/s3/S3Agent';
 import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
-import {
-  getAndUpdatePatreonRewardTierForUser,
-  getAvatarLibrarySizeForUser,
-} from '../../rewards/getRewards';
+import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 import userAdapter from '../../databaseAdapters/user';
+import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 
-const MAX_ACTIVE_AVATAR_REQUESTS = 2;
+const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
+const MIN_GAMES_REQUIRED_FOR_TOURNEY = 25;
 const VALID_DIMENSIONS = [128, 1024];
 const VALID_DIMENSIONS_STR = '128x128px or 1024x1024px';
 const MAX_FILESIZE = 1048576; // 1MB
 const MAX_FILESIZE_STR = '1MB';
+const MIN_TIME_SINCE_LAST_AVATAR_APPROVAL = 3 * 30 * 24 * 60 * 60 * 1000; // 3 months
+const MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR = '3 months';
 
 const sanitizeHtmlAllowedTagsForumThread = [
   'img',
@@ -53,6 +59,11 @@ const sanitizeHtmlAllowedAttributesForumThread = {
   b: ['style'],
 };
 
+assert(
+  MIN_GAMES_REQUIRED_FOR_TOURNEY <= MIN_GAMES_REQUIRED,
+  `Min games configured incorrectly.`,
+);
+
 const router = express.Router();
 router.use(avatarRoutes);
 
@@ -66,13 +77,57 @@ router.get('/avatargetlinktutorial', (req, res) => {
 
 // Show the mod approving rejecting page
 router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
-  const customAvatarRequests = await avatarRequest.find({ processed: false });
   const avatarLookupReact = renderToString(<AvatarLookup />);
+  const customAvatarRequests = await avatarRequest.find({ processed: false });
+
+  interface UpdatedAvatarRequest {
+    id: string;
+    forUsername: string;
+    resLink: string;
+    spyLink: string;
+    lastApprovedAvatarDate: Date | null;
+    totalGamesPlayed: number;
+    enoughTimeElapsed: boolean;
+    hasLibrarySpace: boolean;
+    overallValid: boolean;
+  }
+
+  const updatedAvatarRequests: Promise<UpdatedAvatarRequest[]> =
+    await Promise.all(
+      customAvatarRequests.map(async (avatarReq) => {
+        const user = await userAdapter.getUser(avatarReq.forUsername);
+        const librarySize = await getAvatarLibrarySizeForUser(
+          user.usernameLower,
+        );
+        const enoughTimeElapsed = user.lastApprovedAvatarDate
+          ? user.lastApprovedAvatarDate <
+            new Date() - MIN_TIME_SINCE_LAST_AVATAR_APPROVAL
+          : true;
+        const hasLibrarySpace = user.avatarLibrary.length < librarySize;
+        const overallValid = enoughTimeElapsed && hasLibrarySpace;
+
+        return {
+          id: avatarReq.id,
+          forUsername: avatarReq.forUsername,
+          resLink: avatarReq.resLink,
+          spyLink: avatarReq.spyLink,
+          lastApprovedAvatarDate: user.lastApprovedAvatarDate
+            ? user.lastApprovedAvatarDate
+            : null,
+          totalGamesPlayed: user.totalGamesPlayed,
+          enoughTimeElapsed,
+          hasLibrarySpace,
+          overallValid,
+        };
+      }),
+    );
 
   res.render('mod/customavatar', {
-    customAvatarRequests,
+    updatedAvatarRequests,
     MAX_FILESIZE_STR,
     VALID_DIMENSIONS_STR,
+    MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR,
+    MIN_GAMES_REQUIRED,
     avatarLookupReact,
   });
 });
@@ -107,12 +162,11 @@ router.get('/mod/approvedavatars', isModMiddleware, async (req, res) => {
   return res.status(200).send(result);
 });
 
-// Moderator update a user's avatarLibrary
+// Moderator swap an avatar in a user's avatarLibrary
 router.post(
   '/mod/updateuseravatarlibrary',
   isModMiddleware,
   async (req, res) => {
-    console.log(req.body);
     if (
       !req.body.username ||
       !req.body.toBeAddedAvatarId ||
@@ -150,6 +204,10 @@ router.post(
     user.markModified('avatarLibrary');
     await user.save();
 
+    console.log(
+      `Mod updated user avatar library: mod=${req.user.usernameLower} forUser=${req.body.username} removedAvatarId=${req.body.toBeRemovedAvatarId} addedAvatarId=${req.body.toBeAddedAvatarId}`,
+    );
+
     return res
       .status(200)
       .send(
@@ -157,6 +215,66 @@ router.post(
       );
   },
 );
+
+router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
+  if (
+    !req.body.username ||
+    !req.body.toBeDeletedAvatarSet ||
+    !req.body.deletionReason
+  ) {
+    return res.status(400).send('Bad input.');
+  }
+
+  const modWhoProcessed = req.user;
+  const targetUsername: string = req.body.username;
+  const toBeDeletedAvatarSet: S3AvatarSet = req.body.toBeDeletedAvatarSet;
+  const deletionReason: string = req.body.deletionReason;
+
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+    targetUsername.toLowerCase(),
+  );
+  if (!approvedAvatarIds.includes(toBeDeletedAvatarSet.avatarSetId)) {
+    return res
+      .status(400)
+      .send(
+        `Unable to delete Avatar ${toBeDeletedAvatarSet.avatarSetId}. Does not exist.`,
+      );
+  }
+
+  try {
+    await s3Agent.deleteAvatars(
+      targetUsername.toLowerCase(),
+      toBeDeletedAvatarSet.resLink,
+      toBeDeletedAvatarSet.spyLink,
+    );
+  } catch (e) {
+    res.status(500).send(`Something went wrong.`);
+    throw e;
+  }
+
+  await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
+
+  await ModLog.create({
+    type: 'avatarDelete',
+    modWhoMade: {
+      id: modWhoProcessed._id,
+      username: modWhoProcessed.username,
+      usernameLower: modWhoProcessed.usernameLower,
+    },
+    data: {
+      avatarId: toBeDeletedAvatarSet.avatarSetId,
+      modComment: deletionReason,
+      username: targetUsername,
+    },
+    dateCreated: new Date(),
+  });
+
+  return res
+    .status(200)
+    .send(
+      `Successfully removed Avatar ${toBeDeletedAvatarSet.avatarSetId} from ${targetUsername}`,
+    );
+});
 
 // moderator approve or reject custom avatar requests
 router.post(
@@ -198,9 +316,14 @@ router.post(
 
       await avatarReq.save();
 
+      const librarySize = await getAvatarLibrarySizeForUser(
+        userRequestingAvatar.usernameLower,
+      );
+
       await userAdapter.setAvatarAndUpdateLibrary(
-        userRequestingAvatar.username,
+        userRequestingAvatar.usernameLower,
         approvedAvatarLinks,
+        librarySize,
       );
 
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
@@ -265,12 +388,22 @@ router.post(
 router.get(
   '/:profileUsername/customavatar',
   checkProfileOwnership,
-  (req, res) => {
+  async (req, res) => {
+    const maxLibrarySize = await getAvatarLibrarySizeForUser(
+      req.user.usernameLower,
+    );
+
     res.render('profile/customavatar', {
       username: req.user.username,
+      totalGamesPlayed: req.user.totalGamesPlayed,
+      MIN_GAMES_REQUIRED,
+      MIN_GAMES_REQUIRED_FOR_TOURNEY,
       MAX_FILESIZE_STR,
       VALID_DIMENSIONS,
       VALID_DIMENSIONS_STR,
+      maxLibrarySize,
+      currentLibrarySize: req.user.avatarLibrary.length,
+      currentLibrary: req.user.avatarLibrary,
     });
   },
 );
@@ -409,15 +542,6 @@ async function validateUploadAvatarRequest(
     }
   }
 
-  // Check: User has space in their avatar library
-  const librarySize = await getAvatarLibrarySizeForUser(user.usernameLower);
-  if (user.avatarLibrary && user.avatarLibrary.length >= librarySize) {
-    return {
-      valid: false,
-      errMsg: `You have exceeded your maximum number of avatars: ${librarySize}.`,
-    };
-  }
-
   // Check: Both a singular res and spy avatar were submitted
   if (
     !files['avatarRes'] ||
@@ -468,10 +592,13 @@ async function validateUploadAvatarRequest(
   );
 
   // Check: Min game count satisfied. If user is a paid Patron, they can bypass this check
-  if (!patreonRewards && user.totalGamesPlayed < MIN_GAMES_REQUIRED) {
+  if (
+    !patreonRewards &&
+    user.totalGamesPlayed < MIN_GAMES_REQUIRED_FOR_TOURNEY
+  ) {
     return {
       valid: false,
-      errMsg: `You must play at least 100 games to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
+      errMsg: `You must play at least ${MIN_GAMES_REQUIRED_FOR_TOURNEY} game(s) to submit a custom avatar request. You have played ${user.totalGamesPlayed} games.`,
     };
   }
 
