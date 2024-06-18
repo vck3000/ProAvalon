@@ -36,20 +36,6 @@ services:
       MINIO_ROOT_PASSWORD: password
     command: server /data --console-address ":9001"
 
-#  vmagent:
-#    image: victoriametrics/vmagent:latest
-#    ports:
-#      - 8429:8429
-#    volumes:
-#      - ./docker-compose-data/vmagent:/data
-#      - ./vmagent.yml:/etc/vmagent/vmagent.yml:ro
-#    restart: always
-#    depends_on:
-#      - victoria-metrics
-#    command:
-#      - -promscrape.config=/etc/vmagent/vmagent.yml
-#      - -remoteWrite.url=https://victoria-metrics:8428/api/v1/write
-
   victoria-metrics:
     image: victoriametrics/victoria-metrics:latest
     ports:
