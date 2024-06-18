@@ -92,6 +92,8 @@ class Game extends Room {
   missionNum = 0;
   pickNum = 0;
   roomCreationType: RoomCreationType;
+  isMissionSuperset = false;
+  sinadMissionSwitch = false;
 
   // Game misc variables
   winner: Alliance = '';
@@ -1071,9 +1073,16 @@ class Game extends Room {
         data[i].phase = this.phase;
         data[i].proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
-        data[i].numPlayersOnMission =
+        if(this.sinadMissionSwitch)
+        {
+          data[i].numPlayersOnMission = [2,3,4,4,3];
+        }
+        else
+        {
+          data[i].numPlayersOnMission =
           NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
-        data[i].numSelectTargets = this.getClientNumOfTargets(i);
+        }
+          data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
         data[i].voteHistory = this.disableVoteHistory
@@ -1156,8 +1165,15 @@ class Game extends Room {
     data.phase = this.phase;
     data.proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
-    data.numPlayersOnMission =
-      NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+    if(this.sinadMissionSwitch){
+        data.numPlayersOnMission = [2,3,4,4,3];
+    }
+    
+    else{
+        data.numPlayersOnMission =
+        NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+    }
+    
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
