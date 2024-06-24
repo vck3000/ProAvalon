@@ -1,7 +1,7 @@
 import promClient, { Gauge } from 'prom-client';
 import { promAgent } from './promAgent';
 
-export class PromMetricGaugeFactory {
+export class PromMetricGauge {
   private gauge: Gauge;
 
   constructor(name: string, help: string, collect?: () => void) {
@@ -21,17 +21,5 @@ export class PromMetricGaugeFactory {
     }
 
     this.gauge = new promClient.Gauge(gaugeConfig);
-  }
-
-  public gaugeSet(num: number) {
-    this.gauge.set(num);
-  }
-
-  public gaugeInc(num: number) {
-    this.gauge.inc(num);
-  }
-
-  public gaugeDec(num: number) {
-    this.gauge.dec(num);
   }
 }
