@@ -15,10 +15,15 @@ export class PromAgent {
   public addMetricName(metricName: string) {
     if (!this.metricNames.has(metricName)) {
       this.metricNames.add(metricName);
-    } else {
-      // TODO-kev: Error message below okay?
+      return;
+    }
+
+    if (process.env.NODE_ENV !== 'test') {
       console.error(`Error metric name already exists: ${metricName}`);
       process.exit(1);
+    } else {
+      // TODO-kev: Error message below okay?
+      throw new Error(`Error metric name already exists: ${metricName}`);
     }
   }
 
