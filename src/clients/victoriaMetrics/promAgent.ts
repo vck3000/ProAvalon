@@ -42,25 +42,30 @@ export class PromAgent {
     });
 
     if (!response.ok) {
-      // TODO-kev: Remove below
-      console.log('ERROR PUSHING METRICS');
+      const errMsg = `Failed to push metrics: status=${response.status} text=${response.statusText}`;
+      console.error(errMsg);
 
-      // Alert while errors are less than MAX_PUSH_METRICS_ERRORS
+      // Alert Discord while errors are less than MAX_PUSH_METRICS_ERRORS
       const now = Date.now();
       this.pushMetricsErrorsTimestamps.push(now);
+
+      let count = 0;
+
+      while (
+        count < this.pushMetricsErrorsTimestamps.length &&
+        now - this.pushMetricsErrorsTimestamps[count] >=
+          PUSH_METRICS_ERRORS_RATE_LIMIT
+      ) {
+        count++;
+      }
+
       this.pushMetricsErrorsTimestamps =
-        this.pushMetricsErrorsTimestamps.filter(
-          (timestamp) => now - timestamp <= PUSH_METRICS_ERRORS_RATE_LIMIT,
-        );
+        this.pushMetricsErrorsTimestamps.slice(count);
 
       // TODO-kev: Check below. Particularly error stack?. Consider what to do in cases where it exceeds
       if (this.pushMetricsErrorsTimestamps.length <= MAX_PUSH_METRICS_ERRORS) {
-        sendToDiscordAdmins(
-          `Failed to push metrics: status=${response.status} text=${response.statusText}`,
-        );
+        sendToDiscordAdmins(errMsg);
       }
-    } else {
-      this.pushMetricsErrorsTimestamps = [];
     }
   }
 
