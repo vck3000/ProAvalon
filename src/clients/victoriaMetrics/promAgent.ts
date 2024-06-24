@@ -30,7 +30,7 @@ export class PromAgent {
     return this.metricNames;
   }
 
-  public async pushMetricsToVictoriaMetrics() {
+  public async pushMetrics() {
     const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
 
     const response = await fetch(VM_IMPORT_PROMETHEUS_URL, {

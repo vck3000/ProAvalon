@@ -215,11 +215,9 @@ io.use(
 socketServer(io);
 
 // Periodically push metrics every 15 seconds to VictoriaMetrics
-if (process.env.ENV === 'prod') {
-  setInterval(async () => {
-    await promAgent.pushMetricsToVictoriaMetrics();
-  }, 15000);
-}
+setInterval(async () => {
+  await promAgent.pushMetrics();
+}, 15000);
 
 // TODO-kev: Test - remove all lines below this once extracted out
 (async () => {})();
@@ -227,5 +225,5 @@ if (process.env.ENV === 'prod') {
 // Periodically push metrics every 15 seconds to VictoriaMetrics
 setInterval(async () => {
   // console.log('Pushing metrics:');
-  // await promAgent.pushMetricsToVictoriaMetrics();
+  // await promAgent.pushMetrics();
 }, 2000);
