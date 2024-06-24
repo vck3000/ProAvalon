@@ -6,20 +6,6 @@ export class PromMetricGauge {
 
   constructor(name: string, help: string, collect?: () => void) {
     promAgent.addMetricName(name);
-
-    const gaugeConfig: {
-      name: string;
-      help: string;
-      collect?: () => void;
-    } = {
-      name,
-      help,
-    };
-
-    if (collect) {
-      gaugeConfig.collect = collect;
-    }
-
-    this.gauge = new promClient.Gauge(gaugeConfig);
+    this.gauge = new promClient.Gauge({ name, help, collect });
   }
 }

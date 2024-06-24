@@ -67,6 +67,9 @@ export class PromAgent {
         sendToDiscordAdmins(errMsg);
       }
     }
+
+    // TODO-kev: Delete
+    console.log('Successfully pushed metrics.');
   }
 
   // TODO-kev: Delete
