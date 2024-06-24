@@ -1,5 +1,4 @@
 import promClient from 'prom-client';
-import assert from 'assert';
 import { sendToDiscordAdmins } from '../discord';
 
 const MAX_PUSH_METRICS_ERRORS = 5;
@@ -14,12 +13,13 @@ export class PromAgent {
   }
 
   public addMetricName(metricName: string) {
-    assert(
-      !this.metricNames.has(metricName),
-      `Metric name already exists: ${metricName}`,
-    );
-
-    this.metricNames.add(metricName);
+    if (!this.metricNames.has(metricName)) {
+      this.metricNames.add(metricName);
+    } else {
+      // TODO-kev: Error message below okay?
+      console.error(`Error metric name already exists: ${metricName}`);
+      process.exit(1);
+    }
   }
 
   // TODO-kev: Below is purely for testing. Keep or remove?
