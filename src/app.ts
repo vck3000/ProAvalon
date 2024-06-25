@@ -225,7 +225,7 @@ socketServer(io);
 
 // Periodically push metrics every 15 seconds to VictoriaMetrics
 setInterval(async () => {
-  console.log('Start of test');
-  collectSystemMetrics();
-  await promAgent.test();
+  // console.log('Start of test');
+  // collectSystemMetrics();
+  // await promAgent.test();
 }, 2000);
