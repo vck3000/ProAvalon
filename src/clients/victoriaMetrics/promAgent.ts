@@ -1,6 +1,5 @@
 import promClient from 'prom-client';
 import { sendToDiscordAdmins } from '../discord';
-import { collectSystemMetrics } from './systemMetrics';
 
 const MAX_PUSH_METRICS_ERRORS = 5;
 const PUSH_METRICS_ERRORS_RATE_LIMIT = 60 * 60 * 1000; // 1 hour
@@ -34,8 +33,6 @@ export class PromAgent {
   }
 
   public async pushMetrics() {
-    collectSystemMetrics();
-
     const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
 
     const response = await fetch(process.env.VM_IMPORT_PROMETHEUS_URL, {

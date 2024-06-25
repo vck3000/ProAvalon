@@ -2,13 +2,13 @@ import os from 'os';
 import { PromMetricGauge } from './promMetricGauge';
 
 const cpuUsageMetric = new PromMetricGauge({
-  name: `cpu_milliseconds_total`,
+  name: `cpu_milliseconds`,
   help: `Total milliseconds CPU has run since program initiated.`,
   labelNames: ['type'],
 });
 
 const memoryUsageMetric = new PromMetricGauge({
-  name: `memory_bytes_total`,
+  name: `memory_bytes`,
   help: `Total memory available.`,
   labelNames: ['type'],
 });
@@ -29,8 +29,8 @@ export function collectSystemMetrics() {
       cpu.times.irq;
   }
 
-  cpuUsageMetric.set(total, { type: 'total' });
-  cpuUsageMetric.set(idle, { type: 'idle' });
+  cpuUsageMetric.set(total * 1000, { type: 'total' });
+  cpuUsageMetric.set(idle * 1000, { type: 'idle' });
 
   // Memory Usage Metrics
   const usedMem = os.totalmem() - os.freemem();
