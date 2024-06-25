@@ -16,7 +16,7 @@ export class PromMetricGauge {
     this.gauge = new promClient.Gauge(gaugeConfig);
   }
 
-  public set(val: number, labels: Record<string, string>) {
+  public set(val: number, labels?: Record<string, string>) {
     if (!labels) {
       this.gauge.set(val);
     } else {
