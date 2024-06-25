@@ -2,7 +2,7 @@ import os from 'os';
 import { PromMetricGauge } from './promMetricGauge';
 
 const cpuUsageMetric = new PromMetricGauge({
-  name: `cpu_milliseconds`,
+  name: `cpu_seconds`,
   help: `Total milliseconds CPU has run since program initiated.`,
   labelNames: ['type'],
 });
