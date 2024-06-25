@@ -59,17 +59,17 @@ if (process.env.NODE_ENV !== 'test') {
   }, 1000);
 }
 
-const onlinePlayersMetric = new PromMetricGauge(
-  `online_players_total`,
-  `Number of online players`,
-  function collect() {
+const onlinePlayersMetric = new PromMetricGauge({
+  name: `online_players_total`,
+  help: `Number of online players`,
+  collect() {
     // TODO-kev: uncomment below line once pushed
     let randomInt = Math.floor(Math.random() * 40) + 1;
     this.set(randomInt);
 
     // this.set(allSockets.length);
   },
-);
+});
 
 const quote = new Quote();
 
