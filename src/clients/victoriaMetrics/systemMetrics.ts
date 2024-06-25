@@ -1,13 +1,13 @@
 import os from 'os';
 import { PromMetricGauge } from './promMetricGauge';
 
-// const cpuUsageMetric = new PromMetricGauge(
-//   `cpu_milliseconds_total`,
-//   `Total milliseconds CPU has run since program initiated.`,
-//   ['type'],
-// );
+const cpuUsageMetric = new PromMetricGauge({
+  name: `cpu_milliseconds_total`,
+  help: `Total milliseconds CPU has run since program initiated.`,
+  labelNames: ['type'],
+});
 
-function collectSystemMetrics() {
+export function collectSystemMetrics() {
   const cpus = os.cpus();
   let user = 0;
   let nice = 0;
@@ -24,17 +24,12 @@ function collectSystemMetrics() {
   }
 
   const total = user + nice + sys + idle + irq;
-  const idlePercentage = (idle / total) * 100;
-  const usagePercentage = 100 - idlePercentage;
 
-  console.log(usagePercentage);
+  cpuUsageMetric.set(total, { type: 'total' });
+  cpuUsageMetric.set(idle, { type: 'idle' });
 
   const totalMem = os.totalmem();
   const freeMem = os.freemem();
   const usedMem = totalMem - freeMem;
   const usageMemPercentage = (usedMem / totalMem) * 100;
-
-  console.log(totalMem);
-  console.log(usedMem);
-  console.log(usageMemPercentage);
 }
