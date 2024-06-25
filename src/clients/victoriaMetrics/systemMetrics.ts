@@ -7,7 +7,14 @@ const cpuUsageMetric = new PromMetricGauge({
   labelNames: ['type'],
 });
 
+const memoryUsageMetric = new PromMetricGauge({
+  name: `memory_bytes_total`,
+  help: `Total memory available.`,
+  labelNames: ['type'],
+});
+
 export function collectSystemMetrics() {
+  // CPU Usage Metrics
   const cpus = os.cpus();
   let idle = 0;
   let total = 0;
@@ -25,8 +32,9 @@ export function collectSystemMetrics() {
   cpuUsageMetric.set(total, { type: 'total' });
   cpuUsageMetric.set(idle, { type: 'idle' });
 
-  const totalMem = os.totalmem();
-  const freeMem = os.freemem();
-  const usedMem = totalMem - freeMem;
-  const usageMemPercentage = (usedMem / totalMem) * 100;
+  // Memory Usage Metrics
+  const usedMem = os.totalmem() - os.freemem();
+
+  memoryUsageMetric.set(os.totalmem(), { type: 'total' });
+  memoryUsageMetric.set(usedMem, { type: 'used' });
 }
