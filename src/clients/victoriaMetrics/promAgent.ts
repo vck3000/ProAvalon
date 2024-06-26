@@ -14,11 +14,9 @@ export class PromAgent {
   }
 
   public registerMetric(metricName: string) {
-    if (!this.metricNames.has(metricName)) {
-      this.metricNames.add(metricName);
-    } else {
-      this.dupeMetricErrorHandler(metricName);
-    }
+    this.metricNames.has(metricName)
+      ? this.dupeMetricErrorHandler(metricName)
+      : this.metricNames.add(metricName);
   }
 
   // TODO-kev: Below is purely for testing. Keep or remove?
