@@ -12,7 +12,7 @@ export class PromMetricGauge {
   private gauge: Gauge;
 
   constructor(gaugeConfig: GaugeConfig) {
-    promAgent.addMetricName(gaugeConfig.name);
+    promAgent.registerMetric(gaugeConfig.name);
     this.gauge = new promClient.Gauge(gaugeConfig);
   }
 

@@ -12,7 +12,7 @@ export class PromAgent {
     this.metricNames = new Set<string>();
   }
 
-  public addMetricName(metricName: string) {
+  public registerMetric(metricName: string) {
     if (!this.metricNames.has(metricName)) {
       this.metricNames.add(metricName);
       return;
