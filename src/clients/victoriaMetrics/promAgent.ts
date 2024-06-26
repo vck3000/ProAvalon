@@ -5,25 +5,19 @@ const MAX_PUSH_METRICS_ERRORS = 5;
 const PUSH_METRICS_ERRORS_RATE_LIMIT = 60 * 60 * 1000; // 1 hour
 
 export class PromAgent {
-  private metricNames: Set<string>;
+  private metricNames = new Set<string>();
   private pushMetricsErrorsTimestamps: number[] = [];
+  private readonly dupeMetricErrorHandler: (metricName: string) => void;
 
-  constructor() {
-    this.metricNames = new Set<string>();
+  constructor(dupeMetricErrorHandler: (metricName: string) => void) {
+    this.dupeMetricErrorHandler = dupeMetricErrorHandler;
   }
 
   public registerMetric(metricName: string) {
     if (!this.metricNames.has(metricName)) {
       this.metricNames.add(metricName);
-      return;
-    }
-
-    if (process.env.NODE_ENV !== 'test') {
-      console.error(`Error metric name already exists: ${metricName}`);
-      process.exit(1);
     } else {
-      // TODO-kev: Error message below okay?
-      throw new Error(`Error metric name already exists: ${metricName}`);
+      this.dupeMetricErrorHandler(metricName);
     }
   }
 
@@ -99,4 +93,9 @@ export class PromAgent {
   }
 }
 
-export const promAgent = new PromAgent();
+const dupeMetricErrorHandler = (metricName: string) => {
+  console.error(`Error metric name already exists: ${metricName}`);
+  process.exit(1);
+};
+
+export const promAgent = new PromAgent(dupeMetricErrorHandler);

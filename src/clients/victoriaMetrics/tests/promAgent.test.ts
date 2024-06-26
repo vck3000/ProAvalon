@@ -4,7 +4,11 @@ describe('PromAgent', () => {
   let promAgent: PromAgent;
 
   beforeEach(() => {
-    promAgent = new PromAgent();
+    const dupeMetricErrorHandler = (metricName: string) => {
+      throw new Error(`Error metric name already exists: ${metricName}`);
+    };
+
+    promAgent = new PromAgent(dupeMetricErrorHandler);
   });
 
   it(`Adds unique metric names.`, () => {
