@@ -24,6 +24,7 @@ export class PromMetricGauge {
       console.error(
         `Error gauge metric should not call set when collect exists.`,
       );
+      process.exit(1);
     }
 
     if (!labels) {
