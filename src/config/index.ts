@@ -47,9 +47,7 @@ function validateEnv() {
 
   if (process.env.NODE_ENV !== 'test') {
     if (!VALID_ENVIRONMENTS.has(ENV)) {
-      // TODO-kev: Prefer the console.error then process exit or throw an error?
       console.error(`Bad environment variable given: ${ENV}`);
-      throw new Error(`Invalid settings: ENV=${ENV}`);
       process.exit(1);
     }
   }
