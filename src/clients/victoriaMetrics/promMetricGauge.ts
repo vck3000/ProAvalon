@@ -5,7 +5,7 @@ interface GaugeConfig {
   name: string;
   help: string;
   labelNames?: string[];
-  collect?: () => void; // Refer to prom-client docs on how this should be configured
+  collect?: () => void; // Refer to prom-client docs on how this should be used.
 }
 
 export class PromMetricGauge {

@@ -58,10 +58,10 @@ $ yarn
 ### Setting up Grafana
 
 1. Access Grafana via localhost:5000
-2. Connect `victoria-metrics` by following steps 3-5.
-3. From the main menu: Connections -> Data sources -> Add new data source.
-4. Add a Prometheus time series database.
-5. Under Connection, paste `http://victoria-metrics:8428` then Save & test.
+2. Connect `victoria-metrics`
+    a. From the main menu: Connections -> Data sources -> Add new data source. 
+    b. Add a Prometheus time series database. 
+    c. Under Connection, paste `http://victoria-metrics:8428` then Save & test.
 
 ### Stopping
 
