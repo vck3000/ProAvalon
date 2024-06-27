@@ -64,27 +64,6 @@ export class PromAgent {
         sendToDiscordAdmins(errMsg);
       }
     }
-
-    // TODO-kev: Delete
-    console.log('Successfully pushed metrics.');
-  }
-
-  // TODO-kev: Delete
-  public async test() {
-    let metrics: string;
-
-    try {
-      metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
-
-      console.log(metrics);
-    } catch (e) {
-      if (e.message.includes('label')) {
-        console.error(e);
-        process.exit(1);
-      }
-
-      throw e;
-    }
   }
 }
 

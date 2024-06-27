@@ -218,14 +218,3 @@ socketServer(io);
 setInterval(async () => {
   await promAgent.pushMetrics();
 }, 15000);
-
-// TODO-kev: Test - remove all lines below this once extracted out
-(async () => {
-  console.log('Start of test');
-})();
-
-// Periodically push metrics every 15 seconds to VictoriaMetrics
-setInterval(async () => {
-  // console.log('Pushing metrics:');
-  await promAgent.test();
-}, 2000);
