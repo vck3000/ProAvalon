@@ -34,6 +34,11 @@ export class PromAgent {
       throw e;
     }
 
+    if (!process.env.VM_IMPORT_PROMETHEUS_URL) {
+      console.error(`Missing environment variable: VM_IMPORT_PROMETHEUS_URL`);
+      process.exit(1);
+    }
+
     const response = await fetch(process.env.VM_IMPORT_PROMETHEUS_URL, {
       method: 'POST',
       body: metrics,
