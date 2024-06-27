@@ -25,7 +25,19 @@ export class PromAgent {
   }
 
   public async pushMetrics() {
-    const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
+    let metrics: string;
+
+    try {
+      metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
+    } catch (e) {
+      // Exit program if non-initialised labels are used in collect() function
+      if (e.message.includes('label')) {
+        console.error(e);
+        process.exit(1);
+      }
+
+      throw e;
+    }
 
     const response = await fetch(process.env.VM_IMPORT_PROMETHEUS_URL, {
       method: 'POST',
@@ -64,26 +76,20 @@ export class PromAgent {
 
   // TODO-kev: Delete
   public async test() {
-    const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
-    // const currentTimestamp = Date.now();
-    //
-    // const metricsWithTimestamp = metrics
-    //   .split('\n')
-    //   .map((line: string) => {
-    //     // Ignore comment lines and empty lines
-    //     if (line.startsWith('#') || line.trim() === '') {
-    //       return line;
-    //     }
-    //     return `${line} ${currentTimestamp}`;
-    //   })
-    //   .join('\n');
-    //
-    // console.log(metricsWithTimestamp);
+    let metrics: string;
 
-    console.log(metrics);
+    try {
+      metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
 
-    // Reset metrics
-    // await promClient.register.resetMetrics();
+      console.log(metrics);
+    } catch (e) {
+      if (e.message.includes('label')) {
+        console.error(e);
+        process.exit(1);
+      }
+
+      throw e;
+    }
   }
 }
 

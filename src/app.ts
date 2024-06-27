@@ -227,5 +227,5 @@ setInterval(async () => {
 // Periodically push metrics every 15 seconds to VictoriaMetrics
 setInterval(async () => {
   // console.log('Pushing metrics:');
-  // await promAgent.pushMetrics();
+  await promAgent.test();
 }, 2000);
