@@ -27,6 +27,7 @@ export class PromAgent {
     } catch (e) {
       // Exit program if non-initialised labels are used in collect() function
       if (e.message.includes('label')) {
+        sendToDiscordAdmins(e.message);
         console.error(e);
         process.exit(1);
       }
@@ -73,7 +74,9 @@ export class PromAgent {
 }
 
 const dupeMetricErrorHandler = (metricName: string) => {
-  console.error(`Error metric name already exists: ${metricName}`);
+  const errMsg = `Error metric name already exists: ${metricName}`;
+  sendToDiscordAdmins(errMsg);
+  console.error(errMsg);
   process.exit(1);
 };
 
