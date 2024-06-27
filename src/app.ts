@@ -36,7 +36,8 @@ import staticifyFactory from 'staticify';
 import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
 import { promAgent } from './clients/victoriaMetrics/promAgent';
-import { collectSystemMetrics } from './clients/victoriaMetrics/systemMetrics';
+
+import './clients/victoriaMetrics/systemMetrics';
 
 const assetsPath = path.join(__dirname, '../assets');
 
@@ -217,7 +218,6 @@ socketServer(io);
 
 // Periodically push metrics every 15 seconds to VictoriaMetrics
 setInterval(async () => {
-  collectSystemMetrics();
   await promAgent.pushMetrics();
 }, 15000);
 
