@@ -25,6 +25,14 @@ class MongoUserAdapter implements DatabaseAdapter {
     })) as IUser;
   }
 
+  async muteUser(usernameCallingMute: string, usernameToMute: string) {
+    const userCallingMute = await this.getUser(usernameCallingMute);
+
+    userCallingMute.mutedPlayers.push(usernameToMute.toLowerCase());
+    userCallingMute.markModified('mutedPlayers');
+    await userCallingMute.save();
+  }
+
   // Does not update the user's avatar Library. Only used by mods or in avatar resets
   async setAvatarLinks(username: string, resLink: string, spyLink: string) {
     const user = await this.getUser(username);

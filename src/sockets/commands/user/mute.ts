@@ -3,6 +3,7 @@ import { SocketUser } from '../../types';
 import { rooms, sendReplyToCommand } from '../../sockets';
 import User from '../../../models/user';
 import user from '../../../models/user';
+import userAdapter from '../../../databaseAdapters/user';
 
 export const mute: Command = {
   command: 'mute',
@@ -14,35 +15,44 @@ export const mute: Command = {
     }
 
     const userCallingMute = socket.request.user;
-    const usernameToMute = args[1];
+    const usernameToMuteLower = args[1].toLowerCase();
 
-    if (userCallingMute.username === usernameToMute) {
+    if (userCallingMute.usernameLower === usernameToMuteLower) {
       sendReplyToCommand(socket, 'You cannot mute yourself.');
       return;
     }
 
-    const userToMute = await User.findOne({ username: args[1].toLowerCase() });
-
-    if (userToMute === null) {
-      sendReplyToCommand(socket, `${usernameToMute} was not found.`);
-      return;
-    }
-
-    // TODO: Do we even need this?
+    // TODO-kev: Do we even need this?
     // if (!userCallingMute.mutedPlayers) {
     //   userCallingMute.mutedPlayers = [];
     // }
 
-    console.log(userCallingMute.mutedPlayers.includes(userToMute.username));
-    console.log(userCallingMute.mutedPlayers);
-
-    if (userCallingMute.mutedPlayers.includes(userToMute.username)) {
-      sendReplyToCommand(socket, `You have already muted ${usernameToMute}.`);
-    } else {
-      userCallingMute.mutedPlayers.push(userToMute.username);
-      userCallingMute.markModified('mutedPlayers');
-      await userCallingMute.save();
-      sendReplyToCommand(socket, `Muted ${usernameToMute} successfully.`);
+    if (userCallingMute.mutedPlayers.includes(usernameToMuteLower)) {
+      sendReplyToCommand(
+        socket,
+        `You have already muted ${usernameToMuteLower}.`,
+      );
+      return;
     }
+
+    const userToMute = await userAdapter.getUser(usernameToMuteLower);
+
+    if (!userToMute) {
+      sendReplyToCommand(socket, `${usernameToMuteLower} was not found.`);
+      return;
+    }
+
+    await userAdapter.muteUser(
+      userCallingMute.usernameLower,
+      usernameToMuteLower,
+    );
+
+    socket.request.user.mutedPlayers.push(usernameToMuteLower);
+    socket.request.user.markModified('mutedPlayers');
+    await socket.request.user.save();
+
+    console.log(socket.request.user.mutedPlayers);
+
+    sendReplyToCommand(socket, `Muted ${usernameToMuteLower} successfully.`);
   },
 };
