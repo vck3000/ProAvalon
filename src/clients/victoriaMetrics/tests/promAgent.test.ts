@@ -16,9 +16,6 @@ describe('PromAgent', () => {
       promAgent.registerMetric('metric_name_1');
       promAgent.registerMetric('metric_name_2');
     }).not.toThrow();
-
-    expect(promAgent.getMetricNames().has('metric_name_1'));
-    expect(promAgent.getMetricNames().has('metric_name_2'));
   });
 
   it('Throws an error when adding a duplicate metric name.', () => {

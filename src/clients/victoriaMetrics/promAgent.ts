@@ -19,11 +19,6 @@ export class PromAgent {
       : this.metricNames.add(metricName);
   }
 
-  // TODO-kev: Below is purely for testing. Keep or remove?
-  public getMetricNames(): Set<string> {
-    return this.metricNames;
-  }
-
   public async pushMetrics() {
     let metrics: string;
 
