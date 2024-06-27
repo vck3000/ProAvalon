@@ -11,7 +11,8 @@ export function getRequiredEnvVariable(variableName: string) {
     process.env.NODE_ENV !== 'test' &&
     (envVariable === undefined || envVariable === '')
   ) {
-    throw new Error(`Missing required environment variable: ${variableName}`);
+    console.error(`Missing required environment variable: ${variableName}`);
+    process.exit(1);
   }
 
   return envVariable;
