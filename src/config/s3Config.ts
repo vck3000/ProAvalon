@@ -15,22 +15,16 @@ export const S3Config: Readonly<S3ConfigType> = Object.freeze({
 });
 
 function validateBucketName() {
-  const { NODE_ENV, ENV } = process.env;
   const S3_BUCKET_NAME = getRequiredEnvVariable('S3_BUCKET_NAME');
 
-  if (NODE_ENV !== 'test') {
-    const expectedBucketNames: { [key: string]: string } = {
-      prod: `proavalon`,
-      staging: `proavalon-staging`,
-    };
-
-    const expectedBucketName = expectedBucketNames[ENV];
-
-    if (expectedBucketName && S3_BUCKET_NAME !== expectedBucketName) {
-      throw new Error(
-        `Invalid env variables: ENV=${ENV} S3_BUCKET_NAME=${S3_BUCKET_NAME} expectedBucketName=${expectedBucketName}`,
-      );
-    }
+  if (
+    (process.env.ENV === 'prod' && S3_BUCKET_NAME !== `proavalon`) ||
+    (process.env.ENV === 'staging' && S3_BUCKET_NAME !== `proavalon-staging`)
+  ) {
+    console.error(
+      `Invalid env variables: ENV=${process.env.ENV} S3_BUCKET_NAME=${S3_BUCKET_NAME}`,
+    );
+    process.exit(1);
   }
 
   return S3_BUCKET_NAME;
