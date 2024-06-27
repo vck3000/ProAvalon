@@ -9,7 +9,7 @@ type ConfigNew = {
   ENV: string;
   NODE_ENV?: string;
   SERVER_DOMAIN?: string;
-  PORT?: string;
+  PORT?: number;
   IP?: string;
   MY_SECRET_KEY: string;
 
@@ -27,7 +27,7 @@ export const config: Readonly<ConfigNew> = Object.freeze({
   ENV: validateEnv(),
   NODE_ENV: process.env.NODE_ENV,
   SERVER_DOMAIN: process.env.SERVER_DOMAIN,
-  PORT: process.env.PORT || '3000',
+  PORT: validatePort(),
   IP: process.env.IP || '127.0.0.1',
   MY_SECRET_KEY: process.env.MY_SECRET_KEY || 'MySecretKey',
 
@@ -41,7 +41,7 @@ export const config: Readonly<ConfigNew> = Object.freeze({
   vpn: VpnConfig,
 });
 
-function validateEnv() {
+function validateEnv(): string {
   const VALID_ENVIRONMENTS: Set<string> = new Set(['local', 'staging', 'prod']);
   const ENV = getRequiredEnvVariable('ENV');
 
@@ -53,4 +53,20 @@ function validateEnv() {
   }
 
   return ENV;
+}
+
+function validatePort(): number {
+  if (!process.env.PORT) {
+    return 3000;
+  }
+
+  const port = parseInt(process.env.PORT, 10);
+
+  if (isNaN(port) || port < 1 || port > 65535) {
+    console.error(
+      `Invalid port number: ${port}. Port must be between 1 and 65535.`,
+    );
+  }
+
+  return port;
 }
