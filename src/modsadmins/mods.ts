@@ -1,6 +1,7 @@
 // all in lower case
 export const modsArray = [
   'pronub',
+  'kage',
   'besjbo',
   'maximovic96',
   'ingenue',

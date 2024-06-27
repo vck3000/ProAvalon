@@ -44,6 +44,8 @@ import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
+import { PatreonAgent } from '../clients/patreon/patreonAgent';
+import { PatreonController } from '../clients/patreon/patreonController';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -711,6 +713,12 @@ export const userCommandsOLD = {
             classStr: 'server-text',
           };
 
+          senderSocket.request.user.avatarHide = false;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
+
           senderSocket.emit('messageCommandReturnStr', dataToReturn);
         });
     },
@@ -727,6 +735,12 @@ export const userCommandsOLD = {
         .exec((err, foundUser) => {
           foundUser.avatarHide = true;
           foundUser.save();
+
+          senderSocket.request.user.avatarHide = true;
+
+          if (senderSocket.request.user.inRoomId) {
+            rooms[senderSocket.request.user.inRoomId].distributeGameData();
+          }
 
           const dataToReturn = {
             message: 'Successfully hidden.',
@@ -1923,7 +1937,7 @@ function queueRequest(data): void {
     joined = leaveQueue.call(this);
   }
 
-  this.emit('queueReply', { joined: joined });
+  this.emit('queueStatus', { joined: joined });
 }
 
 // Returns whether they're joined or not.
@@ -2065,6 +2079,7 @@ function matchFound(usernames: string[]): void {
 
         for (const username of rejectedUsernames) {
           const socket = getSocketFromUsername(username);
+          socket.emit('queueStatus', { joined: false });
           socket.emit('allChatToClient', {
             message:
               'You did not accept the match. You have been removed from the queue.',
@@ -2148,12 +2163,13 @@ function matchFound(usernames: string[]): void {
       // send data, etc.
       for (const username of approvedUsernames) {
         room.playerLeaveRoom(getSocketFromUsername(username));
-      }
 
-      for (const username of approvedUsernames) {
-        getSocketFromUsername(username).emit('match-found-join-room', {
+        const socket = getSocketFromUsername(username);
+
+        socket.emit('match-found-join-room', {
           roomId: nextRoomId,
         });
+        socket.emit('queueStatus', { joined: false });
       }
 
       const data = {

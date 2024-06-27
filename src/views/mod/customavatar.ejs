@@ -1,4 +1,5 @@
 <%- include('../partials/header') %>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
 
 <style>
     .myContainer {
@@ -47,62 +48,65 @@
         -ms-transition: opacity 0.3s ease-in-out;
         -o-transition: opacity 0.3s ease-in-out;
     }
+
+    .avatarImg {
+        width: 128px;
+        height: 128px;
+    }
+
 </style>
 
 <div class="container myContainer">
+    <div react-entrypoint id="avatarLibraryDiv"><%- avatarLookupReact %></div>
+
+    <br>
+
     <h1><u>Process custom avatars:</u></h1>
     Hi mods! Thanks for taking your time on helping the site with these custom avatars :).
 
     <br>
-    Here is another list of rules for reference:
+    Here is the list of rules for reference:
 
-    <h3>Rules for avatars:</h3>
-    <div>
-        Avatars:
-        <ul>
-            <li>Must be easily identifyable as res or spy.</li>
-            <li>Must have at least 20% of the original colour (blue or red) and a minimum of the opposite allegiance's
-                colour (approximation).
-            </li>
-            <li>Must not be inappropriate.</li>
-            <li>Must have similar Res and Spy avatars.</li>
-            <li>Must not be similar to any other existing custom avatars (unless the avatar was yours initially).</li>
-            <li>Must be 128x128 px in size.</li>
-            <li>Must be a png file.</li>
-            <li>Must have a transparent background (solid white will hurt the eyes of dark theme users!).</li>
-            <li>Must resemble the base avatar images.</li>
-            <li>Must keep the wordage to a minimum.</li>
-            <li>Must be hosted on Discord or Imgbb. Click <a href="/profile/avatargetlinktutorial">here</a> for a
-                tutorial on how to get a good link.
-            </li>
-            <li>Moderators have the final say, based on their judgment. Feel free to consult them before making your
-                avatars to ensure they will adhere to these guidelines.
-            </li>
-
-        </ul>
-    </div>
-
-    <h3>Who can request a custom avatar:</h3>
-    <div>
-        Players:
-        <ul>
-            <li>Must have played at least 100 games (with the exception of old regular players).</li>
-            <li>Must be an active player of the public Resistance community.</li>
-            <li>Will not be allowed multiple avatars over a number of alternate accounts (open to discussion).</li>
-        </ul>
-    </div>
-
+    <%- include('../partials/customAvatarRules', MAX_FILESIZE_STR, VALID_DIMENSIONS_STR) %>
 
     <br>
     <br>
 
-    <% if(locals.customAvatarRequests){ %>
+    <% if(updatedAvatarRequests){ %>
 
-        <% customAvatarRequests.forEach(function(avreq){ %>
+        <% updatedAvatarRequests.forEach(function(avreq){ %>
 
             <div class="panel panel-default rootRequest singleReq" reqId="<%= avreq.id %>">
                 <div class="panel-heading"><h2>For user: <%= avreq.forUsername %></h2></div>
+
                 <div class="panel-body">
+
+                    <div class="panel <%= avreq.overallValid ? "panel-success" : "panel-danger"%>">
+                        <div class="panel-heading">
+                            <p>
+                                Last approved avatar date:
+                                <span class="lastApprovedAvatarDate" data-date="<%= avreq.lastApprovedAvatarDate %>"></span>
+                            </p>
+
+                            <%= avreq.totalGamesPlayed >= MIN_GAMES_REQUIRED ?
+                                    `✅ Total game(s) played: ${avreq.totalGamesPlayed}.` :
+                                    `❌ Total game(s) played: ${avreq.totalGamesPlayed}. Only tourney avatars may be approved in this case.` %>
+                            <br />
+
+                            <%= avreq.hasLibrarySpace ?
+                                    `✅ User avatar library is not full.` :
+                                    `❌ User avatar library is full. Please check the user's avatar library before and after approval.` %>
+                            <br />
+
+                            <% if (!avreq.hasLibrarySpace) { %>
+                                <%= avreq.enoughTimeElapsed ?
+                                        `✅ It has been more than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR} since last avatar approval.` :
+                                        `❌ It has been less than ${MIN_TIME_SINCE_LAST_AVATAR_APPROVAL_STR} since last avatar approval.`
+                                %>
+                            <% } %>
+
+                        </div>
+                    </div>
 
 
                     <div class="row">
@@ -163,37 +167,31 @@
 
     <% } %>
 
-    <% if(customAvatarRequests.length === 0){ %>
+    <% if(updatedAvatarRequests.length === 0){ %>
         <div class="well">No requests!</div>
     <% } %>
 
     <script>
-
       $(document).ready(function() {
-        console.log('ready!');
+        $('.avatarImg').each(function (index, element) {
+           let img = new Image();
+           img.src = $(element).attr('src');
+           img.classList.add('avatarImg')
+           img.onload = () => {
+               $(element).siblings('.imgdimensions').text(img.width + 'x' + img.height + ' px');
+               $(element).siblings('.link').text(img.src);
+               $(element).replaceWith(img);
+           }
+        });
 
-        // <div class="imgdimensions">test x asdf px</div>
-
-        setInterval(function() {
-          var imgdimensions = $('.imgdimensions');
-          var links = $('.link');
-
-          console.log(imgdimensions);
-          console.log('test');
-
-          for (var i = 0; i < imgdimensions.length; i++) {
-            console.log(imgdimensions[i].parentElement.children[0]);
-
-            var x = imgdimensions[i].parentElement.children[0].clientWidth;
-            var y = imgdimensions[i].parentElement.children[0].clientHeight;
-
-
-            imgdimensions[i].innerText = x + 'x' + y + ' px';
-
-            links[i].innerText = $(imgdimensions[i].parentElement.children[0]).attr('src');
-          }
-        }, 1000);
-
+        $('.lastApprovedAvatarDate').each(function() {
+            const date = $(this).data('date');
+            if (date) {
+                this.textContent = moment(date).format('LL');
+            } else {
+                this.textContent = 'N/A';
+            }
+          })
 
         $('.approve').on('click', function(e) {
           var id = $(e.target).closest('.rootRequest').attr('reqid');
@@ -217,22 +215,36 @@
 
 
       function processAvatarRequest(decision, avatarreqid, comment) {
-        $.ajax({
-          url: '/profile/mod/ajax/processavatarrequest',
-          type: 'POST',
-          data: {
-            decision: decision,
-            avatarreqid: avatarreqid,
-            modcomment: comment,
-          },
-          success: function() {
-            console.log('ajax success');
-          },
-          error: function(err) {
-            console.log(err);
-          },
-        });
-
+          Swal.fire({
+              title: 'Sending your request...',
+              onOpen: () => {
+                  Swal.showLoading();
+                  axios({
+                      method: 'POST',
+                      url: '/profile/mod/ajax/processavatarrequest',
+                      data: {
+                          decision: decision,
+                          avatarreqid: avatarreqid,
+                          modcomment: comment,
+                      },
+                  })
+                      .then(function (response) {
+                          //handle success
+                          Swal.close();
+                          Swal.fire({
+                              title: response.data,
+                              type: 'success',
+                          });
+                      })
+                      .catch(function (err) {
+                          Swal.close();
+                          Swal.fire({
+                              title: err.response.data,
+                              type: 'error',
+                          });
+                      });
+              },
+          })
       }
     </script>
 </div>
@@ -240,3 +252,6 @@
 <br>
 
 <%- include('../partials/footer') %>
+
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/runtime.bundle.js')%>"></script>
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/avatarLookup.bundle.js')%>"></script>

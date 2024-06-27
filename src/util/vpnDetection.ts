@@ -61,7 +61,19 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
   // Must pass both vpn checks
-  const result = (await isVpnCheck1(ip)) || (await isVpnCheck2(ip));
+  const VpnCheck1 = await isVpnCheck1(ip);
+
+  // TODO-kev: Temporarily commenting out until a limiter is added in
+  // const VpnCheck2 = await isVpnCheck2(ip);
+  // console.log(
+  //   `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=${VpnCheck2}`,
+  // );
+  console.log(
+    `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=temporarily disabled`,
+  );
+
+  // const result = VpnCheck1 || VpnCheck2;
+  const result = VpnCheck1;
 
   vpnCache.get(ip).setIsVpn(result);
 
@@ -82,8 +94,6 @@ const isVpnCheck1 = async (ip: string): Promise<boolean> => {
     );
   }
 
-  console.log(`VPN Detection via vpnapi.io result: ${data.security.vpn}`);
-
   return data.security.vpn;
 };
 
@@ -101,8 +111,6 @@ const isVpnCheck2 = async (ip: string): Promise<boolean> => {
       'VPN Detection lookup response did not contain the expected data at check.getipintel.net.',
     );
   }
-
-  console.log(`VPN Detection via check.getipintel.net result: ${result}`);
 
   return result;
 };

@@ -1,0 +1,53 @@
+/*Avatar styling*/
+.avatarImg {
+    width: 128px;
+    height: 128px;
+    margin-left: 10px;
+    display: inline-block;
+}
+
+.avatarSet {
+    padding-top: 2em;
+    padding-bottom: 2em;
+    border-radius: 20px;
+    transition: transform 0.2s ease;
+}
+
+/*Avatar grid view styling*/
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(336px, 1fr));
+    gap: 20px;
+}
+
+.grid-container .avatarSet:hover {
+    border-radius: 20px;
+    transform: scale(1.05);
+}
+
+.grid-container .avatarSet:hover:not(.selected) {
+    background-color: #e0e0e0;
+}
+
+.dark .grid-container .avatarSet:hover:not(.selected) {
+    background-color: #303030;
+}
+
+.grid-container .selected {
+    background: #bbdefb;
+}
+
+.dark .grid-container .selected {
+    background: #1565c0;
+}
+
+.grid-container .avatarSet {
+    margin: 15px;
+    cursor: pointer;
+    display: block;
+    text-align: center;
+}
+
+.grid-item .avatarImg {
+    margin: 10px;
+}

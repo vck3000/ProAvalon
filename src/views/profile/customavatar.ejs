@@ -1,0 +1,272 @@
+<%- include('../partials/header') %>
+
+<link rel="stylesheet" type="text/css" href="../stylesheets/profile.css">
+
+<style>
+    .myContainer {
+        border-radius: 50px;
+
+        padding-top: 5%;
+        padding-bottom: 5%;
+        margin-bottom: 30px;
+        color: inherit;
+        background-color: #eee;
+        
+        width:95%;
+    }
+
+    .myTable {
+        border: 1px solid black;
+        /* table-layout: fixed; */
+
+        /* width: 100%; */
+    }
+
+    .myTable tbody tr td{
+        border: 1px solid black;
+    }
+
+    .myTable thead tr td{
+        border: 1px solid black;
+    }
+
+    .table-nonfluid {
+        width: auto !important;
+    }
+
+    .alignCenterHoriz{
+        text-align: center;
+        background: rgb(200,200,200);
+    }
+
+</style>
+
+
+<div class="container myContainer">
+    <h1><u>Request an avatar!</u></h1>
+
+    <%- include('../partials/customAvatarRules', MAX_FILESIZE_STR, VALID_DIMENSIONS_STR) %>
+
+    <h4><u>If you think your avatar meets these requirements, please fill in the form below:</u></h4>
+
+    <br>
+    <br>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="panel panel-success">
+                <div class="panel-heading">Res img:</div>
+                <div class="panel-body alignCenterHoriz" id="resAvatarPreview">
+                    <p>No files currently selected for upload</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="panel panel-danger">
+                <div class="panel-heading">Spy img:</div>
+                <div class="panel-body alignCenterHoriz" id="spyAvatarPreview">
+                    <p>No files currently selected for upload</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form action="/profile/<%=username%>/customavatar" method="post" id="customAvatarSubmissionForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="resAvatarFile">Resistance avatar image</label>
+            <input type="file" id="resAvatarFile" class="avatarFile" accept="image/png, .png" name="avatarRes">
+        </div>
+
+        <div class="form-group">
+            <label for="spyAvatarFile">Spy avatar image</label>
+            <input type="file" id="spyAvatarFile" class="avatarFile" accept="image/png, .png" name="avatarSpy">
+        </div>
+
+        <br>
+        <br>
+        
+        <div class="form-group">
+            <label for="msgToMod">Message to the moderators</label>
+            <% if (maxLibrarySize !== 0 && currentLibrarySize >= maxLibrarySize) { %>
+                <p>Your avatar library is full. If your request is approved, your oldest avatar will be removed from your library by default.</p>
+                <p>If you wish to keep the oldest avatar, please include in the comment below: your oldest avatar ID and the avatar you want to remove instead.</p>
+                <p>Example: oldest ID: 2, remove ID: 4, [reason for request]</p>
+                <br>
+                <p>Your current avatar library (oldest -> recent): [<%= currentLibrary %>]</p>
+            <% } %>
+            <input type="text" name="msgToMod" class="form-control" id="msgToMod" placeholder="Message">
+        </div>
+
+        <br>
+
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+
+
+</div>
+
+<br>
+
+
+
+<script>
+
+$(document).ready(() => {
+    const MIN_GAMES_REQUIRED = 100;
+
+    $("#resAvatarFile").on("change", (e) => {
+        updateAvatarDisplay(e.target.files[0], "#resAvatarPreview");
+    });
+
+    $("#spyAvatarFile").on("change", (e) => {
+        updateAvatarDisplay(e.target.files[0], "#spyAvatarPreview");
+    });
+
+    $("#customAvatarSubmissionForm").on("submit", async (e) => {
+        e.preventDefault();
+
+        // Client side checks
+        const resAvatarFile = $("#resAvatarFile")[0].files[0];
+        const spyAvatarFile = $("#spyAvatarFile")[0].files[0];
+
+        const resValid = await updateAvatarDisplay(resAvatarFile, "#resAvatarPreview");
+        const spyValid = await updateAvatarDisplay(spyAvatarFile, "#spyAvatarPreview");
+
+        if (!resValid || !spyValid) {
+            Swal.fire({
+                title: "Please upload a valid custom Res and Spy avatar.",
+                type: "error"
+            });
+            return;
+        }
+
+        const MIN_GAMES_REQUIRED = <%= MIN_GAMES_REQUIRED %>;
+        const MIN_GAMES_REQUIRED_FOR_TOURNEY = <%= MIN_GAMES_REQUIRED_FOR_TOURNEY %>;
+        const totalGamesPlayed = <%= totalGamesPlayed %>;
+
+        if (totalGamesPlayed < MIN_GAMES_REQUIRED_FOR_TOURNEY) {
+            Swal.fire({
+                title: `You must play at least ${MIN_GAMES_REQUIRED_FOR_TOURNEY} game(s) to submit a custom avatar request.`,
+                type: "error"
+            });
+            return;
+        }
+
+        if (totalGamesPlayed < MIN_GAMES_REQUIRED) {
+            const swal = await Swal.fire({
+                title: `You must play at least ${MIN_GAMES_REQUIRED} game(s) to submit a custom avatar request apart from tourney avatars.`,
+                type: "error",
+                showCancelButton: true,
+                confirmButtonText: "Submit tourney avatar"
+            });
+
+            if (!swal.value) {
+                return;
+            }
+        }
+
+        // Server side
+        const formElement = document.querySelector('#customAvatarSubmissionForm');
+        const bodyFormData = new FormData(formElement);
+
+        Swal.fire({
+            title: 'Sending your request...',
+            onOpen: () => {
+                Swal.showLoading();
+
+                axios({
+                    method: 'POST',
+                    url: '/profile/<%= username %>/customavatar',
+                    data: bodyFormData,
+                })
+                    .then(function (response) {
+                        //handle success
+                        // Clear the form for next input.
+                        $('#customAvatarSubmissionForm')[0].reset();
+
+                        // Reset image previews
+                        resetAvatarPreviews();
+
+                        Swal.close();
+                        Swal.fire({
+                            title: response.data,
+                            type: 'success',
+                        });
+                    })
+                    .catch(function (err) {
+                        Swal.close();
+                        Swal.fire({
+                            title: err.response.data,
+                            type: 'error',
+                        });
+                    });
+            },
+        })
+    })
+});
+
+function resetAvatarPreviews() {
+    const resPreview = document.querySelector('#resAvatarPreview')
+    const spyPreview = document.querySelector('#spyAvatarPreview')
+
+    const previews = [resPreview, spyPreview];
+
+    previews.forEach(preview => {
+        const para = document.createElement("p");
+        para.textContent = "No files currently selected for upload";
+
+        preview.replaceChildren();
+        preview.appendChild(para);
+    })
+}
+
+async function updateAvatarDisplay(file, previewId) {
+    const preview = document.querySelector(previewId);
+    preview.replaceChildren();
+
+    let valid = false;
+    const para = document.createElement("p");
+
+    if (!file) {
+        para.textContent = "No files currently selected for upload";
+        preview.appendChild(para);
+    } else if (file.type !== "image/png") {
+        para.textContent = "Invalid: Selected file is not a PNG image";
+        preview.appendChild(para);
+    } else {
+        const image = document.createElement("img");
+
+        image.src = URL.createObjectURL(file);
+        image.alt = file.name;
+
+        preview.appendChild(image);
+
+        await new Promise((resolve) => {
+            image.onload = () => {
+                para.textContent = `Image dimensions: ${image.width}x${image.height}px`;
+                preview.appendChild(para);
+
+                const validation = document.createElement("p");
+                const validDim = "<%= JSON.stringify(VALID_DIMENSIONS) %>";
+
+                if (!validDim.includes(image.width) || !validDim.includes(image.height) || image.width !== image.height) {
+                    validation.textContent = `Invalid: Image should be either <%= VALID_DIMENSIONS_STR %>.`;
+                } else {
+                    valid = true;
+                }
+
+                image.width = 128;
+                image.height = 128;
+
+                preview.appendChild(validation);
+                resolve();
+            };
+        });
+    }
+
+    return valid;
+}
+
+</script>
+
+<%- include('../partials/footer') %>

@@ -1,22 +1,77 @@
-import getPatreonDetails from './getPatreonDetails';
-import { Rewards, RewardType } from './indexRewards';
+import {
+  AllRewards,
+  AllRewardsExceptPatreon,
+  PatreonRewards,
+  RewardType,
+} from './indexRewards';
 
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
+import { PatreonAgent } from '../clients/patreon/patreonAgent';
+import { IUser } from '../gameplay/types';
+import { PatreonController } from '../clients/patreon/patreonController';
+import constants from './constants';
+import { S3Agent } from '../clients/s3/S3Agent';
+import S3Controller from '../clients/s3/S3Controller';
+import userAdapter from '../databaseAdapters/user';
 
-async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
+const s3Agent = new S3Agent(new S3Controller());
+const patreonAgent = new PatreonAgent(new PatreonController());
+
+const TEMP_MIN_LIBRARY_SIZE = 2;
+
+// Returns Patreon Tier for User. Will update the users avatar library based on tier
+export async function getAndUpdatePatreonRewardTierForUser(
+  usernameLower: string,
+): Promise<RewardType> {
+  const patreonTier = await getPatreonRewardTierForUser(usernameLower);
+  await updateUsersAvatarLibrary(usernameLower, patreonTier);
+
+  return patreonTier;
+}
+
+async function getPatreonRewardTierForUser(
+  usernameLower: string,
+): Promise<RewardType> {
+  const patronDetails = await patreonAgent.findOrUpdateExistingPatronDetails(
+    usernameLower,
+  );
+
+  if (!patronDetails || !patronDetails.isPledgeActive) {
+    return null;
+  }
+
+  let highestTierReward: RewardType = null;
+  let highestDonationAmount = 0;
+
+  for (const key in PatreonRewards) {
+    const reward = AllRewards[key as RewardType];
+    if (
+      reward.donationReq <= patronDetails.amountCents &&
+      reward.donationReq > highestDonationAmount
+    ) {
+      highestTierReward = key as RewardType;
+      highestDonationAmount = reward.donationReq;
+    }
+  }
+
+  return highestTierReward;
+}
+
+export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
   const rewardsSatisfied: RewardType[] = [];
+  const patreonReward = await getAndUpdatePatreonRewardTierForUser(
+    user.username.toLowerCase(),
+  );
 
-  const patreonDetails = await getPatreonDetails(user.patreonId);
+  if (patreonReward) {
+    rewardsSatisfied.push(patreonReward);
+  }
 
-  for (const key in Rewards) {
-    const hasReward = await userHasReward(
-      user,
-      key as RewardType,
-      patreonDetails,
-    );
+  for (const key in AllRewardsExceptPatreon) {
+    const hasReward = await userHasReward(user, key as RewardType);
     if (hasReward === true) {
       rewardsSatisfied.push(key as RewardType);
     }
@@ -25,30 +80,25 @@ async function getAllRewardsForUser(user: any): Promise<RewardType[]> {
   return rewardsSatisfied;
 }
 
-async function userHasReward(
-  user: any,
+export async function userHasReward(
+  user: IUser,
   rewardType: RewardType,
-  patreonDetails?: any,
 ): Promise<boolean> {
-  if (!patreonDetails) {
-    patreonDetails = await getPatreonDetails(user.patreonId);
-  }
+  const reward = AllRewards[rewardType];
 
-  const reward = Rewards[rewardType];
-
-  if (reward.adminReq && !isAdmin(user.username)) {
+  if (reward.adminReq && !isAdmin(user.usernameLower)) {
     return false;
   }
 
-  if (reward.modReq && !isMod(user.username)) {
+  if (reward.modReq && !isMod(user.usernameLower)) {
     return false;
   }
 
-  if (reward.TOReq && !isTO(user.username)) {
+  if (reward.TOReq && !isTO(user.usernameLower)) {
     return false;
   }
 
-  if (reward.devReq && !isDev(user.username)) {
+  if (reward.devReq && !isDev(user.usernameLower)) {
     return false;
   }
 
@@ -57,24 +107,90 @@ async function userHasReward(
     return false;
   }
 
-  // Check for patreon donations
-  if (
-    reward.donationReq !== 0 &&
-    // Payment has been declined
-    (patreonDetails.declined_since !== null ||
-      // Payment is not high enough
-      patreonDetails.amount_cents < reward.donationReq ||
-      // Username linked is not the current user
-      patreonDetails.in_game_username.toLowerCase() !==
-        user.username.toLowerCase() ||
-      // Passed the 32 day valid period
-      new Date() > new Date(patreonDetails.expires))
-  ) {
-    return false;
-  }
-
   // If we pass all the above, this reward has been satisfied.
   return true;
 }
 
-export { userHasReward, getAllRewardsForUser };
+export async function getAvatarLibrarySizeForUser(
+  usernameLower: string,
+  patreonReward?: RewardType,
+): Promise<number> {
+  const defaultLibrarySize = async () => {
+    const user = await userAdapter.getUser(usernameLower);
+    if (user.totalGamesPlayed > 500) {
+      return 2;
+    } else if (user.totalGamesPlayed > 100) {
+      return 1;
+    } else {
+      return 0;
+    }
+  };
+
+  const modLibrarySize = () => {
+    return isMod(usernameLower) ? 5 : 0;
+  };
+
+  const patreonLibrarySize = async () => {
+    if (!patreonReward) {
+      patreonReward = await getPatreonRewardTierForUser(usernameLower);
+    }
+
+    if (patreonReward === constants.TIER1_BADGE) {
+      return 2;
+    } else if (patreonReward === constants.TIER2_BADGE) {
+      return 3;
+    } else if (patreonReward === constants.TIER3_BADGE) {
+      return 5;
+    } else if (patreonReward === constants.TIER4_BADGE) {
+      return 10;
+    } else {
+      return 0;
+    }
+  };
+
+  return Math.max(
+    await patreonLibrarySize(),
+    modLibrarySize(),
+    await defaultLibrarySize(),
+  );
+}
+
+async function updateUsersAvatarLibrary(
+  usernameLower: string,
+  patreonReward: any,
+) {
+  const user = await userAdapter.getUser(usernameLower);
+  const librarySize = await getAvatarLibrarySizeForUser(
+    usernameLower,
+    patreonReward,
+  );
+
+  if (user.avatarLibrary.length === librarySize) {
+    return;
+  }
+
+  const approvedAvatarIds = await s3Agent.getApprovedAvatarIdsForUser(
+    usernameLower,
+  );
+  const approvedAvatarIdsNotInLibrary = approvedAvatarIds.filter(
+    (id) => !user.avatarLibrary.includes(id),
+  );
+
+  if (user.avatarLibrary.length < librarySize) {
+    // Add approved avatars until librarySize is reached OR all approvedAvatarIds are added
+    const numAvatarsToAdd = Math.min(
+      approvedAvatarIdsNotInLibrary.length,
+      librarySize - user.avatarLibrary.length,
+    );
+
+    user.avatarLibrary.push(
+      ...approvedAvatarIdsNotInLibrary.slice(-numAvatarsToAdd),
+    );
+  } else {
+    // Remove oldest avatars
+    user.avatarLibrary.splice(0, user.avatarLibrary.length - librarySize);
+  }
+
+  user.markModified('avatarLibrary');
+  await user.save();
+}

@@ -278,7 +278,9 @@ function activateAvatarButtons() {
 
       const username =
         this.parentElement.parentElement.getAttribute('usernameofplayer');
-      const chatItems = $(`.room-chat-list li span[username='${username}']`);
+      const anonUsername =
+        this.parentElement.parentElement.getAttribute('anonusernameofplayer');
+      const chatItems = $(`.room-chat-list li span[username='${username}']${anonUsername ? `, .room-chat-list li span[username='${anonUsername}']` : ''}`);
 
       let playerHighlightColour = docCookies.getItem(
         `player${getIndexFromUsername(username)}HighlightColour`
@@ -972,28 +974,18 @@ function strOfAvatar(playerData, alliance) {
       $('#option_display_original_avatars')[0].checked === false &&
       (!playerData.avatarHide || playerData.avatarHide === false)
     ) {
-      if (playerData.avatarImgRes.includes('http')) {
-        picLink = playerData.avatarImgRes;
-      } else {
-        // stored locally, need to add the path to it
-        picLink = `avatars/${playerData.avatarImgRes}`;
-      }
+      picLink = playerData.avatarImgRes
     } else {
-      picLink = pics.baseRes.path; // 'avatars/base-res.png';
+      picLink = 'avatars/base-res.svg';
     }
   } else if (
     playerData.avatarImgSpy &&
     $('#option_display_original_avatars')[0].checked === false &&
     (!playerData.avatarHide || playerData.avatarHide === false)
   ) {
-    if (playerData.avatarImgSpy.includes('http')) {
-      picLink = playerData.avatarImgSpy;
-    } else {
-      // stored locally, need to add the path to it
-      picLink = `avatars/${playerData.avatarImgSpy}`;
-    }
+    picLink = playerData.avatarImgSpy;
   } else {
-    picLink = 'avatars/base-spy.png';
+    picLink = 'avatars/base-spy.svg';
   }
 
   // add in the role of the player, and the percy info
@@ -1083,7 +1075,7 @@ function strOfAvatar(playerData, alliance) {
     colourToHighlightChatButton = '';
   }
 
-  let str = `<div usernameofplayer='${playerData.username}' class='playerDiv ${selectedAvatar}''>`;
+  let str = `<div usernameofplayer='${playerData.username}' ${playerData.anonUsername ? `anonusernameofplayer=${playerData.anonUsername}` : ''} class='playerDiv ${selectedAvatar}''>`;
 
   str += "<span class='avatarOptionButtons'>";
   str +=
