@@ -5,22 +5,15 @@ interface GaugeConfig {
   name: string;
   help: string;
   labelNames?: string[];
-  collect?: () => void;
+  collect?: () => void; // Refer to prom-client docs on how this should be configured
 }
 
 export class PromMetricGauge {
   private gauge: Gauge;
 
   constructor(gaugeConfig: GaugeConfig) {
-    promAgent.addMetricName(gaugeConfig.name);
-    this.gauge = new promClient.Gauge(gaugeConfig);
-  }
+    promAgent.registerMetric(gaugeConfig.name);
 
-  public set(val: number, labels?: Record<string, string>) {
-    if (!labels) {
-      this.gauge.set(val);
-    } else {
-      this.gauge.set(labels, val); // TODO-kev: Note an error is naturally thrown when creating labels not originally defined
-    }
+    this.gauge = new promClient.Gauge(gaugeConfig);
   }
 }

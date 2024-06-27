@@ -2,29 +2,21 @@ import promClient from 'prom-client';
 import { sendToDiscordAdmins } from '../discord';
 
 const MAX_PUSH_METRICS_ERRORS = 5;
-const PUSH_METRICS_ERRORS_RATE_LIMIT = 60 * 60 * 1000; // 1 hour
+const FORGET_ERROR_TIME_THRESHOLD = 60 * 60 * 1000; // 1 hour
 
 export class PromAgent {
-  private metricNames: Set<string>;
+  private metricNames = new Set<string>();
   private pushMetricsErrorsTimestamps: number[] = [];
+  private readonly dupeMetricErrorHandler: (metricName: string) => void;
 
-  constructor() {
-    this.metricNames = new Set<string>();
+  constructor(dupeMetricErrorHandler: (metricName: string) => void) {
+    this.dupeMetricErrorHandler = dupeMetricErrorHandler;
   }
 
-  public addMetricName(metricName: string) {
-    if (!this.metricNames.has(metricName)) {
-      this.metricNames.add(metricName);
-      return;
-    }
-
-    if (process.env.NODE_ENV !== 'test') {
-      console.error(`Error metric name already exists: ${metricName}`);
-      process.exit(1);
-    } else {
-      // TODO-kev: Error message below okay?
-      throw new Error(`Error metric name already exists: ${metricName}`);
-    }
+  public registerMetric(metricName: string) {
+    this.metricNames.has(metricName)
+      ? this.dupeMetricErrorHandler(metricName)
+      : this.metricNames.add(metricName);
   }
 
   // TODO-kev: Below is purely for testing. Keep or remove?
@@ -33,7 +25,19 @@ export class PromAgent {
   }
 
   public async pushMetrics() {
-    const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
+    let metrics: string;
+
+    try {
+      metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
+    } catch (e) {
+      // Exit program if non-initialised labels are used in collect() function
+      if (e.message.includes('label')) {
+        console.error(e);
+        process.exit(1);
+      }
+
+      throw e;
+    }
 
     const response = await fetch(process.env.VM_IMPORT_PROMETHEUS_URL, {
       method: 'POST',
@@ -51,20 +55,16 @@ export class PromAgent {
       const now = Date.now();
       this.pushMetricsErrorsTimestamps.push(now);
 
-      let count = 0;
+      while (this.pushMetricsErrorsTimestamps.length > 0) {
+        const timeDiff = now - this.pushMetricsErrorsTimestamps[0];
 
-      while (
-        count < this.pushMetricsErrorsTimestamps.length &&
-        now - this.pushMetricsErrorsTimestamps[count] >=
-          PUSH_METRICS_ERRORS_RATE_LIMIT
-      ) {
-        count++;
+        if (timeDiff > FORGET_ERROR_TIME_THRESHOLD) {
+          this.pushMetricsErrorsTimestamps.unshift();
+        } else {
+          break;
+        }
       }
 
-      this.pushMetricsErrorsTimestamps =
-        this.pushMetricsErrorsTimestamps.slice(count);
-
-      // TODO-kev: Check below. Particularly error stack?. Consider what to do in cases where it exceeds
       if (this.pushMetricsErrorsTimestamps.length <= MAX_PUSH_METRICS_ERRORS) {
         sendToDiscordAdmins(errMsg);
       }
@@ -76,27 +76,26 @@ export class PromAgent {
 
   // TODO-kev: Delete
   public async test() {
-    const metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
-    // const currentTimestamp = Date.now();
-    //
-    // const metricsWithTimestamp = metrics
-    //   .split('\n')
-    //   .map((line: string) => {
-    //     // Ignore comment lines and empty lines
-    //     if (line.startsWith('#') || line.trim() === '') {
-    //       return line;
-    //     }
-    //     return `${line} ${currentTimestamp}`;
-    //   })
-    //   .join('\n');
-    //
-    // console.log(metricsWithTimestamp);
+    let metrics: string;
 
-    console.log(metrics);
+    try {
+      metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
 
-    // Reset metrics
-    // await promClient.register.resetMetrics();
+      console.log(metrics);
+    } catch (e) {
+      if (e.message.includes('label')) {
+        console.error(e);
+        process.exit(1);
+      }
+
+      throw e;
+    }
   }
 }
 
-export const promAgent = new PromAgent();
+const dupeMetricErrorHandler = (metricName: string) => {
+  console.error(`Error metric name already exists: ${metricName}`);
+  process.exit(1);
+};
+
+export const promAgent = new PromAgent(dupeMetricErrorHandler);

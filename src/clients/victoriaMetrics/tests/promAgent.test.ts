@@ -4,13 +4,17 @@ describe('PromAgent', () => {
   let promAgent: PromAgent;
 
   beforeEach(() => {
-    promAgent = new PromAgent();
+    const dupeMetricErrorHandler = (metricName: string) => {
+      throw new Error(`Error metric name already exists: ${metricName}`);
+    };
+
+    promAgent = new PromAgent(dupeMetricErrorHandler);
   });
 
   it(`Adds unique metric names.`, () => {
     expect(() => {
-      promAgent.addMetricName('metric_name_1');
-      promAgent.addMetricName('metric_name_2');
+      promAgent.registerMetric('metric_name_1');
+      promAgent.registerMetric('metric_name_2');
     }).not.toThrow();
 
     expect(promAgent.getMetricNames().has('metric_name_1'));
@@ -19,8 +23,8 @@ describe('PromAgent', () => {
 
   it('Throws an error when adding a duplicate metric name.', () => {
     expect(() => {
-      promAgent.addMetricName('metric_name_1');
-      promAgent.addMetricName('metric_name_1');
+      promAgent.registerMetric('metric_name_1');
+      promAgent.registerMetric('metric_name_1');
     }).toThrow();
   });
 });
