@@ -2,7 +2,7 @@ import promClient from 'prom-client';
 import { sendToDiscordAdmins } from '../discord';
 
 const MAX_PUSH_METRICS_ERRORS = 5;
-const PUSH_METRICS_ERRORS_RATE_LIMIT = 60 * 60 * 1000; // 1 hour
+const FORGET_ERROR_TIME_THRESHOLD = 60 * 60 * 1000; // 1 hour
 
 export class PromAgent {
   private metricNames = new Set<string>();
@@ -43,20 +43,16 @@ export class PromAgent {
       const now = Date.now();
       this.pushMetricsErrorsTimestamps.push(now);
 
-      let count = 0;
+      while (this.pushMetricsErrorsTimestamps.length > 0) {
+        const timeDiff = now - this.pushMetricsErrorsTimestamps[0];
 
-      while (
-        count < this.pushMetricsErrorsTimestamps.length &&
-        now - this.pushMetricsErrorsTimestamps[count] >=
-          PUSH_METRICS_ERRORS_RATE_LIMIT
-      ) {
-        count++;
+        if (timeDiff > FORGET_ERROR_TIME_THRESHOLD) {
+          this.pushMetricsErrorsTimestamps.unshift();
+        } else {
+          break;
+        }
       }
 
-      this.pushMetricsErrorsTimestamps =
-        this.pushMetricsErrorsTimestamps.slice(count);
-
-      // TODO-kev: Check below. Particularly error stack?. Consider what to do in cases where it exceeds
       if (this.pushMetricsErrorsTimestamps.length <= MAX_PUSH_METRICS_ERRORS) {
         sendToDiscordAdmins(errMsg);
       }
