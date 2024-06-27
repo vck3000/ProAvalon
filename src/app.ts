@@ -20,6 +20,7 @@ import socket, { Server as SocketServer } from 'socket.io';
 import createProxyMiddleware from 'http-proxy-middleware';
 import morgan from 'morgan';
 
+import { config } from './config';
 import { server as socketServer } from './sockets/sockets';
 import User from './models/user';
 import { emailVerified, isLoggedIn } from './routes/middleware';
@@ -37,16 +38,6 @@ import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
 
 const assetsPath = path.join(__dirname, '../assets');
-
-// Die if env var isn't given in
-if (
-  process.env.ENV !== 'local' &&
-  process.env.ENV !== 'staging' &&
-  process.env.ENV !== 'prod'
-) {
-  console.error('Bad environment variable given.');
-  process.exit(1);
-}
 
 const app = express();
 app.use(compression());
@@ -84,7 +75,7 @@ app.use(
   ),
 );
 
-if (process.env.ENV === 'local') {
+if (config.ENV === 'local') {
   console.log('Routing dist_webpack to localhost:3010.');
   app.use(
     '/dist_webpack',
@@ -92,8 +83,8 @@ if (process.env.ENV === 'local') {
   );
 }
 
-const port = process.env.PORT || 3000;
-const dbLoc = process.env.DATABASEURL;
+const port = config.PORT;
+const dbLoc = config.DATABASE_URL;
 console.log(`Using database url: ${dbLoc}`);
 
 mongoose.connect(dbLoc, {
@@ -139,7 +130,7 @@ process
   });
 
 // authentication
-const secretKey = process.env.MY_SECRET_KEY || 'MySecretKey';
+const secretKey = config.MY_SECRET_KEY;
 app.use(
   session({
     secret: secretKey,
@@ -192,7 +183,7 @@ app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
 app.use('/profile', profileRoutes);
 
-const IP = process.env.IP || '127.0.0.1';
+const IP = config.IP;
 const server = app.listen(port, () => {
   console.log(`Server has started on ${IP}:${port}!`);
 });

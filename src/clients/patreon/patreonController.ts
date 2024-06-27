@@ -1,9 +1,11 @@
+import uuid from 'uuid';
+
+import { config } from '../../config';
 import {
   IPatreonController,
   PatreonUserTokens,
   PaidPatronFullDetails,
 } from './patreonAgent';
-import uuid from 'uuid';
 
 const PATREON_URLS = {
   AUTHORIZATION_LINK: 'https://www.patreon.com/oauth2/authorize',
@@ -12,9 +14,9 @@ const PATREON_URLS = {
 };
 
 export class PatreonController implements IPatreonController {
-  private clientId = process.env.patreon_client_ID;
-  private clientSecret = process.env.patreon_client_secret;
-  private redirectUri = process.env.patreon_redirectURL;
+  private clientId = config.patreon.CLIENT_ID;
+  private clientSecret = config.patreon.CLIENT_SECRET;
+  private redirectUri = config.patreon.REDIRECT_URL;
 
   public async getPatreonUserTokens(code: string): Promise<PatreonUserTokens> {
     const getPatreonUserTokensUrl = new URL(PATREON_URLS.GET_TOKENS);

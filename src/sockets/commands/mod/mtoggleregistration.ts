@@ -1,13 +1,13 @@
 import { Command } from '../types';
-import Settings from '../../../settings';
+import { settingsSingleton } from '../../../settings';
 
 export const mtoggleregistration: Command = {
   command: 'mtoggleregistration',
   help: '/mtoggleregistration: Toggles site registration.',
   run: async (args, senderSocket) => {
-    Settings.toggleDisableRegistration();
+    settingsSingleton.toggleDisableRegistration();
 
-    const descriptor = Settings.getDisableRegistration()
+    const descriptor = settingsSingleton.getDisableRegistration()
       ? 'disabled'
       : 'enabled';
 

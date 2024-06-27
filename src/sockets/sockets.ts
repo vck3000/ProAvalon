@@ -2,6 +2,7 @@
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
+import { config } from '../config';
 import GameWrapper from '../gameplay/gameWrapper';
 
 import savedGameObj from '../models/savedGame';
@@ -54,7 +55,7 @@ const matchmakingQueue = new MatchmakingQueue(matchFound);
 const joinQueueFilter = new JoinQueueFilter(() => new Date());
 const readyPrompt = new ReadyPrompt();
 
-if (process.env.NODE_ENV !== 'test') {
+if (config.NODE_ENV !== 'test') {
   setInterval(() => {
     chatSpamFilter.tick();
   }, 1000);
@@ -148,7 +149,7 @@ function deleteSaveGameFromDb(room) {
   }
 }
 
-if (process.env.NODE_ENV !== 'test') {
+if (config.NODE_ENV !== 'test') {
   setTimeout(async () => {
     let run = true;
     let i = 0;
@@ -1954,7 +1955,7 @@ function joinQueue(): boolean {
     return false;
   }
 
-  if (process.env.ENV !== 'local') {
+  if (config.ENV !== 'local') {
     if (this.request.user.totalGamesPlayed < 3) {
       this.emit('allChatToClient', {
         message: 'You require 3 games to join the ranked queue.',
