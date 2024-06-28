@@ -1,5 +1,5 @@
 import os from 'os';
-import { PromMetricGauge } from './promMetricGauge';
+import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
 
 const cpuIdleUsageMetric = new PromMetricGauge({
   name: `idle_cpu_seconds`,

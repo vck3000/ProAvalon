@@ -37,7 +37,7 @@ import MongoDBStoreFactory from 'connect-mongodb-session';
 import { SESSIONS_COLLECTION_NAME } from './constants';
 import { promAgent } from './clients/victoriaMetrics/promAgent';
 
-import './clients/victoriaMetrics/systemMetrics';
+import './metrics/systemMetrics';
 
 const assetsPath = path.join(__dirname, '../assets');
 
