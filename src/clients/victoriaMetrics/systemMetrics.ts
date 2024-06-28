@@ -2,7 +2,7 @@ import os from 'os';
 import { PromMetricGauge } from './promMetricGauge';
 
 const cpuIdleUsageMetric = new PromMetricGauge({
-  name: `cpu_idle_seconds_total`,
+  name: `idle_cpu_seconds`,
   help: `Total milliseconds CPU has run in idle mode since program initiated.`,
   collect() {
     let totalIdleMilliseconds = 0;
@@ -17,7 +17,7 @@ const cpuIdleUsageMetric = new PromMetricGauge({
 });
 
 const cpuTotalUsageMetric = new PromMetricGauge({
-  name: `cpu_seconds_total`,
+  name: `total_cpu_seconds`,
   help: `Total milliseconds CPU has run in all modes since program initiated.`,
   collect() {
     let totalMilliseconds = 0;
@@ -37,18 +37,16 @@ const cpuTotalUsageMetric = new PromMetricGauge({
 });
 
 const memoryUsedMetric = new PromMetricGauge({
-  name: `memory_bytes`,
-  help: `Total memory available.`,
-  labelNames: ['type'],
+  name: `used_memory_bytes`,
+  help: `Total memory used.`,
   collect() {
     this.set(os.totalmem() - os.freemem());
   },
 });
 
 const memoryTotalMetric = new PromMetricGauge({
-  name: `memory_bytes`,
+  name: `total_memory_bytes`,
   help: `Total memory available.`,
-  labelNames: ['type'],
   collect() {
     this.set(os.totalmem());
   },
