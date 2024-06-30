@@ -51,3 +51,11 @@ const memoryTotalMetric = new PromMetricGauge({
     this.set(os.totalmem());
   },
 });
+
+const upTimeMetric = new PromMetricGauge({
+  name: `uptime_seconds`,
+  help: `System uptime.`,
+  collect() {
+    this.set(os.uptime());
+  },
+});
