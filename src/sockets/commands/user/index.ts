@@ -13,10 +13,12 @@ import { mute } from './mute';
 import { muted } from './muted';
 import { unmute } from './unmute';
 import { mods } from './mods';
+import { pmmod } from './pmmod';
 
 export const userCommandsImported: Commands = {
   [help.command]: help,
   [mods.command]: mods,
+  [pmmod.command]: pmmod,
   [allchat.command]: allchat,
   [navbar.command]: navbar,
   [roll.command]: roll,
