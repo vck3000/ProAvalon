@@ -2,29 +2,24 @@ import { PromAgent } from '../promAgent';
 
 describe('PromAgent', () => {
   let promAgent: PromAgent;
+  let dupeMetricErrorHandler: jest.Mock;
 
   beforeEach(() => {
-    const dupeMetricErrorHandler = (metricName: string) => {
-      throw new Error(`Error metric name already exists: ${metricName}`);
-    };
-
+    dupeMetricErrorHandler = jest.fn();
     promAgent = new PromAgent(dupeMetricErrorHandler);
   });
 
   it(`Adds unique metric names.`, () => {
-    expect(() => {
-      promAgent.registerMetric('metric_name_1');
-      promAgent.registerMetric('metric_name_2');
-    }).not.toThrow();
+    promAgent.registerMetric('metric_name_1');
+    promAgent.registerMetric('metric_name_2');
 
-    expect(promAgent.getMetricNames().has('metric_name_1'));
-    expect(promAgent.getMetricNames().has('metric_name_2'));
+    expect(dupeMetricErrorHandler).not.toHaveBeenCalled();
   });
 
   it('Throws an error when adding a duplicate metric name.', () => {
-    expect(() => {
-      promAgent.registerMetric('metric_name_1');
-      promAgent.registerMetric('metric_name_1');
-    }).toThrow();
+    promAgent.registerMetric('metric_name_1');
+    promAgent.registerMetric('metric_name_1');
+
+    expect(dupeMetricErrorHandler).toHaveBeenCalledTimes(1);
   });
 });

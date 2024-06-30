@@ -57,6 +57,6 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: pass
-    user: "$UID:$GID" # TODO-kev: Warning where UID and GID are not set, defaults to blank string
+    user: "$UID:$GID"
     depends_on:
       - victoria-metrics

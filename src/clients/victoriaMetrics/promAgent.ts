@@ -19,11 +19,6 @@ export class PromAgent {
       : this.metricNames.add(metricName);
   }
 
-  // TODO-kev: Below is purely for testing. Keep or remove?
-  public getMetricNames(): Set<string> {
-    return this.metricNames;
-  }
-
   public async pushMetrics() {
     let metrics: string;
 
@@ -32,11 +27,17 @@ export class PromAgent {
     } catch (e) {
       // Exit program if non-initialised labels are used in collect() function
       if (e.message.includes('label')) {
+        sendToDiscordAdmins(e.message);
         console.error(e);
         process.exit(1);
       }
 
       throw e;
+    }
+
+    if (!process.env.VM_IMPORT_PROMETHEUS_URL) {
+      console.error(`Missing environment variable: VM_IMPORT_PROMETHEUS_URL`);
+      process.exit(1);
     }
 
     const response = await fetch(process.env.VM_IMPORT_PROMETHEUS_URL, {
@@ -69,32 +70,13 @@ export class PromAgent {
         sendToDiscordAdmins(errMsg);
       }
     }
-
-    // TODO-kev: Delete
-    console.log('Successfully pushed metrics.');
-  }
-
-  // TODO-kev: Delete
-  public async test() {
-    let metrics: string;
-
-    try {
-      metrics = await promClient.register.metrics(); // Will call any collect() functions for gauges
-
-      console.log(metrics);
-    } catch (e) {
-      if (e.message.includes('label')) {
-        console.error(e);
-        process.exit(1);
-      }
-
-      throw e;
-    }
   }
 }
 
 const dupeMetricErrorHandler = (metricName: string) => {
-  console.error(`Error metric name already exists: ${metricName}`);
+  const errMsg = `Error metric name already exists: ${metricName}`;
+  sendToDiscordAdmins(errMsg);
+  console.error(errMsg);
   process.exit(1);
 };
 

@@ -61,13 +61,9 @@ if (process.env.NODE_ENV !== 'test') {
 
 const onlinePlayersMetric = new PromMetricGauge({
   name: `online_players_total`,
-  help: `Number of online players`,
+  help: `Number of online players.`,
   collect() {
-    // TODO-kev: uncomment below line once pushed
-    let randomInt = Math.floor(Math.random() * 40) + 1;
-    this.set(randomInt);
-
-    // this.set(allSockets.length);
+    this.set(allSockets.length);
   },
 });
 
