@@ -10,6 +10,7 @@ import { removeblacklist } from './removeblacklist';
 import { getblacklist } from './getblacklist';
 import { allchat } from './allchat';
 import { mute } from './mute';
+import { muted } from './muted';
 
 export const userCommandsImported: Commands = {
   [help.command]: help,
@@ -23,4 +24,5 @@ export const userCommandsImported: Commands = {
   [removeblacklist.command]: removeblacklist,
   [getblacklist.command]: getblacklist,
   [mute.command]: mute,
+  [muted.command]: muted,
 };
