@@ -14,7 +14,9 @@ export const mute: Command = {
       return;
     }
 
-    const userCallingMute = socket.request.user;
+    const userCallingMute = await userAdapter.getUser(
+      socket.request.user.username,
+    );
     const usernameToMuteLower = args[1].toLowerCase();
 
     if (userCallingMute.usernameLower === usernameToMuteLower) {
@@ -22,7 +24,7 @@ export const mute: Command = {
       return;
     }
 
-    // TODO-kev: Do we even need this?
+    // TODO-kev: Do all users have mutedPlayers array?
     // if (!userCallingMute.mutedPlayers) {
     //   userCallingMute.mutedPlayers = [];
     // }
@@ -42,17 +44,9 @@ export const mute: Command = {
       return;
     }
 
-    await userAdapter.muteUser(
-      userCallingMute.usernameLower,
-      usernameToMuteLower,
-    );
+    await userAdapter.muteUser(userCallingMute, usernameToMuteLower);
 
-    socket.request.user.mutedPlayers.push(usernameToMuteLower);
-    socket.request.user.markModified('mutedPlayers');
-    await socket.request.user.save();
-
-    console.log(socket.request.user.mutedPlayers);
-
+    socket.emit('updateMutedPlayers', userCallingMute.mutedPlayers);
     sendReplyToCommand(socket, `Muted ${usernameToMuteLower} successfully.`);
   },
 };

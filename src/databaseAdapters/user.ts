@@ -25,9 +25,7 @@ class MongoUserAdapter implements DatabaseAdapter {
     })) as IUser;
   }
 
-  async muteUser(usernameCallingMute: string, usernameToMute: string) {
-    const userCallingMute = await this.getUser(usernameCallingMute);
-
+  async muteUser(userCallingMute: IUser, usernameToMute: string) {
     userCallingMute.mutedPlayers.push(usernameToMute.toLowerCase());
     userCallingMute.markModified('mutedPlayers');
     await userCallingMute.save();
