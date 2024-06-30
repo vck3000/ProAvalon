@@ -1,8 +1,6 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import { rooms, sendReplyToCommand } from '../../sockets';
-import User from '../../../models/user';
-import user from '../../../models/user';
+import { sendReplyToCommand } from '../../sockets';
 import userAdapter from '../../../databaseAdapters/user';
 
 export const mute: Command = {
