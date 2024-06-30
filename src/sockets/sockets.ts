@@ -9,7 +9,6 @@ import { getAllRewardsForUser } from '../rewards/getRewards';
 import REWARDS from '../rewards/constants';
 import avatarRequest from '../models/avatarRequest';
 import User from '../models/user';
-import ModLog from '../models/modLog';
 import JSON from 'circular-json';
 
 import { isAdmin } from '../modsadmins/admins';
@@ -31,7 +30,6 @@ import { userCommandsImported } from './commands/user';
 import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
 
-import { lastWhisperObj } from './commands/mod/mwhisper';
 import * as util from 'util';
 import { RoomCreationType } from '../gameplay/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
@@ -495,67 +493,6 @@ export const userCommandsOLD = {
 
           senderSocket.emit('messageCommandReturnStr', dataToReturn);
         });
-    },
-  },
-
-  r: {
-    command: 'r',
-    help: '/r: Reply to a mod who just messaged you.',
-    run(args: string[], senderSocket) {
-      // If the player has not been whispered to yet.
-      if (!lastWhisperObj[senderSocket.request.user.username.toLowerCase()]) {
-        return {
-          message: "You haven't been whispered to before.",
-          classStr: 'server-text',
-        };
-      }
-      const sendToSocket =
-        allSockets[
-          getIndexFromUsername(
-            allSockets,
-            lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
-              .username,
-            true,
-          )
-        ];
-      if (sendToSocket === undefined || sendToSocket === null) {
-        return;
-      }
-      // this sendToSocket is the moderator
-      // If the reply target is no longer in the sockets list.
-      if (!sendToSocket) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: 'Your target has disconnected.',
-          classStr: 'server-text',
-        });
-      } else {
-        let str = `${senderSocket.request.user.username}->${sendToSocket.request.user.username} (whisper): `;
-        for (let i = 1; i < args.length; i++) {
-          str += args[i];
-          str += ' ';
-        }
-
-        // str += ("(From: " + senderSocket.request.user.username + ")");
-
-        const dataMessage = {
-          message: str,
-          dateCreated: new Date(),
-          classStr: 'whisper',
-        };
-
-        sendToSocket.emit('allChatToClient', dataMessage);
-        sendToSocket.emit('roomChatToClient', dataMessage);
-
-        senderSocket.emit('allChatToClient', dataMessage);
-        senderSocket.emit('roomChatToClient', dataMessage);
-
-        const modlog =
-          lastWhisperObj[senderSocket.request.user.username.toLowerCase()]
-            .modlog;
-        modlog.data.log.push(dataMessage);
-        modlog.markModified('data');
-        modlog.save();
-      }
     },
   },
 
