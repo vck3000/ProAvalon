@@ -1,7 +1,6 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
-import { IUser } from '../../../gameplay/types';
 
 export const getblacklist: Command = {
   command: 'getblacklist',
