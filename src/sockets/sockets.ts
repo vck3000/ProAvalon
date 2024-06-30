@@ -444,20 +444,6 @@ export const userCommandsOLD = {
     },
   },
 
-  mods: {
-    command: 'mods',
-    help: '/mods: Shows a list of online moderators.',
-    run() {
-      const modUsers = getPlayerUsernamesFromAllSockets().filter((username) =>
-        isMod(username),
-      );
-      const message = `Currently online mods: ${
-        modUsers.length > 0 ? modUsers.join(', ') : 'None'
-      }.`;
-      return { message, classStr: 'server-text' };
-    },
-  },
-
   pmmod: {
     command: 'pmmod',
     help: '/pmmod <mod_username> <message>: Sends a private message to an online moderator.',
