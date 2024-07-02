@@ -215,6 +215,8 @@ io.use(
 socketServer(io);
 
 // Periodically push metrics every 15 seconds to VictoriaMetrics
-setInterval(async () => {
-  await promAgent.pushMetrics();
-}, 15000);
+if (process.env.ENV === 'local' || process.env.ENV === 'prod') {
+  setInterval(async () => {
+    await promAgent.pushMetrics();
+  }, 15000);
+}
