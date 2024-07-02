@@ -26,6 +26,7 @@ import { createNotification } from '../../myFunctions/createNotification';
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
 import userAdapter from '../../databaseAdapters/user';
 import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
+import { avatarSubmissionsMetric } from '../../metrics/miscellaneousMetrics';
 
 const MAX_ACTIVE_AVATAR_REQUESTS = 1;
 const MIN_GAMES_REQUIRED = 100;
@@ -487,6 +488,8 @@ router.post(
     };
 
     await avatarRequest.create(avatarRequestData);
+
+    avatarSubmissionsMetric.inc(1);
 
     res
       .status(200)
