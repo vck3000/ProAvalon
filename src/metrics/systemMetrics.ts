@@ -3,7 +3,7 @@ import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
 
 const cpuIdleUsageMetric = new PromMetricGauge({
   name: `idle_cpu_seconds`,
-  help: `Total milliseconds CPU has been in idle mode since the program initiated.`,
+  help: `Total milliseconds CPU has been in idle mode from box startup.`,
   collect() {
     let totalIdleMilliseconds = 0;
     const cpus = os.cpus();
@@ -18,7 +18,7 @@ const cpuIdleUsageMetric = new PromMetricGauge({
 
 const cpuTotalUsageMetric = new PromMetricGauge({
   name: `total_cpu_seconds`,
-  help: `Total milliseconds CPU has been active in all modes (user, nice, system, idle, irq) since the program initiated.`,
+  help: `Total milliseconds CPU has been active in all modes (user, nice, system, idle, irq) from box startup.`,
   collect() {
     let totalMilliseconds = 0;
     const cpus = os.cpus();
