@@ -55,6 +55,14 @@ $ yarn
 3. Create a Bucket named `proavalon` in MinIO.
 4. Set its Access Policy to Public.
 
+### Setting up Grafana
+
+1. Access Grafana via localhost:5000
+2. Connect `victoria-metrics`
+    a. From the main menu: Connections -> Data sources -> Add new data source. 
+    b. Add a Prometheus time series database. 
+    c. Under Connection, paste `http://victoria-metrics:8428` then Save & test.
+
 ### Stopping
 
 1. Stop the server with `Ctrl+C`.

@@ -35,3 +35,28 @@ services:
       MINIO_ROOT_USER: admin
       MINIO_ROOT_PASSWORD: password
     command: server /data --console-address ":9001"
+
+  victoria-metrics:
+    image: victoriametrics/victoria-metrics:latest
+    ports:
+      - 8428:8428
+    volumes:
+      - ./docker-compose-data/victoria-metrics:/data
+    restart: always
+    command:
+      - -storageDataPath=/data
+      - -retentionPeriod=100y
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - 5000:3000
+    volumes:
+      - ./docker-compose-data/grafana:/var/lib/grafana
+    restart: always
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: pass
+    user: "$UID:$GID"
+    depends_on:
+      - victoria-metrics
