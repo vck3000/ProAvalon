@@ -9,6 +9,8 @@ interface DatabaseAdapter {
     resLink: string,
     spyLink: string,
   ): Promise<void>;
+  muteUser(userCallingMute: IUser, usernameToMute: string): Promise<void>;
+  unmuteUser(userCallingUnmute: IUser, usernameToUnmute: string): Promise<void>;
   resetAvatar(username: string): Promise<void>;
   setAvatarAndUpdateLibrary(
     username: string,
