@@ -42,8 +42,7 @@ import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
-import { PatreonAgent } from '../clients/patreon/patreonAgent';
-import { PatreonController } from '../clients/patreon/patreonController';
+import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -57,6 +56,14 @@ if (process.env.NODE_ENV !== 'test') {
     chatSpamFilter.tick();
   }, 1000);
 }
+
+const onlinePlayersMetric = new PromMetricGauge({
+  name: `online_players_total`,
+  help: `Number of online players.`,
+  collect() {
+    this.set(allSockets.length);
+  },
+});
 
 const quote = new Quote();
 
