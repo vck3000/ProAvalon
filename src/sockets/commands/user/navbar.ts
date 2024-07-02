@@ -1,6 +1,5 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import { sendReplyToCommand } from '../../sockets';
 
 export const navbar: Command = {
   command: 'navbar',
