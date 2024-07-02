@@ -57,14 +57,6 @@ if (process.env.NODE_ENV !== 'test') {
   }, 1000);
 }
 
-const onlinePlayersMetric = new PromMetricGauge({
-  name: `online_players_total`,
-  help: `Number of online players.`,
-  collect() {
-    this.set(allSockets.length);
-  },
-});
-
 const quote = new Quote();
 
 const dateResetRequired = 1543480412695;

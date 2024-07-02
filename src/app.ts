@@ -39,6 +39,7 @@ import { promAgent } from './clients/victoriaMetrics/promAgent';
 
 import './metrics/systemMetrics';
 import './metrics/gameMetrics';
+import './metrics/miscellaneousMetrics';
 
 const assetsPath = path.join(__dirname, '../assets');
 
