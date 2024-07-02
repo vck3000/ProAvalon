@@ -18,8 +18,7 @@ import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
 import uuid from 'uuid';
 import { captchaMiddleware } from '../util/captcha';
-import { PatreonAgent } from '../clients/patreon/patreonAgent';
-import { PatreonController } from '../clients/patreon/patreonController';
+import { passwordResetMetric } from '../metrics/miscellaneousMetrics';
 
 const router = new Router();
 
@@ -295,6 +294,8 @@ router.get('/resetPassword/verifyResetPassword', async (req, res) => {
       });
 
       await user.save();
+
+      passwordResetMetric.inc(1);
 
       req.flash('success', 'Your password has been reset!');
       res.render('resetPasswordSuccess', { newPassword });
