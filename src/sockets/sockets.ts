@@ -42,7 +42,10 @@ import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
-import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
+import userAdapter from '../databaseAdapters/user';
+import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
+
+const UNIQUE_LOGIN_TIMER = 24 * 60 * 60 * 1000; // 1 day
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -731,6 +734,16 @@ export const server = function (io: SocketServer): void {
 
     socket.rewards = await getAllRewardsForUser(socket.request.user);
     socket = applyApplicableRewards(socket);
+
+    const user = await userAdapter.getUser(socket.request.user.username);
+
+    if (
+      !user.lastLoggedInDateMetric ||
+      new Date() - user.lastLoggedInDateMetric > UNIQUE_LOGIN_TIMER
+    ) {
+      await userAdapter.updateLastLoggedInDateMetric(user.username, new Date());
+      uniqueLoginsMetric.inc(1);
+    }
   });
 };
 

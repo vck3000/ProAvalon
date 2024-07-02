@@ -10,6 +10,11 @@ const onlinePlayersMetric = new PromMetricGauge({
   },
 });
 
+export const uniqueLoginsMetric = new PromMetricCounter({
+  name: 'unique_logins_total',
+  help: 'Total number of unique logins over a 24h time period.',
+});
+
 export const avatarSubmissionsMetric = new PromMetricCounter({
   name: `custom_avatar_submissions_total`,
   help: `Total number of custom avatar submissions.`,
