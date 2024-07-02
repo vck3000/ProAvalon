@@ -40,35 +40,41 @@ export class PromAgent {
       process.exit(1);
     }
 
-    const response = await fetch(process.env.VM_IMPORT_PROMETHEUS_URL, {
-      method: 'POST',
-      body: metrics,
-      headers: {
-        'Content-Type': 'text/plain',
-      },
-    });
+    try {
+      const response = await fetch(process.env.VM_IMPORT_PROMETHEUS_URL, {
+        method: 'POST',
+        body: metrics,
+        headers: {
+          'Content-Type': 'text/plain',
+        },
+      });
 
-    if (!response.ok) {
-      const errMsg = `Failed to push metrics: status=${response.status} text=${response.statusText}`;
-      console.error(errMsg);
+      if (!response.ok) {
+        const errMsg = `Failed to push metrics: status=${response.status} text=${response.statusText}`;
+        console.error(errMsg);
 
-      // Alert Discord while errors are less than MAX_PUSH_METRICS_ERRORS
-      const now = Date.now();
-      this.pushMetricsErrorsTimestamps.push(now);
+        // Alert Discord while errors are less than MAX_PUSH_METRICS_ERRORS
+        const now = Date.now();
+        this.pushMetricsErrorsTimestamps.push(now);
 
-      while (this.pushMetricsErrorsTimestamps.length > 0) {
-        const timeDiff = now - this.pushMetricsErrorsTimestamps[0];
+        while (this.pushMetricsErrorsTimestamps.length > 0) {
+          const timeDiff = now - this.pushMetricsErrorsTimestamps[0];
 
-        if (timeDiff > FORGET_ERROR_TIME_THRESHOLD) {
-          this.pushMetricsErrorsTimestamps.unshift();
-        } else {
-          break;
+          if (timeDiff > FORGET_ERROR_TIME_THRESHOLD) {
+            this.pushMetricsErrorsTimestamps.unshift();
+          } else {
+            break;
+          }
+        }
+
+        if (
+          this.pushMetricsErrorsTimestamps.length <= MAX_PUSH_METRICS_ERRORS
+        ) {
+          sendToDiscordAdmins(errMsg);
         }
       }
-
-      if (this.pushMetricsErrorsTimestamps.length <= MAX_PUSH_METRICS_ERRORS) {
-        sendToDiscordAdmins(errMsg);
-      }
+    } catch (e) {
+      return;
     }
   }
 }
