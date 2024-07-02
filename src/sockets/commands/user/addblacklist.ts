@@ -37,8 +37,8 @@ export const addblacklist: Command = {
     }
 
     user.matchmakingBlacklist.push(usernameToBlacklist);
-    socket.request.user.markModified('matchmakingBlacklist');
-    await socket.request.user.save();
+    user.markModified('matchmakingBlacklist');
+    await user.save();
     sendReplyToCommand(
       socket,
       `Added ${usernameToBlacklist} to your blacklist.`,

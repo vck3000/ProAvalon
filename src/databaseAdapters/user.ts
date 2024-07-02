@@ -9,6 +9,8 @@ interface DatabaseAdapter {
     resLink: string,
     spyLink: string,
   ): Promise<void>;
+  muteUser(userCallingMute: IUser, usernameToMute: string): Promise<void>;
+  unmuteUser(userCallingUnmute: IUser, usernameToUnmute: string): Promise<void>;
   resetAvatar(username: string): Promise<void>;
   setAvatarAndUpdateLibrary(
     username: string,
@@ -23,6 +25,21 @@ class MongoUserAdapter implements DatabaseAdapter {
     return (await User.findOne({
       usernameLower: username.toLowerCase(),
     })) as IUser;
+  }
+
+  async muteUser(userCallingMute: IUser, usernameToMute: string) {
+    userCallingMute.mutedPlayers.push(usernameToMute.toLowerCase());
+    userCallingMute.markModified('mutedPlayers');
+    await userCallingMute.save();
+  }
+
+  async unmuteUser(userCallingUnmute: IUser, usernameToUnmute: string) {
+    userCallingUnmute.mutedPlayers = userCallingUnmute.mutedPlayers.filter(
+      (unmuteUsername) => unmuteUsername !== usernameToUnmute.toLowerCase(),
+    );
+
+    userCallingUnmute.markModified('mutedPlayers');
+    await userCallingUnmute.save();
   }
 
   // Does not update the user's avatar Library. Only used by mods or in avatar resets
