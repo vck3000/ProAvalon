@@ -2,7 +2,7 @@ import uuid from 'uuid';
 import ejs from 'ejs';
 import emailTemplateResetPassword from './emailTemplateResetPassword';
 import { sendEmail } from './sendEmail';
-import { passwordResetEmailMetric } from '../metrics/miscellaneousMetrics';
+import { passwordResetRequestsMetric } from '../metrics/miscellaneousMetrics';
 
 const TOKEN_TIMEOUT = 60 * 60 * 1000; // 1 hour
 
@@ -29,5 +29,5 @@ export const sendResetPassword = async (user: any, email: string) => {
 
   sendEmail(email, subject, message);
 
-  passwordResetEmailMetric.inc(1);
+  passwordResetRequestsMetric.inc(1);
 };

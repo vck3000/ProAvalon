@@ -45,7 +45,7 @@ import { TOCommandsImported } from './commands/tournamentOrganisers';
 import userAdapter from '../databaseAdapters/user';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
-const UNIQUE_LOGIN_TIMER = 24 * 60 * 60 * 1000; // 1 day
+const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -739,7 +739,7 @@ export const server = function (io: SocketServer): void {
 
     if (
       !user.lastLoggedInDateMetric ||
-      new Date() - user.lastLoggedInDateMetric > UNIQUE_LOGIN_TIMER
+      new Date() - user.lastLoggedInDateMetric > ONE_DAY_MILLIS
     ) {
       await userAdapter.updateLastLoggedInDateMetric(user.username, new Date());
       uniqueLoginsMetric.inc(1);
