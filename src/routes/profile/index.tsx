@@ -369,10 +369,12 @@ router.post(
     });
 
     if (decision) {
+      avatarSubmissionsMetric.inc(1, { status: 'approved' });
       console.log(
         `Custom avatar request approved: forUser="${avatarReq.forUsername}" byMod="${modWhoProcessed.username}" modComment="${modComment}" resLink="${avatarReq.resLink}" spyLink="${avatarReq.spyLink}"`,
       );
     } else {
+      avatarSubmissionsMetric.inc(1, { status: 'rejected' });
       console.log(
         `Custom avatar request rejected: forUser="${avatarReq.forUsername}" byMod="${modWhoProcessed.username}" modComment="${modComment}"`,
       );
@@ -489,7 +491,7 @@ router.post(
 
     await avatarRequest.create(avatarRequestData);
 
-    avatarSubmissionsMetric.inc(1);
+    avatarSubmissionsMetric.inc(1, { status: 'submitted' });
 
     res
       .status(200)
