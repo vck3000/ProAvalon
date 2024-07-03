@@ -42,7 +42,10 @@ import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
-import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
+import userAdapter from '../databaseAdapters/user';
+import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
+
+const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -56,14 +59,6 @@ if (process.env.NODE_ENV !== 'test') {
     chatSpamFilter.tick();
   }, 1000);
 }
-
-const onlinePlayersMetric = new PromMetricGauge({
-  name: `online_players_total`,
-  help: `Number of online players.`,
-  collect() {
-    this.set(allSockets.length);
-  },
-});
 
 const quote = new Quote();
 
@@ -739,6 +734,15 @@ export const server = function (io: SocketServer): void {
 
     socket.rewards = await getAllRewardsForUser(socket.request.user);
     socket = applyApplicableRewards(socket);
+
+    if (
+      !socket.request.user.lastLoggedInDateMetric ||
+      new Date() - socket.request.user.lastLoggedInDateMetric > ONE_DAY_MILLIS
+    ) {
+      socket.request.user.lastLoggedInDateMetric = new Date();
+      await socket.request.user.save();
+      uniqueLoginsMetric.inc(1);
+    }
   });
 };
 

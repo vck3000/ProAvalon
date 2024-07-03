@@ -57,6 +57,7 @@ services:
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: pass
+      GF_SERVER_ROOT_URL: http://localhost:5000
     user: "$UID:$GID"
     depends_on:
       - victoria-metrics

@@ -50,6 +50,7 @@ export interface IUser {
   pronoun?: string | null;
   dateJoined?: Date;
   lastLoggedIn?: Date[];
+  lastLoggedInDateMetric?: Date;
   totalTimePlayed?: Date | number;
   totalGamesPlayed?: number;
   totalRankedGamesPlayed?: number;
