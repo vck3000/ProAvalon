@@ -735,13 +735,12 @@ export const server = function (io: SocketServer): void {
     socket.rewards = await getAllRewardsForUser(socket.request.user);
     socket = applyApplicableRewards(socket);
 
-    const user = await userAdapter.getUser(socket.request.user.username);
-
     if (
-      !user.lastLoggedInDateMetric ||
-      new Date() - user.lastLoggedInDateMetric > ONE_DAY_MILLIS
+      !socket.request.user.lastLoggedInDateMetric ||
+      new Date() - socket.request.user.lastLoggedInDateMetric > ONE_DAY_MILLIS
     ) {
-      await userAdapter.updateLastLoggedInDateMetric(user.username, new Date());
+      socket.request.user.lastLoggedInDateMetric = new Date();
+      await socket.request.user.save();
       uniqueLoginsMetric.inc(1);
     }
   });
