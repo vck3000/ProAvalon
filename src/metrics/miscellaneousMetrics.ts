@@ -19,6 +19,9 @@ export const avatarSubmissionsMetric = new PromMetricCounter({
   name: `custom_avatar_submissions_total`,
   help: `Total number of custom avatars submitted/rejected/approved.`,
   labelNames: ['status'],
+  labelOptions: {
+    status: ['approved', 'rejected', 'submitted'],
+  },
 });
 
 export const passwordResetRequestsMetric = new PromMetricCounter({
