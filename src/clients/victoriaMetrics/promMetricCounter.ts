@@ -56,7 +56,7 @@ export class PromMetricCounter {
 
     if (invalidLabelNamesFromOptions.length > 0) {
       throw new Error(
-        `Error: labelNames cannot be used if undeclared: "${invalidLabelNamesFromOptions}".`,
+        `Error: Undeclared labelNames: "${invalidLabelNamesFromOptions}".`,
       );
     }
 
