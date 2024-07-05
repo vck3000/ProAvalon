@@ -15,7 +15,6 @@ export interface PromClientCounterConfig {
 }
 
 export class PromMetricCounter {
-  private readonly labelCombinations: Record<string, string>[];
   private readonly labelOptions: Record<string, Set<string>>;
   private counter: Counter;
 
@@ -44,17 +43,16 @@ export class PromMetricCounter {
       );
     }
 
-    if (counterConfig.labelOptions) {
-      this.labelCombinations = generateLabelCombinations(
-        counterConfig.labelOptions,
-      );
-    }
-
     this.labelOptions = counterConfig.labelOptions;
     this.counter = new promClient.Counter(promClientCounterConfig);
 
-    if (this.labelCombinations) {
-      this.labelCombinations.forEach((combination) => {
+    // Increment each labelCombination by 0 to initiate metric
+    if (counterConfig.labelOptions) {
+      const labelCombinations = generateLabelCombinations(
+        counterConfig.labelOptions,
+      );
+
+      labelCombinations.forEach((combination) => {
         this.counter.inc(combination, 0);
       });
     }
