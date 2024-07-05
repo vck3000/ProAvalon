@@ -1,11 +1,10 @@
 import promClient, { Counter } from 'prom-client';
 import { promAgent } from './promAgent';
-import { generateLabelCombinations } from './metricFunctions';
 
 export interface CounterConfig {
   name: string;
   help: string;
-  labelOptions?: Record<string, string[]>;
+  labelOptions?: Record<string, Set<string>>;
 }
 
 export interface PromClientCounterConfig {
@@ -29,7 +28,7 @@ export class PromMetricCounter {
     if (counterConfig.labelOptions) {
       const labelNames = Object.keys(counterConfig.labelOptions);
       const invalidLabelNames = labelNames.filter((labelName) => {
-        return counterConfig.labelOptions[labelName].length === 0;
+        return counterConfig.labelOptions[labelName].size === 0;
       });
 
       if (invalidLabelNames.length > 0) {
@@ -44,9 +43,10 @@ export class PromMetricCounter {
     }
 
     if (counterConfig.labelOptions) {
-      this.labelCombinations = generateLabelCombinations(
-        counterConfig.labelOptions,
-      );
+      // TODO-kev: Needs to be fixed
+      // this.labelCombinations = generateLabelCombinations(
+      //   counterConfig.labelOptions,
+      // );
     }
 
     this.counter = new promClient.Counter(promClientCounterConfig);
@@ -60,7 +60,7 @@ export class PromMetricCounter {
 
   public inc(num: number, labels?: Record<string, string>) {
     if (labels) {
-      // this.validateLabelCombination(labels);
+      this.validateLabelCombination(labels);
       this.counter.inc(labels, num);
     } else {
       this.counter.inc(num);
