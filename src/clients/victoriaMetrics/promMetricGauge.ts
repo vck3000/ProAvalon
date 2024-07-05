@@ -1,9 +1,6 @@
 import promClient, { Gauge } from 'prom-client';
 import { promAgent } from './promAgent';
-import {
-  generateLabelCombinations,
-  validateLabelNamesAndOptions,
-} from './metricFunctions';
+import { generateLabelCombinations } from './metricFunctions';
 
 interface GaugeConfig {
   name: string;
