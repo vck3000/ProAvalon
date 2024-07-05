@@ -26,6 +26,17 @@ export class PromMetricCounter {
     };
 
     if (counterConfig.labelOptions) {
+      const labelNames = Object.keys(counterConfig.labelOptions);
+      const invalidLabelNames = labelNames.filter((labelName) => {
+        return counterConfig.labelOptions[labelName].length === 0;
+      });
+
+      if (invalidLabelNames.length > 0) {
+        throw new Error(
+          `LabelOptions undefined for labelNames: "${invalidLabelNames}".`,
+        );
+      }
+
       config.labelNames = Object.keys(counterConfig.labelOptions);
     }
 
