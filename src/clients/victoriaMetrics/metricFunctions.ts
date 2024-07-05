@@ -24,13 +24,13 @@ export function validateLabelNamesAndOptions(
 }
 
 export function generateLabelCombinations(
-  labelOptions?: Record<string, string[]>,
+  labelOptions?: Record<string, Set<string>>,
 ): Record<string, string>[] {
-  let labelCombinations = [{}];
+  let labelCombinations: Record<string, string>[] = [{}];
 
   Object.keys(labelOptions).forEach((labelName) => {
     // Get current label options
-    const options = labelOptions[labelName];
+    const options = Array.from(labelOptions[labelName]);
 
     // Update combinations with new options
     labelCombinations = labelCombinations.flatMap((combination) =>

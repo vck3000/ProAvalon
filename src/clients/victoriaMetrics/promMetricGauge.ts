@@ -31,15 +31,16 @@ export class PromMetricGauge {
     }
 
     // Validate labelNames and labelOptions if both provided
-    if (gaugeConfig.labelNames && gaugeConfig.labelOptions) {
-      validateLabelNamesAndOptions(
-        gaugeConfig.labelNames,
-        gaugeConfig.labelOptions,
-      );
-      this.labelCombinations = generateLabelCombinations(
-        gaugeConfig.labelOptions,
-      );
-    }
+    // TODO-kev: Needs to be fixed
+    // if (gaugeConfig.labelNames && gaugeConfig.labelOptions) {
+    //   validateLabelNamesAndOptions(
+    //     gaugeConfig.labelNames,
+    //     gaugeConfig.labelOptions,
+    //   );
+    //   this.labelCombinations = generateLabelCombinations(
+    //     gaugeConfig.labelOptions,
+    //   );
+    // }
 
     this.gauge = new promClient.Gauge(gaugeConfig);
   }

@@ -1,5 +1,6 @@
 import promClient, { Counter } from 'prom-client';
 import { promAgent } from './promAgent';
+import { generateLabelCombinations } from './metricFunctions';
 
 export interface CounterConfig {
   name: string;
@@ -43,10 +44,9 @@ export class PromMetricCounter {
     }
 
     if (counterConfig.labelOptions) {
-      // TODO-kev: Needs to be fixed
-      // this.labelCombinations = generateLabelCombinations(
-      //   counterConfig.labelOptions,
-      // );
+      this.labelCombinations = generateLabelCombinations(
+        counterConfig.labelOptions,
+      );
     }
 
     this.counter = new promClient.Counter(promClientCounterConfig);
