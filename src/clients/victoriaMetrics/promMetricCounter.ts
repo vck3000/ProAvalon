@@ -1,15 +1,16 @@
 import promClient, { Counter } from 'prom-client';
 import { promAgent } from './promAgent';
-import {
-  generateLabelCombinations,
-  validateLabelNamesAndOptions,
-} from './metricFunctions';
 
 export interface CounterConfig {
   name: string;
   help: string;
-  labelNames?: string[];
   labelOptions?: Record<string, string[]>;
+}
+
+export interface PromClientCounterConfig {
+  name: string;
+  help: string;
+  labelNames?: string[];
 }
 
 export class PromMetricCounter {
@@ -19,26 +20,16 @@ export class PromMetricCounter {
   constructor(counterConfig: CounterConfig) {
     promAgent.registerMetric(counterConfig.name);
 
-    // Check either both or neither labelNames and labelOptions are declared
-    if (
-      (counterConfig.labelNames && !counterConfig.labelOptions) ||
-      (!counterConfig.labelNames && counterConfig.labelOptions)
-    ) {
-      throw new Error(
-        `Error: Counter Metric "${counterConfig.name}" must have both labelNames and labelOptions configured if either is declared.`,
-      );
+    const config: PromClientCounterConfig = {
+      name: counterConfig.name,
+      help: counterConfig.help,
+    };
+
+    if (counterConfig.labelOptions) {
+      config.labelNames = Object.keys(counterConfig.labelOptions);
     }
 
-    // Validate labelNames and labelOptions if both provided
-    if (counterConfig.labelNames && counterConfig.labelOptions) {
-      validateLabelNamesAndOptions(
-        counterConfig.labelNames,
-        counterConfig.labelOptions,
-      );
-      this.labelCombinations = generateLabelCombinations(
-        counterConfig.labelOptions,
-      );
-    }
+    console.log(config);
 
     this.counter = new promClient.Counter(counterConfig);
 
