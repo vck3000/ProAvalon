@@ -1,5 +1,6 @@
 import promClient, { Counter } from 'prom-client';
 import { promAgent } from './promAgent';
+import { generateLabelCombinations } from './metricFunctions';
 
 export interface CounterConfig {
   name: string;
@@ -20,7 +21,7 @@ export class PromMetricCounter {
   constructor(counterConfig: CounterConfig) {
     promAgent.registerMetric(counterConfig.name);
 
-    const config: PromClientCounterConfig = {
+    const promClientCounterConfig: PromClientCounterConfig = {
       name: counterConfig.name,
       help: counterConfig.help,
     };
@@ -37,12 +38,18 @@ export class PromMetricCounter {
         );
       }
 
-      config.labelNames = Object.keys(counterConfig.labelOptions);
+      promClientCounterConfig.labelNames = Object.keys(
+        counterConfig.labelOptions,
+      );
     }
 
-    console.log(config);
+    if (counterConfig.labelOptions) {
+      this.labelCombinations = generateLabelCombinations(
+        counterConfig.labelOptions,
+      );
+    }
 
-    this.counter = new promClient.Counter(counterConfig);
+    this.counter = new promClient.Counter(promClientCounterConfig);
 
     if (this.labelCombinations) {
       this.labelCombinations.forEach((combination) => {
@@ -53,7 +60,7 @@ export class PromMetricCounter {
 
   public inc(num: number, labels?: Record<string, string>) {
     if (labels) {
-      this.validateLabelCombination(labels);
+      // this.validateLabelCombination(labels);
       this.counter.inc(labels, num);
     } else {
       this.counter.inc(num);
