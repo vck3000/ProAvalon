@@ -16,6 +16,7 @@ export interface PromClientCounterConfig {
 
 export class PromMetricCounter {
   private readonly labelCombinations: Record<string, string>[];
+  private readonly labelOptions: Record<string, Set<string>>;
   private counter: Counter;
 
   constructor(counterConfig: CounterConfig) {
@@ -49,6 +50,7 @@ export class PromMetricCounter {
       );
     }
 
+    this.labelOptions = counterConfig.labelOptions;
     this.counter = new promClient.Counter(promClientCounterConfig);
 
     if (this.labelCombinations) {
@@ -60,26 +62,38 @@ export class PromMetricCounter {
 
   public inc(num: number, labels?: Record<string, string>) {
     if (labels) {
-      this.validateLabelCombination(labels);
+      if (!this.isValidLabelCombination(labels)) {
+        throw new Error(`Invalid labels provided: ${JSON.stringify(labels)}`);
+      }
       this.counter.inc(labels, num);
     } else {
       this.counter.inc(num);
     }
   }
 
-  private validateLabelCombination(labelCombination: Record<string, string>) {
-    const result = this.labelCombinations.some((item) => {
-      return Object.keys(labelCombination).every(
-        (key) => item[key] === labelCombination[key],
-      );
-    });
-
-    if (!result) {
-      throw new Error(
-        `Invalid labelCombination provided: "${JSON.stringify(
-          labelCombination,
-        )}".`,
-      );
+  private isValidLabelCombination(
+    labelCombination: Record<string, string>,
+  ): boolean {
+    // Key size does not match
+    if (
+      Object.keys(labelCombination).length !==
+      Object.keys(this.labelOptions).length
+    ) {
+      return false;
     }
+
+    for (const labelName in labelCombination) {
+      // label name is not in config
+      if (!this.labelOptions[labelName]) {
+        return false;
+      }
+
+      // Option not present under the label name
+      if (!this.labelOptions[labelName].has(labelCombination[labelName])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
