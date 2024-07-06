@@ -49,8 +49,8 @@ export class PromMetricGauge {
         labelNames: Object.keys(gaugeConfig.labelOptions),
         collect: gaugeConfig.collect,
       });
-    }
 
-    this.gauge = new promClient.Gauge(gaugeConfig);
+      this.gauge = new promClient.Gauge(gaugeConfig);
+    }
   }
 }

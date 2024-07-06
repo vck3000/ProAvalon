@@ -9,8 +9,6 @@ import {
 // Create mocks for promAgent and promClient.Counter
 promAgent.registerMetric = jest.fn();
 
-const incMock = jest.fn();
-
 jest.mock('prom-client', () => ({
   Gauge: jest.fn().mockImplementation(),
 }));
