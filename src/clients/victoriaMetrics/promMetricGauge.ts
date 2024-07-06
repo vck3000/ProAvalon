@@ -1,14 +1,14 @@
 import promClient, { Gauge } from 'prom-client';
 import { promAgent } from './promAgent';
 
-interface GaugeConfig {
+export interface GaugeConfig {
   name: string;
   help: string;
   labelOptions?: Record<string, Set<string>>;
   collect?: () => void; // Refer to prom-client docs on how this should be used.
 }
 
-interface PromClientGaugeConfig {
+export interface PromClientGaugeConfig {
   name: string;
   help: string;
   labelNames?: string[];
