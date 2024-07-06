@@ -71,6 +71,7 @@ export class PromMetricCounter {
     }
   }
 
+  // Valid label combinations have a corresponding value for each label name
   private isValidLabelCombination(
     labelCombination: Record<string, string>,
   ): boolean {
@@ -84,7 +85,7 @@ export class PromMetricCounter {
 
     for (const labelName in labelCombination) {
       // label name is not in config
-      if (!this.labelOptions[labelName]) {
+      if (!(labelName in this.labelOptions)) {
         return false;
       }
 
