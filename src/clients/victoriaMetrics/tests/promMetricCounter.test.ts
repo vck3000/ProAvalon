@@ -109,4 +109,58 @@ describe('PromMetricCounter', () => {
       });
     });
   });
+
+  describe('Increment', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should increment metrics.', () => {
+      const testMetric = new PromMetricCounter({
+        name: 'test_counter',
+        help: 'A test counter.',
+      });
+
+      testMetric.inc(2);
+
+      expect(incMock).toHaveBeenCalledWith(2);
+
+      const testMetric2 = new PromMetricCounter({
+        name: 'test_counter2',
+        help: 'A test counter.',
+        labelOptions: {
+          status: new Set(['yes', 'no']),
+        },
+      });
+
+      testMetric2.inc(2, { status: 'yes' });
+      testMetric2.inc(2, { status: 'no' });
+
+      expect(incMock).toHaveBeenCalledWith({ status: 'yes' }, 2);
+      expect(incMock).toHaveBeenCalledWith({ status: 'no' }, 2);
+    });
+
+    it('should not increment invalid metrics.', () => {
+      const testMetric = new PromMetricCounter({
+        name: 'test_counter',
+        help: 'A test counter.',
+        labelOptions: {
+          status: new Set(['yes', 'no']),
+          color: new Set(['red', 'white']),
+        },
+      });
+
+      // Labels are not used yet they were declared
+      expect(() => testMetric.inc(2)).toThrow();
+
+      // Not all label names are used
+      expect(() => testMetric.inc(2, { status: 'yes' })).toThrow();
+
+      // Label name not declared
+      expect(() => testMetric.inc(2, { fake_label: 'yes' })).toThrow();
+
+      // Incorrect label option used
+      expect(() => testMetric.inc(2, { status: 'fake_status' })).toThrow();
+    });
+  });
 });

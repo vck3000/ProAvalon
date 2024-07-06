@@ -61,6 +61,10 @@ export class PromMetricCounter {
   }
 
   public inc(num: number, labels?: Record<string, string>) {
+    if (this.labelOptions && !labels) {
+      throw new Error('Labels were not provided.');
+    }
+
     if (labels) {
       if (!this.isValidLabelCombination(labels)) {
         throw new Error(`Invalid labels provided: ${JSON.stringify(labels)}`);
