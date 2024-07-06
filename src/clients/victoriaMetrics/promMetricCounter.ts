@@ -27,6 +27,10 @@ export class PromMetricCounter {
     };
 
     if (counterConfig.labelOptions) {
+      if (Object.keys(counterConfig.labelOptions).length === 0) {
+        throw new Error('LabelOptions are declared but undefined.');
+      }
+
       for (const labelName in counterConfig.labelOptions) {
         if (counterConfig.labelOptions[labelName].size === 0) {
           throw new Error(
