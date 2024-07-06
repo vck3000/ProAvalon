@@ -26,7 +26,9 @@ export class PromMetricCounter {
       help: counterConfig.help,
     };
 
-    if (counterConfig.labelOptions) {
+    if (!counterConfig.labelOptions) {
+      this.counter = new promClient.Counter(promClientCounterConfig);
+    } else {
       if (Object.keys(counterConfig.labelOptions).length === 0) {
         throw new Error('LabelOptions are declared but undefined.');
       }
@@ -34,7 +36,7 @@ export class PromMetricCounter {
       for (const labelName in counterConfig.labelOptions) {
         if (counterConfig.labelOptions[labelName].size === 0) {
           throw new Error(
-            `LabelOptions undefined for labelName: "${labelName}".`,
+            `LabelOptions are undefined for labelName: "${labelName}".`,
           );
         }
       }
@@ -42,13 +44,12 @@ export class PromMetricCounter {
       promClientCounterConfig.labelNames = Object.keys(
         counterConfig.labelOptions,
       );
-    }
 
-    this.labelOptions = counterConfig.labelOptions;
-    this.counter = new promClient.Counter(promClientCounterConfig);
+      // Initialise counter metric
+      this.labelOptions = counterConfig.labelOptions;
+      this.counter = new promClient.Counter(promClientCounterConfig);
 
-    // Increment each labelCombination by 0 to initiate metric
-    if (counterConfig.labelOptions) {
+      // Increment each labelCombination by 0 to initiate metric
       const labelCombinations = generateLabelCombinations(
         counterConfig.labelOptions,
       );
