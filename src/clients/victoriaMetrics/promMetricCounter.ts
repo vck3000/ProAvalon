@@ -21,13 +21,11 @@ export class PromMetricCounter {
   constructor(counterConfig: CounterConfig) {
     promAgent.registerMetric(counterConfig.name);
 
-    const promClientCounterConfig: PromClientCounterConfig = {
-      name: counterConfig.name,
-      help: counterConfig.help,
-    };
-
     if (!counterConfig.labelOptions) {
-      this.counter = new promClient.Counter(promClientCounterConfig);
+      this.counter = new promClient.Counter({
+        name: counterConfig.name,
+        help: counterConfig.help,
+      });
     } else {
       if (Object.keys(counterConfig.labelOptions).length === 0) {
         throw new Error('LabelOptions are declared but undefined.');
@@ -41,22 +39,20 @@ export class PromMetricCounter {
         }
       }
 
-      promClientCounterConfig.labelNames = Object.keys(
-        counterConfig.labelOptions,
-      );
-
       // Initialise counter metric
       this.labelOptions = counterConfig.labelOptions;
-      this.counter = new promClient.Counter(promClientCounterConfig);
+      this.counter = new promClient.Counter({
+        name: counterConfig.name,
+        help: counterConfig.help,
+        labelNames: Object.keys(counterConfig.labelOptions),
+      });
 
       // Increment each labelCombination by 0 to initiate metric
-      const labelCombinations = generateLabelCombinations(
-        counterConfig.labelOptions,
+      generateLabelCombinations(counterConfig.labelOptions).forEach(
+        (combination) => {
+          this.counter.inc(combination, 0);
+        },
       );
-
-      labelCombinations.forEach((combination) => {
-        this.counter.inc(combination, 0);
-      });
     }
   }
 
