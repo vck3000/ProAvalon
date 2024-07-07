@@ -1,10 +1,6 @@
-import { Counter } from 'prom-client';
+import { Counter, CounterConfiguration } from 'prom-client';
 import { promAgent } from '../promAgent';
-import {
-  CounterConfig,
-  PromClientCounterConfig,
-  PromMetricCounter,
-} from '../promMetricCounter';
+import { CounterConfig, PromMetricCounter } from '../promMetricCounter';
 
 promAgent.registerMetric = jest.fn();
 const incMock = jest.fn();
@@ -27,7 +23,7 @@ describe('PromMetricCounter', () => {
         help: 'A test counter.',
       });
 
-      const expectedConfig1: PromClientCounterConfig = {
+      const expectedConfig1: CounterConfiguration<string> = {
         name: 'test_counter1',
         help: 'A test counter.',
       };
@@ -44,7 +40,7 @@ describe('PromMetricCounter', () => {
         },
       });
 
-      const expectedConfig2: PromClientCounterConfig = {
+      const expectedConfig2: CounterConfiguration<string> = {
         name: 'test_counter2',
         help: 'A test counter.',
         labelNames: ['status', 'colour'],
@@ -84,7 +80,7 @@ describe('PromMetricCounter', () => {
         },
       });
 
-      const expectedConfig: PromClientCounterConfig = {
+      const expectedConfig: CounterConfiguration<string> = {
         name: 'test_counter',
         help: 'A test counter.',
         labelNames: ['status', 'colour'],

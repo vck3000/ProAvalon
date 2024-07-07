@@ -8,12 +8,6 @@ export interface CounterConfig {
   labelOptions?: Record<string, Set<string>>;
 }
 
-export interface PromClientCounterConfig {
-  name: string;
-  help: string;
-  labelNames?: string[];
-}
-
 export class PromMetricCounter {
   private readonly labelOptions: Record<string, Set<string>>;
   private counter: Counter;
