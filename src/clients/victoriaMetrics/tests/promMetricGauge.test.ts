@@ -26,6 +26,7 @@ describe('PromMetric Gauge', () => {
         help: 'A test gauge.',
       });
 
+      const mockCollectFn = jest.fn();
       new PromMetricGauge({
         name: 'test_gauge2',
         help: 'A test gauge.',
@@ -33,9 +34,7 @@ describe('PromMetric Gauge', () => {
           status: new Set(['finished', 'voided']),
           colour: new Set(['black', 'white']),
         },
-        collect() {
-          this.set(1);
-        },
+        collect: mockCollectFn,
       });
 
       expect(promAgent.registerMetric).toHaveBeenCalledWith('test_gauge2');
@@ -43,9 +42,7 @@ describe('PromMetric Gauge', () => {
         name: 'test_gauge2',
         help: 'A test gauge.',
         labelNames: ['status', 'colour'],
-        collect() {
-          this.set(1);
-        },
+        collect: mockCollectFn,
       });
     });
 

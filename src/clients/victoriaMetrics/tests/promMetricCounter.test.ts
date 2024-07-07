@@ -1,4 +1,4 @@
-import { Counter, CounterConfiguration } from 'prom-client';
+import { Counter } from 'prom-client';
 import { promAgent } from '../promAgent';
 import { CounterConfig, PromMetricCounter } from '../promMetricCounter';
 
