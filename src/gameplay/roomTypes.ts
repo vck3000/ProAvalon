@@ -13,15 +13,3 @@ export function roomCreationTypeStrToMetricLabel(str: string) {
       throw new Error(`Unknown RoomCreationType: ${str}`);
   }
 }
-
-export function strToRoomCreationType(typeString: string): RoomCreationType {
-  switch (typeString) {
-    case RoomCreationType.QUEUE:
-      return RoomCreationType.QUEUE;
-    case RoomCreationType.CUSTOM_ROOM:
-      return RoomCreationType.CUSTOM_ROOM;
-    default:
-      console.warn(`Invalid roomCreationType string. Got ${typeString}`);
-      return RoomCreationType.CUSTOM_ROOM;
-  }
-}
