@@ -530,7 +530,6 @@ class Game extends Room {
     this.pickNum = 1;
     this.missionHistory = [];
 
-    console.log(this.ranked);
     let str = '';
     if (this.ranked === true) {
       str = 'This game is ranked.';
