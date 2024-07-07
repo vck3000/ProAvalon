@@ -3,6 +3,17 @@ export enum RoomCreationType {
   CUSTOM_ROOM = 'CUSTOM_ROOM',
 }
 
+export function roomCreationTypeStrToMetricLabel(str: string) {
+  switch (str) {
+    case RoomCreationType.QUEUE:
+      return 'matchmaking';
+    case RoomCreationType.CUSTOM_ROOM:
+      return 'custom';
+    default:
+      throw new Error(`Unknown RoomCreationType: ${str}`);
+  }
+}
+
 export function strToRoomCreationType(typeString: string): RoomCreationType {
   switch (typeString) {
     case RoomCreationType.QUEUE:

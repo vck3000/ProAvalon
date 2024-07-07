@@ -11,7 +11,10 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
-import { RoomCreationType } from './roomTypes';
+import {
+  RoomCreationType,
+  roomCreationTypeStrToMetricLabel,
+} from './roomTypes';
 import { Phase } from './phases/types';
 import {
   Alliance,
@@ -1255,7 +1258,11 @@ class Game extends Room {
     }
 
     // From this point on, no more game moves can be made. Game is finished.
-    gamesPlayedMetric.inc(1, { status: 'finished' });
+    console.log(this.roomCreationType);
+    gamesPlayedMetric.inc(1, {
+      status: 'finished',
+      type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
+    });
 
     // Clean up from here.
     for (let i = 0; i < this.allSockets.length; i++) {
@@ -2077,7 +2084,10 @@ class Game extends Room {
     }
 
     if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
-      gamesPlayedMetric.inc(1, { status: 'voided' });
+      gamesPlayedMetric.inc(1, {
+        status: 'voided',
+        type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
+      });
 
       this.changePhase(Phase.Voided);
       this.sendText(`Game has been voided.`, 'server-text');
