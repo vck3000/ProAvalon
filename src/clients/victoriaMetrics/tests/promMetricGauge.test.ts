@@ -1,8 +1,7 @@
-import { Gauge, GaugeConfiguration } from 'prom-client';
+import { Gauge } from 'prom-client';
 import { promAgent } from '../promAgent';
 import { GaugeConfig, PromMetricGauge } from '../promMetricGauge';
 
-// Create mocks for promAgent and promClient.Counter
 promAgent.registerMetric = jest.fn();
 
 jest.mock('prom-client', () => ({
@@ -21,13 +20,11 @@ describe('PromMetric Gauge', () => {
         help: 'A test gauge.',
       });
 
-      const expectedConfig1: GaugeConfiguration<string> = {
+      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_gauge1');
+      expect(Gauge).toHaveBeenCalledWith({
         name: 'test_gauge1',
         help: 'A test gauge.',
-      };
-
-      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_gauge1');
-      expect(Gauge).toHaveBeenCalledWith(expectedConfig1);
+      });
 
       new PromMetricGauge({
         name: 'test_gauge2',
@@ -41,17 +38,15 @@ describe('PromMetric Gauge', () => {
         },
       });
 
-      const expectedConfig2: GaugeConfiguration<string> = {
+      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_gauge2');
+      expect(Gauge).toHaveBeenCalledWith({
         name: 'test_gauge2',
         help: 'A test gauge.',
         labelNames: ['status', 'colour'],
         collect() {
           this.set(1);
         },
-      };
-
-      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_gauge2');
-      expect(Gauge).toHaveBeenCalledWith(expectedConfig2);
+      });
     });
 
     it('should throw an error for empty labelOptions.', () => {
