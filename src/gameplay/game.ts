@@ -1261,7 +1261,7 @@ class Game extends Room {
     console.log(this.roomCreationType);
     gamesPlayedMetric.inc(1, {
       status: 'finished',
-      type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
+      game_type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
     });
 
     // Clean up from here.
@@ -2086,7 +2086,7 @@ class Game extends Room {
     if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
       gamesPlayedMetric.inc(1, {
         status: 'voided',
-        type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
+        game_type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
       });
 
       this.changePhase(Phase.Voided);
