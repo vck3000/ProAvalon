@@ -6,14 +6,12 @@ import {
   PromMetricCounter,
 } from '../promMetricCounter';
 
-// Create mocks for promAgent and promClient.Counter
 promAgent.registerMetric = jest.fn();
-
 const incMock = jest.fn();
 
 jest.mock('prom-client', () => ({
   Counter: jest.fn().mockImplementation(() => ({
-    inc: incMock, // Mock the inc method
+    inc: incMock,
   })),
 }));
 
@@ -53,7 +51,7 @@ describe('PromMetricCounter', () => {
       };
 
       expect(promAgent.registerMetric).toHaveBeenCalledWith('test_counter2');
-      expect(Counter).toHaveBeenCalledWith(expectedConfig1);
+      expect(Counter).toHaveBeenCalledWith(expectedConfig2);
     });
 
     it('should throw an error for empty labelOptions.', () => {
