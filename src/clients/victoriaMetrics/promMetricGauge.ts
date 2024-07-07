@@ -8,13 +8,6 @@ export interface GaugeConfig {
   collect?: () => void; // Refer to prom-client docs on how this should be used.
 }
 
-export interface PromClientGaugeConfig {
-  name: string;
-  help: string;
-  labelNames?: string[];
-  collect?: () => void;
-}
-
 export class PromMetricGauge {
   private readonly labelOptions: Record<string, Set<string>>;
   private gauge: Gauge;

@@ -1,10 +1,6 @@
-import { Gauge } from 'prom-client';
+import { Gauge, GaugeConfiguration } from 'prom-client';
 import { promAgent } from '../promAgent';
-import {
-  GaugeConfig,
-  PromClientGaugeConfig,
-  PromMetricGauge,
-} from '../promMetricGauge';
+import { GaugeConfig, PromMetricGauge } from '../promMetricGauge';
 
 // Create mocks for promAgent and promClient.Counter
 promAgent.registerMetric = jest.fn();
@@ -25,7 +21,7 @@ describe('PromMetric Gauge', () => {
         help: 'A test gauge.',
       });
 
-      const expectedConfig1: PromClientGaugeConfig = {
+      const expectedConfig1: GaugeConfiguration<string> = {
         name: 'test_gauge1',
         help: 'A test gauge.',
       };
@@ -45,7 +41,7 @@ describe('PromMetric Gauge', () => {
         },
       });
 
-      const expectedConfig2: PromClientGaugeConfig = {
+      const expectedConfig2: GaugeConfiguration<string> = {
         name: 'test_gauge2',
         help: 'A test gauge.',
         labelNames: ['status', 'colour'],
@@ -55,7 +51,7 @@ describe('PromMetric Gauge', () => {
       };
 
       expect(promAgent.registerMetric).toHaveBeenCalledWith('test_gauge2');
-      expect(Gauge).toHaveBeenCalledWith(expectedConfig1);
+      expect(Gauge).toHaveBeenCalledWith(expectedConfig2);
     });
 
     it('should throw an error for empty labelOptions.', () => {
