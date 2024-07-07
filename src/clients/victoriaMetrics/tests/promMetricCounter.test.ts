@@ -23,13 +23,11 @@ describe('PromMetricCounter', () => {
         help: 'A test counter.',
       });
 
-      const expectedConfig1: CounterConfiguration<string> = {
+      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_counter1');
+      expect(Counter).toHaveBeenCalledWith({
         name: 'test_counter1',
         help: 'A test counter.',
-      };
-
-      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_counter1');
-      expect(Counter).toHaveBeenCalledWith(expectedConfig1);
+      });
 
       new PromMetricCounter({
         name: 'test_counter2',
@@ -40,14 +38,12 @@ describe('PromMetricCounter', () => {
         },
       });
 
-      const expectedConfig2: CounterConfiguration<string> = {
+      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_counter2');
+      expect(Counter).toHaveBeenCalledWith({
         name: 'test_counter2',
         help: 'A test counter.',
         labelNames: ['status', 'colour'],
-      };
-
-      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_counter2');
-      expect(Counter).toHaveBeenCalledWith(expectedConfig2);
+      });
     });
 
     it('should throw an error for empty labelOptions.', () => {
@@ -80,14 +76,12 @@ describe('PromMetricCounter', () => {
         },
       });
 
-      const expectedConfig: CounterConfiguration<string> = {
+      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_counter');
+      expect(Counter).toHaveBeenCalledWith({
         name: 'test_counter',
         help: 'A test counter.',
         labelNames: ['status', 'colour'],
-      };
-
-      expect(promAgent.registerMetric).toHaveBeenCalledWith('test_counter');
-      expect(Counter).toHaveBeenCalledWith(expectedConfig);
+      });
 
       const labelCombinations = [
         { status: 'finished', colour: 'black' },
