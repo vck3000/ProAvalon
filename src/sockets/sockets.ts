@@ -42,7 +42,6 @@ import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
-import userAdapter from '../databaseAdapters/user';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
 const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
@@ -1444,7 +1443,7 @@ function newRoom(dataObj) {
       roomConfig,
       dataObj.muteSpectators,
       dataObj.disableVoteHistory,
-      RoomCreationType.CUSTOM_ROOM,
+      privateRoom ? RoomCreationType.PRIVATE : RoomCreationType.CUSTOM_ROOM,
       () => new Date(),
     );
 
