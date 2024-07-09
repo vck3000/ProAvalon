@@ -1,3 +1,7 @@
+const GaugeMock = jest.fn().mockImplementation(() => ({
+  set: setMock,
+}));
+
 import { Gauge } from 'prom-client';
 import { promAgent } from '../promAgent';
 import { GaugeConfig, PromMetricGauge } from '../promMetricGauge';
@@ -6,9 +10,7 @@ promAgent.registerMetric = jest.fn();
 const setMock = jest.fn();
 
 jest.mock('prom-client', () => ({
-  Gauge: jest.fn().mockImplementation(() => ({
-    set: setMock,
-  })),
+  Gauge: GaugeMock,
 }));
 
 describe('PromMetric Gauge', () => {
@@ -29,7 +31,10 @@ describe('PromMetric Gauge', () => {
         help: 'A test gauge.',
       });
 
-      const mockCollectFn = jest.fn();
+      function mockCollectFn() {
+        this.set(123, { status: 'finished', colour: 'black' });
+      };
+
       new PromMetricGauge({
         name: 'test_gauge2',
         help: 'A test gauge.',
@@ -41,12 +46,16 @@ describe('PromMetric Gauge', () => {
       });
 
       expect(promAgent.registerMetric).toHaveBeenCalledWith('test_gauge2');
-      expect(Gauge).toHaveBeenCalledWith({
+      expect(GaugeMock).toHaveBeenCalledWith({
         name: 'test_gauge2',
         help: 'A test gauge.',
         labelNames: ['status', 'colour'],
-        collect: expect.any(Function), // TODO-kev: Temp fix
+        collect: expect.any(Function),
       });
+
+      expect(setMock).not.toHaveBeenCalled();
+      GaugeMock.mock.calls[1][0].collect();
+      expect(setMock).toHaveBeenCalledWith({ status: 'finished', colour: 'black' }, 123);
     });
 
     it('should throw an error for empty labelOptions.', () => {
