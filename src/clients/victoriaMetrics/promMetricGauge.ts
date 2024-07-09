@@ -19,7 +19,7 @@ export class PromMetricGauge {
       this.gauge = new promClient.Gauge({
         name: gaugeConfig.name,
         help: gaugeConfig.help,
-        collect: gaugeConfig.collect,
+        collect: gaugeConfig.collect.bind(this),
       });
     } else {
       if (Object.keys(gaugeConfig.labelOptions).length === 0) {
@@ -40,10 +40,50 @@ export class PromMetricGauge {
         name: gaugeConfig.name,
         help: gaugeConfig.help,
         labelNames: Object.keys(gaugeConfig.labelOptions),
-        collect: gaugeConfig.collect,
+        collect: gaugeConfig.collect.bind(this),
       });
-
-      this.gauge = new promClient.Gauge(gaugeConfig);
     }
+  }
+
+  public set(num: number, labels?: Record<string, string>) {
+    if (this.labelOptions && !labels) {
+      throw new Error('Labels were not provided.');
+    }
+
+    if (labels) {
+      if (!this.isValidLabelCombination(labels)) {
+        throw new Error(`Invalid labels provided: ${JSON.stringify(labels)}`);
+      }
+      this.gauge.set(labels, num);
+    } else {
+      this.gauge.set(num);
+    }
+  }
+
+  // Valid label combinations have a corresponding value for each label name
+  private isValidLabelCombination(
+    labelCombination: Record<string, string>,
+  ): boolean {
+    // Key size does not match
+    if (
+      Object.keys(labelCombination).length !==
+      Object.keys(this.labelOptions).length
+    ) {
+      return false;
+    }
+
+    for (const labelName in labelCombination) {
+      // label name is not in config
+      if (!(labelName in this.labelOptions)) {
+        return false;
+      }
+
+      // Option not present under the label name
+      if (!this.labelOptions[labelName].has(labelCombination[labelName])) {
+        return false;
+      }
+    }
+
+    return true;
   }
 }
