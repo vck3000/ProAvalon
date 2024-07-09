@@ -1,4 +1,7 @@
-import { generateLabelCombinations } from '../metricFunctions';
+import {
+  generateLabelCombinations,
+  isValidLabelCombination,
+} from '../metricFunctions';
 
 describe('MetricFunctions', () => {
   describe('Generate label combinations', () => {
@@ -49,6 +52,42 @@ describe('MetricFunctions', () => {
       ];
 
       expect(generateLabelCombinations(labelOptions)).toEqual(expectedResult);
+    });
+  });
+
+  describe('Validate label combinations', () => {
+    it('returns true for valid label combinations', () => {
+      const labelOptions = {
+        status: new Set(['yes', 'no']),
+        color: new Set(['red', 'white']),
+      };
+
+      // Not all label names are used
+      expect(
+        isValidLabelCombination(labelOptions, { status: 'yes', color: 'red' }),
+      ).toEqual(true);
+    });
+
+    it('returns false for invalid label combinations', () => {
+      const labelOptions = {
+        status: new Set(['yes', 'no']),
+        color: new Set(['red', 'white']),
+      };
+
+      // Not all label names are used
+      expect(isValidLabelCombination(labelOptions, { status: 'yes' })).toEqual(
+        false,
+      );
+
+      // Label name not declared
+      expect(
+        isValidLabelCombination(labelOptions, { fake_label: 'yes' }),
+      ).toEqual(false);
+
+      // Incorrect label option used
+      expect(
+        isValidLabelCombination(labelOptions, { status: 'fake_status' }),
+      ).toEqual(false);
     });
   });
 });
