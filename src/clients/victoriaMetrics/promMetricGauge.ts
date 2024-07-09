@@ -19,7 +19,9 @@ export class PromMetricGauge {
       this.gauge = new promClient.Gauge({
         name: gaugeConfig.name,
         help: gaugeConfig.help,
-        collect: gaugeConfig.collect.bind(this),
+        collect: gaugeConfig.collect
+          ? gaugeConfig.collect.bind(this)
+          : undefined,
       });
     } else {
       if (Object.keys(gaugeConfig.labelOptions).length === 0) {
@@ -40,7 +42,9 @@ export class PromMetricGauge {
         name: gaugeConfig.name,
         help: gaugeConfig.help,
         labelNames: Object.keys(gaugeConfig.labelOptions),
-        collect: gaugeConfig.collect.bind(this),
+        collect: gaugeConfig.collect
+          ? gaugeConfig.collect.bind(this)
+          : undefined,
       });
     }
   }
