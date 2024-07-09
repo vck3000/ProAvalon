@@ -1,6 +1,9 @@
 import promClient, { Counter } from 'prom-client';
 import { promAgent } from './promAgent';
-import { generateLabelCombinations } from './metricFunctions';
+import {
+  generateLabelCombinations,
+  isValidLabelCombination,
+} from './metricFunctions';
 
 export interface CounterConfig {
   name: string;
@@ -56,39 +59,12 @@ export class PromMetricCounter {
     }
 
     if (labels) {
-      if (!this.isValidLabelCombination(labels)) {
+      if (!isValidLabelCombination(this.labelOptions, labels)) {
         throw new Error(`Invalid labels provided: ${JSON.stringify(labels)}`);
       }
       this.counter.inc(labels, num);
     } else {
       this.counter.inc(num);
     }
-  }
-
-  // Valid label combinations have a corresponding value for each label name
-  private isValidLabelCombination(
-    labelCombination: Record<string, string>,
-  ): boolean {
-    // Key size does not match
-    if (
-      Object.keys(labelCombination).length !==
-      Object.keys(this.labelOptions).length
-    ) {
-      return false;
-    }
-
-    for (const labelName in labelCombination) {
-      // label name is not in config
-      if (!(labelName in this.labelOptions)) {
-        return false;
-      }
-
-      // Option not present under the label name
-      if (!this.labelOptions[labelName].has(labelCombination[labelName])) {
-        return false;
-      }
-    }
-
-    return true;
   }
 }
