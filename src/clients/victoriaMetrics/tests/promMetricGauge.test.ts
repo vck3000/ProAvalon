@@ -3,9 +3,12 @@ import { promAgent } from '../promAgent';
 import { GaugeConfig, PromMetricGauge } from '../promMetricGauge';
 
 promAgent.registerMetric = jest.fn();
+const setMock = jest.fn();
 
 jest.mock('prom-client', () => ({
-  Gauge: jest.fn().mockImplementation(),
+  Gauge: jest.fn().mockImplementation(() => ({
+    set: setMock,
+  })),
 }));
 
 describe('PromMetric Gauge', () => {
@@ -64,6 +67,51 @@ describe('PromMetric Gauge', () => {
       };
 
       expect(() => new PromMetricGauge(gaugeConfig)).toThrow();
+    });
+  });
+
+  describe('Set', () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('should set valid metrics.', () => {
+      const testMetric = new PromMetricGauge({
+        name: 'test_gauge1',
+        help: 'A test gauge.',
+      });
+
+      testMetric.set(2);
+
+      expect(setMock).toHaveBeenCalledWith(2);
+
+      const testMetric2 = new PromMetricGauge({
+        name: 'test_gauge2',
+        help: 'A test gauge.',
+        labelOptions: {
+          status: new Set(['yes', 'no']),
+        },
+      });
+
+      testMetric2.set(2, { status: 'yes' });
+      testMetric2.set(2, { status: 'no' });
+
+      expect(setMock).toHaveBeenCalledWith({ status: 'yes' }, 2);
+      expect(setMock).toHaveBeenCalledWith({ status: 'no' }, 2);
+    });
+
+    it('should not set invalid metrics.', () => {
+      const testMetric = new PromMetricGauge({
+        name: 'test_gauge',
+        help: 'A test gauge.',
+        labelOptions: {
+          status: new Set(['yes', 'no']),
+          color: new Set(['red', 'white']),
+        },
+      });
+
+      // Labels are not used yet they were declared
+      expect(() => testMetric.set(2)).toThrow();
     });
   });
 });
