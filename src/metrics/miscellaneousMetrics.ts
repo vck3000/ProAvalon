@@ -5,8 +5,14 @@ import { PromMetricCounter } from '../clients/victoriaMetrics/promMetricCounter'
 const onlinePlayersMetric = new PromMetricGauge({
   name: `online_players_total`,
   help: `Number of online players.`,
+  labelOptions: {
+    status: new Set(['approved', 'rejected', 'submitted']),
+  },
   collect() {
-    this.set(numOnlinePlayers());
+    const randInt = Math.floor(Math.random() * 10 + 1);
+    console.log(randInt);
+    this.set(randInt, { status: 'test' });
+    // this.set(numOnlinePlayers());
   },
 });
 
