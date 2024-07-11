@@ -1,4 +1,4 @@
-import { numOnlinePlayers } from '../sockets/sockets';
+import { getNumOnlinePlayers } from '../sockets/sockets';
 import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
 import { PromMetricCounter } from '../clients/victoriaMetrics/promMetricCounter';
 
@@ -9,10 +9,7 @@ const onlinePlayersMetric = new PromMetricGauge({
     status: new Set(['approved', 'rejected', 'submitted']),
   },
   collect() {
-    const randInt = Math.floor(Math.random() * 10 + 1);
-    console.log(randInt);
-    this.set(randInt, { status: 'test' });
-    // this.set(numOnlinePlayers());
+    this.set(getNumOnlinePlayers());
   },
 });
 

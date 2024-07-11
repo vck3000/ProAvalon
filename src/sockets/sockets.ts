@@ -1982,6 +1982,6 @@ function getUsernameForAnon(requestUser): string {
   return username;
 }
 
-export function numOnlinePlayers() {
+export function getNumOnlinePlayers() {
   return allSockets.length;
 }
