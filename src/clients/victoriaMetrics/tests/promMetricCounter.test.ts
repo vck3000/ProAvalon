@@ -129,8 +129,6 @@ describe('PromMetricCounter', () => {
     });
 
     it('should not increment invalid metrics.', () => {
-      // TODO-kev: These tests are somewhat covered in metricFunctions. What to do about overlap?
-
       const testMetric = new PromMetricCounter({
         name: 'test_counter',
         help: 'A test counter.',

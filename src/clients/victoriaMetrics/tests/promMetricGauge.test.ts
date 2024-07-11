@@ -1,3 +1,4 @@
+const setMock = jest.fn();
 const GaugeMock = jest.fn().mockImplementation(() => ({
   set: setMock,
 }));
@@ -7,7 +8,6 @@ import { promAgent } from '../promAgent';
 import { GaugeConfig, PromMetricGauge } from '../promMetricGauge';
 
 promAgent.registerMetric = jest.fn();
-const setMock = jest.fn();
 
 jest.mock('prom-client', () => ({
   Gauge: GaugeMock,
@@ -33,7 +33,7 @@ describe('PromMetric Gauge', () => {
 
       function mockCollectFn() {
         this.set(123, { status: 'finished', colour: 'black' });
-      };
+      }
 
       new PromMetricGauge({
         name: 'test_gauge2',
@@ -54,8 +54,13 @@ describe('PromMetric Gauge', () => {
       });
 
       expect(setMock).not.toHaveBeenCalled();
+
       GaugeMock.mock.calls[1][0].collect();
-      expect(setMock).toHaveBeenCalledWith({ status: 'finished', colour: 'black' }, 123);
+
+      expect(setMock).toHaveBeenCalledWith(
+        { status: 'finished', colour: 'black' },
+        123,
+      );
     });
 
     it('should throw an error for empty labelOptions.', () => {
@@ -121,6 +126,15 @@ describe('PromMetric Gauge', () => {
 
       // Labels are not used yet they were declared
       expect(() => testMetric.set(2)).toThrow();
+
+      // Labels are not used yet they were declared
+      expect(() => testMetric.set(2)).toThrow();
+
+      // Not all label names are used
+      expect(() => testMetric.set(2, { status: 'yes' })).toThrow();
+
+      // Label name not declared
+      expect(() => testMetric.set(2, { fake_label: 'yes' })).toThrow();
     });
   });
 });
