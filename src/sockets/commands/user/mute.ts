@@ -22,12 +22,10 @@ export const mute: Command = {
       return;
     }
 
-    // TODO-kev: Do all users have mutedPlayers array?
-    // if (!userCallingMute.mutedPlayers) {
-    //   userCallingMute.mutedPlayers = [];
-    // }
-
-    if (userCallingMute.mutedPlayers.includes(usernameToMuteLower)) {
+    if (
+      userCallingMute.mutedPlayers &&
+      userCallingMute.mutedPlayers.includes(usernameToMuteLower)
+    ) {
       sendReplyToCommand(
         socket,
         `You have already muted ${usernameToMuteLower}.`,
