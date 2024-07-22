@@ -1981,3 +1981,7 @@ function getUsernameForAnon(requestUser): string {
 
   return username;
 }
+
+export function getNumOnlinePlayers() {
+  return allSockets.length;
+}

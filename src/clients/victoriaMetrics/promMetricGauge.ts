@@ -1,4 +1,5 @@
 import promClient, { Gauge } from 'prom-client';
+import { isValidLabelCombination } from './metricFunctions';
 import { promAgent } from './promAgent';
 
 export interface GaugeConfig {
@@ -6,13 +7,6 @@ export interface GaugeConfig {
   help: string;
   labelOptions?: Record<string, Set<string>>;
   collect?: () => void; // Refer to prom-client docs on how this should be used.
-}
-
-export interface PromClientGaugeConfig {
-  name: string;
-  help: string;
-  labelNames?: string[];
-  collect?: () => void;
 }
 
 export class PromMetricGauge {
@@ -26,7 +20,9 @@ export class PromMetricGauge {
       this.gauge = new promClient.Gauge({
         name: gaugeConfig.name,
         help: gaugeConfig.help,
-        collect: gaugeConfig.collect,
+        collect: gaugeConfig.collect
+          ? gaugeConfig.collect.bind(this)
+          : undefined,
       });
     } else {
       if (Object.keys(gaugeConfig.labelOptions).length === 0) {
@@ -47,10 +43,25 @@ export class PromMetricGauge {
         name: gaugeConfig.name,
         help: gaugeConfig.help,
         labelNames: Object.keys(gaugeConfig.labelOptions),
-        collect: gaugeConfig.collect,
+        collect: gaugeConfig.collect
+          ? gaugeConfig.collect.bind(this)
+          : undefined,
       });
+    }
+  }
 
-      this.gauge = new promClient.Gauge(gaugeConfig);
+  public set(num: number, labels?: Record<string, string>) {
+    if (this.labelOptions && !labels) {
+      throw new Error('Labels were not provided.');
+    }
+
+    if (labels) {
+      if (!isValidLabelCombination(this.labelOptions, labels)) {
+        throw new Error(`Invalid labels provided: ${JSON.stringify(labels)}`);
+      }
+      this.gauge.set(labels, num);
+    } else {
+      this.gauge.set(num);
     }
   }
 }

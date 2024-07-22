@@ -1,4 +1,4 @@
-import { allSockets } from '../sockets/sockets';
+import { getNumOnlinePlayers } from '../sockets/sockets';
 import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
 import { PromMetricCounter } from '../clients/victoriaMetrics/promMetricCounter';
 
@@ -6,7 +6,7 @@ const onlinePlayersMetric = new PromMetricGauge({
   name: `online_players_total`,
   help: `Number of online players.`,
   collect() {
-    this.set(allSockets.length);
+    this.set(getNumOnlinePlayers());
   },
 });
 
