@@ -4,15 +4,28 @@ export enum RoomCreationType {
   PRIVATE = 'PRIVATE_ROOM',
 }
 
-export function roomCreationTypeStrToMetricLabel(str: string) {
-  switch (str) {
-    case RoomCreationType.QUEUE:
-      return 'matchmaking';
-    case RoomCreationType.CUSTOM_ROOM:
-      return 'custom';
-    case RoomCreationType.PRIVATE:
-      return 'private';
-    default:
-      throw new Error(`Unknown RoomCreationType: ${str}`);
+export enum RoomCreationMetricType {
+  QUEUE = 'matchmaking',
+  CUSTOM_ROOM = 'custom',
+  PRIVATE = 'private',
+}
+
+const roomCreationMapping: {
+  [key in RoomCreationType]: RoomCreationMetricType;
+} = {
+  [RoomCreationType.QUEUE]: RoomCreationMetricType.QUEUE,
+  [RoomCreationType.CUSTOM_ROOM]: RoomCreationMetricType.CUSTOM_ROOM,
+  [RoomCreationType.PRIVATE]: RoomCreationMetricType.PRIVATE,
+};
+
+export function getRoomCreationMetricType(
+  type: RoomCreationType,
+): RoomCreationMetricType {
+  const metricType = roomCreationMapping[type];
+
+  if (!metricType) {
+    throw new Error(`Invalid RoomCreationType: ${type}`);
   }
+
+  return roomCreationMapping[type];
 }

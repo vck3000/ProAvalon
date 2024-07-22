@@ -11,10 +11,7 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
-import {
-  RoomCreationType,
-  roomCreationTypeStrToMetricLabel,
-} from './roomTypes';
+import { getRoomCreationMetricType, RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
 import {
   Alliance,
@@ -1257,10 +1254,9 @@ class Game extends Room {
     }
 
     // From this point on, no more game moves can be made. Game is finished.
-    console.log(this.roomCreationType);
     gamesPlayedMetric.inc(1, {
       status: 'finished',
-      game_type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
+      room_creation_type: getRoomCreationMetricType(this.roomCreationType),
     });
 
     // Clean up from here.
@@ -2085,7 +2081,7 @@ class Game extends Room {
     if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
       gamesPlayedMetric.inc(1, {
         status: 'voided',
-        game_type: roomCreationTypeStrToMetricLabel(this.roomCreationType),
+        room_creation_type: getRoomCreationMetricType(this.roomCreationType),
       });
 
       this.changePhase(Phase.Voided);
