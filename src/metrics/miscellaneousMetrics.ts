@@ -1,4 +1,4 @@
-import { allSockets } from '../sockets/sockets';
+import { getNumOnlinePlayers } from '../sockets/sockets';
 import { PromMetricGauge } from '../clients/victoriaMetrics/promMetricGauge';
 import { PromMetricCounter } from '../clients/victoriaMetrics/promMetricCounter';
 
@@ -6,7 +6,7 @@ const onlinePlayersMetric = new PromMetricGauge({
   name: `online_players_total`,
   help: `Number of online players.`,
   collect() {
-    this.set(allSockets.length);
+    this.set(getNumOnlinePlayers());
   },
 });
 
@@ -18,7 +18,9 @@ export const uniqueLoginsMetric = new PromMetricCounter({
 export const avatarSubmissionsMetric = new PromMetricCounter({
   name: `custom_avatar_submissions_total`,
   help: `Total number of custom avatars submitted/rejected/approved.`,
-  labelNames: ['status'],
+  labelOptions: {
+    status: new Set(['approved', 'rejected', 'submitted']),
+  },
 });
 
 export const passwordResetRequestsMetric = new PromMetricCounter({

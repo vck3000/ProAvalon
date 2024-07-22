@@ -25,11 +25,6 @@ export const r: Command = {
         getIndexFromUsername(allSockets, targetModUsernameLower, true)
       ];
 
-    // TODO-kev: Why? is it not covered further below?
-    // if (targetModSocket === undefined || targetModSocket === null) {
-    //   return;
-    // }
-
     if (!targetModSocket) {
       sendReplyToCommand(socket, `${targetModUsernameLower} has disconnected.`);
       return;

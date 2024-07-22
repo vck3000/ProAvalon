@@ -1,39 +1,70 @@
 import promClient, { Counter } from 'prom-client';
 import { promAgent } from './promAgent';
+import {
+  generateLabelCombinations,
+  isValidLabelCombination,
+} from './metricFunctions';
 
-interface CounterConfig {
+export interface CounterConfig {
   name: string;
   help: string;
-  labelNames?: string[];
+  labelOptions?: Record<string, Set<string>>;
 }
 
 export class PromMetricCounter {
+  private readonly labelOptions: Record<string, Set<string>>;
   private counter: Counter;
-  private labelNames: string[];
 
   constructor(counterConfig: CounterConfig) {
     promAgent.registerMetric(counterConfig.name);
 
-    this.counter = new promClient.Counter(counterConfig);
-    this.labelNames = counterConfig.labelNames;
-  }
-
-  public inc(num: number, labels?: Record<string, string>) {
-    if (labels) {
-      this.validateLabels(labels);
-      this.counter.inc(labels, num);
+    if (!counterConfig.labelOptions) {
+      this.counter = new promClient.Counter({
+        name: counterConfig.name,
+        help: counterConfig.help,
+      });
     } else {
-      this.counter.inc(num);
+      if (Object.keys(counterConfig.labelOptions).length === 0) {
+        throw new Error('LabelOptions are declared but undefined.');
+      }
+
+      for (const labelName in counterConfig.labelOptions) {
+        if (counterConfig.labelOptions[labelName].size === 0) {
+          throw new Error(
+            `LabelOptions are undefined for labelName: "${labelName}".`,
+          );
+        }
+      }
+
+      // Initialise counter metric
+      this.labelOptions = counterConfig.labelOptions;
+      this.counter = new promClient.Counter({
+        name: counterConfig.name,
+        help: counterConfig.help,
+        labelNames: Object.keys(counterConfig.labelOptions),
+      });
+
+      // Increment each labelCombination by 0 to initiate metric
+      generateLabelCombinations(counterConfig.labelOptions).forEach(
+        (combination) => {
+          this.counter.inc(combination, 0);
+        },
+      );
     }
   }
 
-  private validateLabels(labels: Record<string, string>) {
-    const invalidLabels = Object.keys(labels).filter(
-      (label) => !this.labelNames.includes(label),
-    );
+  public inc(num: number, labels?: Record<string, string>) {
+    if (this.labelOptions && !labels) {
+      throw new Error('Labels were not provided.');
+    }
 
-    if (invalidLabels.length > 0) {
-      throw new Error(`Invalid labels provided: ${invalidLabels.join(', ')}.`);
+    if (labels) {
+      if (!isValidLabelCombination(this.labelOptions, labels)) {
+        throw new Error(`Invalid labels provided: ${JSON.stringify(labels)}`);
+      }
+      this.counter.inc(labels, num);
+    } else {
+      this.counter.inc(num);
     }
   }
 }

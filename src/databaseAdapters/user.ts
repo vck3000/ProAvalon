@@ -28,6 +28,10 @@ class MongoUserAdapter implements DatabaseAdapter {
   }
 
   async muteUser(userCallingMute: IUser, usernameToMute: string) {
+    if (!userCallingMute.mutedPlayers) {
+      userCallingMute.mutedPlayers = [];
+    }
+
     userCallingMute.mutedPlayers.push(usernameToMute.toLowerCase());
     userCallingMute.markModified('mutedPlayers');
     await userCallingMute.save();

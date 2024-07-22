@@ -42,7 +42,6 @@ import { Role } from '../gameplay/roles/types';
 import { Phase } from '../gameplay/phases/types';
 import { Card } from '../gameplay/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
-import userAdapter from '../databaseAdapters/user';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
 const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
@@ -1981,4 +1980,8 @@ function getUsernameForAnon(requestUser): string {
   }
 
   return username;
+}
+
+export function getNumOnlinePlayers() {
+  return allSockets.length;
 }
