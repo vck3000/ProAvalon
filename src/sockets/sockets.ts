@@ -1443,7 +1443,7 @@ function newRoom(dataObj) {
       roomConfig,
       dataObj.muteSpectators,
       dataObj.disableVoteHistory,
-      RoomCreationType.CUSTOM_ROOM,
+      privateRoom ? RoomCreationType.PRIVATE : RoomCreationType.CUSTOM_ROOM,
       () => new Date(),
     );
 
