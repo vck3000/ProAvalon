@@ -14,7 +14,6 @@ export interface CounterConfig {
 export class PromMetricCounter {
   private readonly labelOptions: Record<string, Set<string>>;
   private counter: Counter;
-  private labelNames: string[];
 
   constructor(counterConfig: CounterConfig) {
     promAgent.registerMetric(counterConfig.name);
