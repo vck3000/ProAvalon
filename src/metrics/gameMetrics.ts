@@ -22,5 +22,9 @@ export function getGameMetricRoomType(game: Game): GameMetricRoomType {
     return GameMetricRoomType.MATCHMAKING;
   } else if (game.joinPassword) {
     return GameMetricRoomType.PRIVATE;
-  } else return GameMetricRoomType.PUBLIC;
+  } else if (!game.joinPassword) {
+    return GameMetricRoomType.PUBLIC;
+  } else {
+    throw new Error('Undefined game room type.');
+  }
 }
