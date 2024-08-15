@@ -32,7 +32,11 @@ import { millisToStr } from '../util/time';
 import shuffleArray from '../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../sockets/sockets';
-import { gamesPlayedMetric } from '../metrics/gameMetrics';
+import {
+  gamesPlayedMetric,
+  getGameMetricRoomType,
+  getGameType,
+} from '../metrics/gameMetrics';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -2081,7 +2085,7 @@ class Game extends Room {
     if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
       gamesPlayedMetric.inc(1, {
         status: 'voided',
-        room_creation_type: getRoomCreationMetricType(this.roomCreationType),
+        room_type: getGameMetricRoomType(this.roomCreationType),
       });
 
       this.changePhase(Phase.Voided);
