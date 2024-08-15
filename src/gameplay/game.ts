@@ -35,7 +35,6 @@ import { sendReplyToCommand } from '../sockets/sockets';
 import {
   gamesPlayedMetric,
   getGameMetricRoomType,
-  getGameType,
 } from '../metrics/gameMetrics';
 
 export const WAITING = 'Waiting';
@@ -1260,7 +1259,7 @@ class Game extends Room {
     // From this point on, no more game moves can be made. Game is finished.
     gamesPlayedMetric.inc(1, {
       status: 'finished',
-      room_creation_type: getRoomCreationMetricType(this.roomCreationType),
+      room_type: getGameMetricRoomType(this),
     });
 
     // Clean up from here.
@@ -2085,7 +2084,7 @@ class Game extends Room {
     if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
       gamesPlayedMetric.inc(1, {
         status: 'voided',
-        room_type: getGameMetricRoomType(this.roomCreationType),
+        room_type: getGameMetricRoomType(this),
       });
 
       this.changePhase(Phase.Voided);
