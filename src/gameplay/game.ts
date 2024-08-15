@@ -11,7 +11,7 @@ import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { modOrTOString } from '../modsadmins/modOrTO';
 
-import { getRoomCreationMetricType, RoomCreationType } from './roomTypes';
+import { RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
 import {
   Alliance,

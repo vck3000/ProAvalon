@@ -5,6 +5,6 @@ export const gamesPlayedMetric = new PromMetricCounter({
   help: 'Total number of games played.',
   labelOptions: {
     status: new Set(['finished', 'voided']),
-    room_creation_type: new Set(['matchmaking', 'custom', 'private']),
+    room_creation_type: new Set(['matchmaking', 'public', 'private']),
   },
 });
