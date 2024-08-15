@@ -2,7 +2,7 @@ import { PromMetricCounter } from '../clients/victoriaMetrics/promMetricCounter'
 import Game from '../gameplay/game';
 import { RoomCreationType } from '../gameplay/roomTypes';
 
-enum GameRoomType {
+enum GameMetricRoomType {
   MATCHMAKING = 'matchmaking',
   PUBLIC = 'public',
   PRIVATE = 'private',
@@ -13,14 +13,14 @@ export const gamesPlayedMetric = new PromMetricCounter({
   help: 'Total number of games played.',
   labelOptions: {
     status: new Set(['finished', 'voided']),
-    room_type: new Set(Object.values(GameRoomType)),
+    room_type: new Set(Object.values(GameMetricRoomType)),
   },
 });
 
-export function getGameMetricRoomType(game: Game) {
+export function getGameMetricRoomType(game: Game): GameMetricRoomType {
   if (game.roomCreationType == RoomCreationType.QUEUE) {
-    return GameRoomType.MATCHMAKING;
+    return GameMetricRoomType.MATCHMAKING;
   } else if (game.joinPassword) {
-    return GameRoomType.PRIVATE;
-  } else return GameRoomType.PUBLIC;
+    return GameMetricRoomType.PRIVATE;
+  } else return GameMetricRoomType.PUBLIC;
 }
