@@ -496,14 +496,6 @@ export const userCommandsOLD = {
         });
     },
   },
-
-  gm: {
-    command: 'gm',
-    help: '/gm <playername>: Shortcut for /guessmerlin',
-    run(args: string[], senderSocket) {
-      return userCommands.guessmerlin.run(args, senderSocket);
-    },
-  },
 };
 
 export const userCommands = { ...userCommandsImported, ...userCommandsOLD };

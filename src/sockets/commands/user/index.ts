@@ -16,6 +16,7 @@ import { mods } from './mods';
 import { pmmod } from './pmmod';
 import { r } from './r';
 import { guessmerlin } from './guessmerlin';
+import { gm } from './gm';
 
 export const userCommandsImported: Commands = {
   [help.command]: help,
@@ -35,4 +36,5 @@ export const userCommandsImported: Commands = {
   [unmute.command]: unmute,
   [muted.command]: muted,
   [guessmerlin.command]: guessmerlin,
+  [gm.command]: gm,
 };
