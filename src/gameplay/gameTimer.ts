@@ -119,7 +119,6 @@ export class GameTimer {
       timerDuration = this.timeoutSettings.assassination;
     } else if (this.game.critMission) {
       timerDuration = this.timeoutSettings.critMission;
-      console.log('THIS HIT');
     } else {
       timerDuration = this.timeoutSettings.default;
     }
