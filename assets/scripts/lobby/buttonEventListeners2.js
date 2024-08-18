@@ -70,7 +70,8 @@ function greenButtonFunction() {
         gameMode: $($('.gameModeSelect')[1]).val(),
         timeouts: {
           default: ((parseInt($('#startGameOptionsDefaultPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsDefaultPhaseTimeoutSec').val())) * 1000).toString(),
-          assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString()
+          assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString(),
+          critMission: ((parseInt($('#startGameOptionsCritMissionTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsCritMissionTimeoutSec').val())) * 1000).toString()
         },
         anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
       };
@@ -242,6 +243,14 @@ $('#startGameOptionsAssassinationPhaseTimeoutMin').on('change', () => {
 
 $('#startGameOptionsAssassinationPhaseTimeoutSec').on('change', () => {
   handleTimeoutInput('#startGameOptionsAssassinationPhaseTimeoutSec');
+});
+
+$('#startGameOptionsCritMissionTimeoutMin').on('change', () => {
+  handleTimeoutInput('#startGameOptionsCritMissionTimeoutMin');
+});
+
+$('#startGameOptionsCritMissionTimeoutSec').on('change', () => {
+  handleTimeoutInput('#startGameOptionsCritMissionTimeoutSec');
 });
 
 function handleTimeoutInput(inputId) {

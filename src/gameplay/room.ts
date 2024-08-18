@@ -643,6 +643,9 @@ class Room {
     rolesInStr += `<br>Assassination timeout: ${millisToStr(
       timeouts.assassination,
     )}`;
+    rolesInStr += `<br>Critical Mission timeout: ${millisToStr(
+      timeouts.critMission,
+    )}`;
     rolesInStr += `<br>Anonymous mode: ${anonymousMode}`;
 
     this.sendText('The game is starting!', 'gameplay-text');

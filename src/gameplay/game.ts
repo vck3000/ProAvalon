@@ -550,11 +550,13 @@ class Game extends Room {
     this.sendText(str, 'gameplay-text');
 
     const timeouts = this.gameTimer.getTimeouts();
-    if (timeouts.assassination || timeouts.default) {
+    if (timeouts.assassination || timeouts.default || timeouts.critMission) {
       this.sendText(
         `Timeouts: Default = ${millisToStr(
           timeouts.default,
-        )}, Assassination = ${millisToStr(timeouts.assassination)}`,
+        )}, Assassination = ${millisToStr(
+          timeouts.assassination,
+        )}, Critical Mission = ${millisToStr(timeouts.critMission)}`,
         'gameplay-text',
       );
     }

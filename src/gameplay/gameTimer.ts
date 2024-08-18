@@ -11,6 +11,7 @@ export interface Timeouts {
   // All in milliseconds
   default: number;
   assassination: number;
+  critMission: number;
 }
 
 export class GameTimer {
@@ -22,6 +23,7 @@ export class GameTimer {
   private timeoutSettings: Timeouts = {
     default: 0,
     assassination: 0,
+    critMission: 0,
   };
 
   private playersVotedPause: Set<string> = new Set();
