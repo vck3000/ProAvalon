@@ -113,10 +113,16 @@ export class GameTimer {
     // Kinda sad to have direct knowledge of the phase here
     // but not much we can do. We don't want the timeout settings
     // in game.ts
-    let timerDuration =
-      this.game.phase === Phase.Assassination
-        ? this.timeoutSettings.assassination
-        : this.timeoutSettings.default;
+    let timerDuration;
+
+    if (this.game.phase === Phase.Assassination) {
+      timerDuration = this.timeoutSettings.assassination;
+    } else if (this.game.critMission) {
+      timerDuration = this.timeoutSettings.critMission;
+      console.log('THIS HIT');
+    } else {
+      timerDuration = this.timeoutSettings.default;
+    }
 
     // Timeout not enabled
     if (timerDuration === 0) {

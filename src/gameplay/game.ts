@@ -97,6 +97,7 @@ class Game extends Room {
   // Game misc variables
   winner: Alliance = '';
   requireSave = false;
+  critMission = false;
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
