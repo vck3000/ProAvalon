@@ -38,6 +38,11 @@ export class GameTimer {
   }
 
   configureTimeouts(timeouts: Timeouts): void {
+    // Set crit mission timer to default if unset.
+    if (timeouts.critMission == 0) {
+      timeouts.critMission = timeouts.default;
+    }
+
     this.timeoutSettings = timeouts;
   }
 
