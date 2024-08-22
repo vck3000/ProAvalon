@@ -555,9 +555,9 @@ class Game extends Room {
       this.sendText(
         `Timeouts: Default = ${millisToStr(
           timeouts.default,
-        )}, Assassination = ${millisToStr(
-          timeouts.assassination,
-        )}, Critical Mission = ${millisToStr(timeouts.critMission)}`,
+        )}, Critical Mission = ${millisToStr(
+          timeouts.critMission,
+        )}, Assassination = ${millisToStr(timeouts.assassination)}`,
         'gameplay-text',
       );
     }
