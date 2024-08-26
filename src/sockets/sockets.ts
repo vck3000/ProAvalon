@@ -723,6 +723,14 @@ export const server = function (io: SocketServer): void {
         socket.emit('allChatToClient', msg4);
       }
 
+      // TODO-kev: Remove below announcement on 8th Sep 2024
+      socket.emit('allChatToClient', {
+        message:
+          'The 8 Player Avalon Tournament Signup is now open! Register here: https://forms.gle/ghHgHhUhN2WYDKYEA',
+        classStr: 'server-text-teal',
+        dateCreated: new Date(),
+      });
+
       updateCurrentPlayersList(io);
       updateCurrentGamesList(io);
 
