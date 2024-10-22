@@ -63,6 +63,7 @@ export class GameConfig {
   roomConfig: RoomConfig;
   muteSpectators = false;
   disableVoteHistory = false;
+  enableSinadMode = false;
   roomCreationType: RoomCreationType;
   getTimeFunc: () => Date;
 
@@ -70,12 +71,14 @@ export class GameConfig {
     roomConfig: RoomConfig,
     muteSpectators: boolean,
     disableVoteHistory: boolean,
+    enableSinadMode: boolean,
     roomCreationType: RoomCreationType,
     getTimeFunc: () => Date,
   ) {
     this.roomConfig = roomConfig;
     this.muteSpectators = muteSpectators;
     this.disableVoteHistory = disableVoteHistory;
+    this.enableSinadMode = enableSinadMode;
     this.roomCreationType = roomCreationType;
     this.getTimeFunc = getTimeFunc;
   }
@@ -133,9 +136,10 @@ class Game extends Room {
     // Expand config
     this.muteSpectators = gameConfig.muteSpectators;
     this.disableVoteHistory = gameConfig.disableVoteHistory;
+    this.enableSinadMode = gameConfig.enableSinadMode;
     this.roomCreationType = gameConfig.roomCreationType;
     this.getTimeFunc = gameConfig.getTimeFunc;
-
+    console.log("Inside Game's constructor. the value of enableSinadMode is:", this.enableSinadMode);
     this.phaseBeforePause = '';
     this.playerUsernamesInGame = [];
 
@@ -578,6 +582,10 @@ class Game extends Room {
 
     if (this.disableVoteHistory) {
       this.sendText('The game has vote history disabled.', 'gameplay-text');
+    }
+    console.log('Yo. Btw, the value of enableSinadMode is:', this.enableSinadMode);
+    if (this.enableSinadMode) {
+      this.sendText('The game has Sinad Mode enabled.', 'gameplay-text');
     }
 
     if (this.anonymousMode) {
@@ -2190,6 +2198,16 @@ class Game extends Room {
     }
   }
 
+  updateEnableSinadMode(enableSinadMode: boolean) {
+    if (this.gameStarted === false) {
+      this.enableSinadMode = enableSinadMode;
+
+      this.sendText(
+        `Enable Sinad Mode option set to ${enableSinadMode}.`,
+        'server-text',
+      );
+    }
+  }
   /*
   ELO RATING CALCULATION:
 
