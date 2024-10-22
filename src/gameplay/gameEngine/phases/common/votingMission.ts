@@ -3,6 +3,8 @@ import { ButtonSettings, IPhase, Phase } from '../types';
 import { Alliance } from '../../types';
 import { SocketUser } from '../../../../sockets/types';
 import { Role } from '../../roles/types';
+import { GameMode } from '../../gameModes';
+import { MIN_PLAYERS } from '../../game';
 
 class VotingMission implements IPhase {
   static phase = Phase.VotingMission;
@@ -170,6 +172,9 @@ class VotingMission implements IPhase {
             1 +
             this.thisRoom.playersInGame.length) %
           this.thisRoom.playersInGame.length;
+
+        
+        this.updateMissionSizesForSinad();
         this.thisRoom.changePhase(Phase.PickingTeam);
       }
       this.thisRoom.requireSave = true;
@@ -290,6 +295,61 @@ class VotingMission implements IPhase {
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     return [];
+  }
+
+  updateMissionSizesForSinad(): void {
+    // in 6p avalon, if m1 and m2 both succeed and m3 is a dani's pick (i.e. m3!=m2+1)
+    // then the sizes of m4 and m5 are swapped, requiring 4 ppl and 3 ppl respectively. 
+
+    if(!this.thisRoom.enableSinadMode)
+    {
+      return;
+    }
+    if(this.thisRoom.playersInGame.length !== 6 && this.thisRoom.gameMode !== GameMode.AVALON)
+    {
+      return; //not tested for other gamemodes. 
+    }
+
+    const VH = this.thisRoom.voteHistory; //for brevity
+
+    const setOfPlayersOnM2 = new Set<string>();
+    const setOfPlayersOnM3 = new Set<string>();
+
+
+    if( 
+      //m1 m2 pass, m3 failed, and we're at m4.1
+      this.thisRoom.missionHistory &&
+      this.thisRoom.missionHistory.length === 3 && 
+      this.thisRoom.missionHistory[0] === 'succeeded' &&
+      this.thisRoom.missionHistory[1] === 'succeeded' &&
+      this.thisRoom.missionHistory[2] === 'failed' &&
+      this.thisRoom.missionNum === 4 &&
+      this.thisRoom.pickNum === 1
+    ) { 
+      for (const player in VH) {
+        if (VH.hasOwnProperty(player)) {
+            
+          const playerVH = VH[player];
+          const playerM2 = playerVH[1][playerVH[1].length -1];
+          const playerM3 = playerVH[2][playerVH[2].length -1];
+
+          if (typeof playerM2 === 'string' && playerM2.includes("VHpicked")) {
+            setOfPlayersOnM2.add(player);
+          }
+          if (typeof playerM3 === 'string' && playerM3.includes("VHpicked")) {
+            setOfPlayersOnM3.add(player);
+          }
+        }
+      }
+
+      let isM2ASubsetOfM3: boolean = [...setOfPlayersOnM2].every(player => setOfPlayersOnM3.has(player));
+   
+      if(!isM2ASubsetOfM3) {
+        this.thisRoom.NUM_PLAYERS_ON_MISSION[6-MIN_PLAYERS] = [2,3,4,4,3];
+        let announcingSinadMode: string = "The mission sizes of Mission 4 and Mission 5 have been swapped!";
+        this.thisRoom.sendText(announcingSinadMode,'gameplay-text');
+      }  
+    }
   }
 }
 

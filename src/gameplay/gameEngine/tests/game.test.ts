@@ -1,4 +1,4 @@
-import Game, { GameConfig, NUM_PLAYERS_ON_MISSION } from '../game';
+import Game, { GameConfig } from '../game';
 import { RoomConfig } from '../room';
 import { GameMode } from '../gameModes';
 import { ReadyPrompt } from '../../../sockets/readyPrompt';
@@ -127,7 +127,7 @@ describe('Game Engine', () => {
     // Picking team
     expect(game.phase).toEqual(Phase.PickingTeam);
 
-    const numOfPlayers = NUM_PLAYERS_ON_MISSION[1][game.missionNum - 1];
+    const numOfPlayers = game.NUM_PLAYERS_ON_MISSION[1][game.missionNum - 1];
     const usernamesToPick = [];
 
     // Need to add a spy to fail if not success

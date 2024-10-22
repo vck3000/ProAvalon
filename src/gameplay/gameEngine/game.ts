@@ -50,14 +50,6 @@ const ALLIANCES = [
   Alliance.Spy,
 ];
 
-export const NUM_PLAYERS_ON_MISSION = [
-  [2, 3, 2, 3, 3],
-  [2, 3, 4, 3, 4],
-  [2, 3, 3, 4, 4],
-  [3, 4, 4, 5, 5],
-  [3, 4, 4, 5, 5],
-  [3, 4, 4, 5, 5],
-];
 
 export class GameConfig {
   roomConfig: RoomConfig;
@@ -96,6 +88,15 @@ class Game extends Room {
   missionNum = 0;
   pickNum = 0;
   roomCreationType: RoomCreationType;
+
+  const NUM_PLAYERS_ON_MISSION = [
+    [2, 3, 2, 3, 3],
+    [2, 3, 4, 3, 4],
+    [2, 3, 3, 4, 4],
+    [3, 4, 4, 5, 5],
+    [3, 4, 4, 5, 5],
+    [3, 4, 4, 5, 5],
+  ];
 
   // Game misc variables
   winner: Alliance = '';
@@ -139,7 +140,6 @@ class Game extends Room {
     this.enableSinadMode = gameConfig.enableSinadMode;
     this.roomCreationType = gameConfig.roomCreationType;
     this.getTimeFunc = gameConfig.getTimeFunc;
-    console.log("Inside Game's constructor. the value of enableSinadMode is:", this.enableSinadMode);
     this.phaseBeforePause = '';
     this.playerUsernamesInGame = [];
 
@@ -583,7 +583,6 @@ class Game extends Room {
     if (this.disableVoteHistory) {
       this.sendText('The game has vote history disabled.', 'gameplay-text');
     }
-    console.log('Yo. Btw, the value of enableSinadMode is:', this.enableSinadMode);
     if (this.enableSinadMode) {
       this.sendText('The game has Sinad Mode enabled.', 'gameplay-text');
     }
@@ -1097,7 +1096,7 @@ class Game extends Room {
         data[i].proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
         data[i].numPlayersOnMission =
-          NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+          this.NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
@@ -1182,7 +1181,7 @@ class Game extends Room {
     data.proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
     data.numPlayersOnMission =
-      NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+      this.NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
