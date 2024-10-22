@@ -599,6 +599,7 @@ class Room {
     gameMode: string,
     timeouts: Timeouts,
     anonymousMode: boolean,
+    enableSinadMode: boolean,
   ) {
     if (this.gameStarted === true) {
       return false;
@@ -644,6 +645,8 @@ class Room {
       timeouts.assassination,
     )}`;
     rolesInStr += `<br>Anonymous mode: ${anonymousMode}`;
+    rolesInStr += `<br>Sinad Mode: ${enableSinadMode}`;
+
 
     this.sendText('The game is starting!', 'gameplay-text');
 

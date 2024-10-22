@@ -51,6 +51,7 @@ describe('Game Engine', () => {
       roomConfig,
       false,
       false,
+      false,
       RoomCreationType.CUSTOM_ROOM,
       jest.fn(),
     );
