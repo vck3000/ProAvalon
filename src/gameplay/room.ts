@@ -619,6 +619,19 @@ class Room {
       return false;
     }
 
+    // Prevents sinad mode in non-6p rooms.
+    // Temporary solution:
+    // TODO: should be integrated with the above checkOptions function.
+    if (this.socketsOfPlayers.length !=6 
+      && this.enableSinadMode
+    ) {
+      this.socketsOfPlayers[0].emit(
+        'danger-alert',
+        'Sinad mode is only available in six-player rooms. ',
+      );
+      return false;
+    }
+
     // Can't start game if joining is locked as well.
     // Will unlock when existing readyPrompt times out or is rejected.
     if (this.lockJoin) {

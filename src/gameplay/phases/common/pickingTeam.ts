@@ -52,7 +52,7 @@ class PickingTeam implements IPhase {
       this.thisRoom.publicVotes = [];
 
       const num =
-        this.thisRoom.NUM_PLAYERS_ON_MISSION[
+        this.thisRoom.numPlayersOnMission[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
       // console.log("Num player for this.thisRoom mission : " + num);
@@ -140,7 +140,7 @@ class PickingTeam implements IPhase {
 
   numOfTargets(indexOfPlayer: number): number {
     const num =
-      this.thisRoom.NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
+      this.thisRoom.numPlayersOnMission[this.thisRoom.playersInGame.length - MIN_PLAYERS][
         this.thisRoom.missionNum - 1
       ];
 
@@ -158,7 +158,7 @@ class PickingTeam implements IPhase {
       indexOfPlayer === this.thisRoom.teamLeader
     ) {
       const num =
-        this.thisRoom.NUM_PLAYERS_ON_MISSION[
+        this.thisRoom.numPlayersOnMission[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
 

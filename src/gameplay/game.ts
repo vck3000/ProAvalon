@@ -89,7 +89,7 @@ class Game extends Room {
   pickNum = 0;
   roomCreationType: RoomCreationType;
 
-  const NUM_PLAYERS_ON_MISSION = [
+  const numPlayersOnMission = [
     [2, 3, 2, 3, 3],
     [2, 3, 4, 3, 4],
     [2, 3, 3, 4, 4],
@@ -1080,7 +1080,7 @@ class Game extends Room {
         data[i].proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
         data[i].numPlayersOnMission =
-          this.NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+          this.numPlayersOnMission[playerRoles.length - MIN_PLAYERS]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
@@ -1165,7 +1165,7 @@ class Game extends Room {
     data.proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
     data.numPlayersOnMission =
-      this.NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+      this.numPlayersOnMission[playerRoles.length - MIN_PLAYERS]; // - 5
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
@@ -2300,6 +2300,30 @@ class Game extends Room {
     }
     return newRating;
   }
+  
+  getPlayersOnMission(missionNum: number) {    
+    
+    VH = this.voteHistory; //for brevity
+    if(VH === undefined) {
+      //TODO: handle error
+    }
+    
+    const set = new Set<string>();
+
+    for (const player in VH) {
+      //TODO: write check to ensure player really is in this.PlayersInGame.
+      if (VH.hasOwnProperty(player)) {
+
+        const missionNumVH = VH[player][missionNum - 1];
+        const lastPick = missionNumVH[missionNumVH.length - 1];
+  
+        if (lastPick.includes('VHpicked')) {
+          set.add(player);
+        }
+      }
+    }
+    return set;
+  }
 }
 
 export default Game;
@@ -2325,6 +2349,20 @@ function generateAssignmentOrders(num) {
   // console.log(rolesAssignment);
 
   return rolesAssignment;
+}
+
+export function isSubsetOf(setA, setB): boolean {
+  if(setA === undefined || setB === undefined) {
+    return false;
+  }
+
+  for(element in setA) {
+    if(setB.has(element)) {
+      continue;
+    }
+    else return false;
+  }
+  return true;
 }
 
 function getAllSpies(thisRoom) {

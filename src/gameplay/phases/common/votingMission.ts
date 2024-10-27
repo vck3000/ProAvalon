@@ -3,7 +3,7 @@ import { ButtonSettings, IPhase, Phase } from '../types';
 import { Alliance } from '../../types';
 import { SocketUser } from '../../../sockets/types';
 import { GameMode } from '../../gameModes';
-import { MIN_PLAYERS } from '../../game';
+import { MIN_PLAYERS, isSubsetOf } from '../../game';
 
 class VotingMission implements IPhase {
   static phase = Phase.VotingMission;
@@ -156,8 +156,10 @@ class VotingMission implements IPhase {
             this.thisRoom.playersInGame.length) %
           this.thisRoom.playersInGame.length;
 
-        
-        this.updateMissionSizesForSinad();
+        if(this.thisRoom.enableSinadMode) {
+          this.updateMissionSizesForSinad();
+        }
+
         this.thisRoom.changePhase(Phase.PickingTeam);
       }
       this.thisRoom.requireSave = true;
@@ -289,12 +291,6 @@ class VotingMission implements IPhase {
       return; //not tested for other gamemodes. 
     }
 
-    const VH = this.thisRoom.voteHistory; //for brevity
-
-    const setOfPlayersOnM2 = new Set<string>();
-    const setOfPlayersOnM3 = new Set<string>();
-
-
     if( 
       //m1 m2 pass, m3 failed, and we're at m4.1
       this.thisRoom.missionHistory &&
@@ -304,27 +300,12 @@ class VotingMission implements IPhase {
       this.thisRoom.missionHistory[2] === 'failed' &&
       this.thisRoom.missionNum === 4 &&
       this.thisRoom.pickNum === 1
-    ) { 
-      for (const player in VH) {
-        if (VH.hasOwnProperty(player)) {
-            
-          const playerVH = VH[player];
-          const playerM2 = playerVH[1][playerVH[1].length -1];
-          const playerM3 = playerVH[2][playerVH[2].length -1];
-
-          if (typeof playerM2 === 'string' && playerM2.includes("VHpicked")) {
-            setOfPlayersOnM2.add(player);
-          }
-          if (typeof playerM3 === 'string' && playerM3.includes("VHpicked")) {
-            setOfPlayersOnM3.add(player);
-          }
-        }
-      }
-
-      let isM2ASubsetOfM3: boolean = [...setOfPlayersOnM2].every(player => setOfPlayersOnM3.has(player));
-   
-      if(!isM2ASubsetOfM3) {
-        this.thisRoom.NUM_PLAYERS_ON_MISSION[6-MIN_PLAYERS] = [2,3,4,4,3];
+    ) {
+      if(!isSubsetOf(
+        this.thisRoom.getPlayersOnMission(2)
+        ,this.thisRoom.getPlayersOnMission(3))
+      ){
+        this.thisRoom.numPlayersOnMission[6-MIN_PLAYERS] = [2,3,4,4,3];
         let announcingSinadMode: string = "The mission sizes of Mission 4 and Mission 5 have been swapped!";
         this.thisRoom.sendText(announcingSinadMode,'gameplay-text');
       }  
