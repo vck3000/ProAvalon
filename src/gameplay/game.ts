@@ -2300,20 +2300,22 @@ class Game extends Room {
     }
     return newRating;
   }
-  
-  getPlayersOnMission(missionNum: number) {    
-    
-    VH = this.voteHistory; //for brevity
-    if(VH === undefined) {
-      //TODO: handle error
-    }
-    
-    const set = new Set<string>();
 
+  getPlayersOnMission(missionNum: number): Set<string> {      
+    const set = new Set<string>();
+    const VH = this.voteHistory; //brevity
+
+    if(VH === undefined) {
+      return set; //return empty set.
+    }
+  
     for (const player in VH) {
       //TODO: write check to ensure player really is in this.PlayersInGame.
       if (VH.hasOwnProperty(player)) {
-
+        if(VH[player].length < missionNum) { //in case mission hasn't happened yet.
+          return set;
+        }
+      
         const missionNumVH = VH[player][missionNum - 1];
         const lastPick = missionNumVH[missionNumVH.length - 1];
   
@@ -2323,7 +2325,7 @@ class Game extends Room {
       }
     }
     return set;
-  }
+  };
 }
 
 export default Game;
@@ -2352,16 +2354,16 @@ function generateAssignmentOrders(num) {
 }
 
 export function isSubsetOf(setA, setB): boolean {
-  if(setA === undefined || setB === undefined) {
+  if (setA === undefined || setB === undefined) {
     return false;
   }
 
-  for(element in setA) {
-    if(setB.has(element)) {
-      continue;
+  for (const x of setA) {
+    if (!setB.has(x)) {
+      return false;
     }
-    else return false;
   }
+  
   return true;
 }
 
