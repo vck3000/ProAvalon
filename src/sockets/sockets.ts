@@ -185,6 +185,7 @@ if (process.env.NODE_ENV !== 'test') {
                 undefined,
                 undefined,
                 undefined,
+                undefined,
               );
 
               rooms[storedData.roomId] = new GameWrapper(gameConfig, null);
@@ -574,6 +575,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-ranked', updateRoomRanked);
     socket.on('update-room-muteSpectators', updateRoomMuteSpectators);
     socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
+    socket.on('update-room-enableSinadMode', updateRoomEnableSinadMode);
     socket.on('gameMove', gameMove);
     socket.on('setClaim', setClaim);
 
@@ -1443,6 +1445,7 @@ function newRoom(dataObj) {
       roomConfig,
       dataObj.muteSpectators,
       dataObj.disableVoteHistory,
+      dataObj.enableSinadMode,
       RoomCreationType.CUSTOM_ROOM,
       () => new Date(),
     );
@@ -1570,6 +1573,7 @@ function startGame(data) {
   const options = data.options;
   const gameMode = data.gameMode;
   const anonymousMode = data.anonymousMode;
+  const sinadMode = data.enableSinadMode;
   const timeoutsStr = data.timeouts;
 
   // start the game
@@ -1610,6 +1614,7 @@ function startGame(data) {
       gameMode,
       timeouts,
       anonymousMode,
+      sinadMode,
     );
   }
 }
@@ -1802,8 +1807,9 @@ function matchFound(usernames: string[]): void {
       );
       const gameConfig = new GameConfig(
         roomConfig,
-        false,
-        false,
+        false, //muteSpectators
+        false, //disableVoteHistory
+        false, //enableSinadMode
         RoomCreationType.QUEUE,
         () => new Date(),
       );
@@ -1929,6 +1935,14 @@ function updateRoomDisableVoteHistory(disableVoteHistory) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateDisableVoteHistory(
       disableVoteHistory,
+    );
+  }
+}
+
+function updateRoomEnableSinadMode(enableSinadMode) {
+  if (rooms[this.request.user.inRoomId]) {
+    rooms[this.request.user.inRoomId].updateEnableSinadMode(
+      enableSinadMode,
     );
   }
 }

@@ -2,6 +2,8 @@ import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../types';
 import { Alliance } from '../../types';
 import { SocketUser } from '../../../sockets/types';
+import { GameMode } from '../../gameModes';
+import { MIN_PLAYERS, isSubsetOf } from '../../game';
 
 class VotingMission implements IPhase {
   static phase = Phase.VotingMission;
@@ -153,6 +155,13 @@ class VotingMission implements IPhase {
             1 +
             this.thisRoom.playersInGame.length) %
           this.thisRoom.playersInGame.length;
+
+        if(!this.thisRoom.hasSinadRun && this.thisRoom.shouldSinadRun()) {
+          this.thisRoom.updateMissionSizesSinad();
+          this.thisRoom.hasSinadRun = true; 
+          //not necessary since above func also sets it to true.
+        }
+
         this.thisRoom.changePhase(Phase.PickingTeam);
       }
       this.thisRoom.requireSave = true;
