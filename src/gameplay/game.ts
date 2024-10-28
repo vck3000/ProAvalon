@@ -2306,13 +2306,14 @@ class Game extends Room {
     const VH = this.voteHistory; //brevity
 
     if(VH === undefined) {
-      return set; //return empty set.
+      return set; // empty set.
     }
   
     for (const player in VH) {
       //TODO: write check to ensure player really is in this.PlayersInGame.
       if (VH.hasOwnProperty(player)) {
-        if(VH[player].length < missionNum) { //in case mission hasn't happened yet.
+        if(VH[player].length < missionNum) { 
+          //in case mission hasn't happened yet.
           return set;
         }
       
@@ -2325,8 +2326,46 @@ class Game extends Room {
       }
     }
     return set;
-  };
+  }
+
+  updateMissionSizesSinad(): void {
+    // in 6p avalon, if m1 and m2 both succeed and m3 is a dani's pick (i.e. m3!=m2+1)
+    // then the sizes of m4 and m5 are swapped, requiring 4 ppl and 3 ppl respectively. 
+    console.log(this.getPlayersOnMission(2)) ;
+    console.log(this.getPlayersOnMission(3)) ;
+    console.log(!isSubsetOf(this.getPlayersOnMission(2),this.getPlayersOnMission(3)));
+    if(!isSubsetOf(
+         this.getPlayersOnMission(2)
+        ,this.getPlayersOnMission(3)
+      )) {
+        this.numPlayersOnMission[6 - MIN_PLAYERS] = [2,3,4,4,3];
+
+        this.sendText(
+          'The mission sizes of Mission 4 and Mission 5 have been swapped!'
+          , 'gameplay-text'
+        );
+      }  
+    this.hasSinadRun = true;
+  }
+
+  hasSinadRun: boolean = false;
+
+  shouldSinadRun(): boolean {
+    return (
+       this.enableSinadMode
+    // this 6p check is also covered by room.ts hostTryStartGame()
+    && this.playersInGame.length == 6
+//    && this.gameMode == GameMode.AVALON
+
+    // m1 m2 pass, m3 failed
+    && this.missionHistory.length >= 3
+    && this.missionHistory[0] === 'succeeded'
+    && this.missionHistory[1] === 'succeeded'
+    && this.missionHistory[2] === 'failed'
+    );
+  }
 }
+
 
 export default Game;
 

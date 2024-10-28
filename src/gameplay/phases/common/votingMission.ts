@@ -156,9 +156,10 @@ class VotingMission implements IPhase {
             this.thisRoom.playersInGame.length) %
           this.thisRoom.playersInGame.length;
 
-        if(!this.hasSinadRun && this.shouldSinadRun()) {
-          this.updateMissionSizesSinad();
-          this.hasSinadRun = true;
+        if(!this.thisRoom.hasSinadRun && this.thisRoom.shouldSinadRun()) {
+          this.thisRoom.updateMissionSizesSinad();
+          this.thisRoom.hasSinadRun = true; 
+          //not necessary since above func also sets it to true.
         }
 
         this.thisRoom.changePhase(Phase.PickingTeam);
@@ -277,42 +278,6 @@ class VotingMission implements IPhase {
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     return [];
-  }
-
-  updateMissionSizesSinad(): void {
-    // in 6p avalon, if m1 and m2 both succeed and m3 is a dani's pick (i.e. m3!=m2+1)
-    // then the sizes of m4 and m5 are swapped, requiring 4 ppl and 3 ppl respectively. 
-    console.log(this.thisRoom.getPlayersOnMission(2)) ;
-    console.log(this.thisRoom.getPlayersOnMission(3)) ;
-    console.log(!isSubsetOf(this.thisRoom.getPlayersOnMission(2),this.thisRoom.getPlayersOnMission(3)));
-    if(!isSubsetOf(
-         this.thisRoom.getPlayersOnMission(2)
-        ,this.thisRoom.getPlayersOnMission(3)
-      )) {
-        this.thisRoom.numPlayersOnMission[6 - MIN_PLAYERS] = [2,3,4,4,3];
-
-        this.thisRoom.sendText(
-          'The mission sizes of Mission 4 and Mission 5 have been swapped!'
-          , 'gameplay-text'
-        );
-      }  
-  }
-
-  hasSinadRun: boolean = false;
-
-  shouldSinadRun(): boolean {
-    return (
-       this.thisRoom.enableSinadMode
-    // this 6p check is also covered by room.ts hostTryStartGame()
-    && this.thisRoom.playersInGame.length == 6
-    && this.thisRoom.gameMode == GameMode.AVALON
-
-    // m1 m2 pass, m3 failed
-    && this.thisRoom.missionHistory.length >= 3
-    && this.thisRoom.missionHistory[0] === 'succeeded'
-    && this.thisRoom.missionHistory[1] === 'succeeded'
-    && this.thisRoom.missionHistory[2] === 'failed'
-    );
   }
 }
 
