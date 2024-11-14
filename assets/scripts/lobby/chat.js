@@ -454,11 +454,11 @@ function addToRoomChat(data) {
 }
 
 function isPlayerMuted(username) {
-  if (mutedPlayers.indexOf(username) !== -1) {
-    return true;
+  if (!username) {
+    return false;
   }
 
-  return false;
+  return mutedPlayers.indexOf(username.toLowerCase()) !== -1;
 }
 
 // Remove the new message yellow background colour when
