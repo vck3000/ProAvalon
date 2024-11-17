@@ -97,6 +97,7 @@ class Game extends Room {
   // Game misc variables
   winner: Alliance = '';
   requireSave = false;
+  critMission = false;
 
   // TODO This shouldn't be here! Should be in Assassin file.
   startAssassinationTime: Date;
@@ -550,10 +551,12 @@ class Game extends Room {
     this.sendText(str, 'gameplay-text');
 
     const timeouts = this.gameTimer.getTimeouts();
-    if (timeouts.assassination || timeouts.default) {
+    if (timeouts.assassination || timeouts.default || timeouts.critMission) {
       this.sendText(
         `Timeouts: Default = ${millisToStr(
           timeouts.default,
+        )}, Critical Mission = ${millisToStr(
+          timeouts.critMission,
         )}, Assassination = ${millisToStr(timeouts.assassination)}`,
         'gameplay-text',
       );
