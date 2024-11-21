@@ -1,11 +1,11 @@
 import { Command } from '../types';
-import Settings from '../../../settings';
+import { settingsSingleton } from '../../../settings';
 
 export const mtempenableregistration: Command = {
   command: 'mtempenableregistration',
   help: '/mtempenableregistration: Temporarily enables site registration for 5 minutes.',
   run: async (args, senderSocket) => {
-    const registrationStatus = Settings.getDisableRegistration();
+    const registrationStatus = settingsSingleton.getDisableRegistration();
 
     if (registrationStatus) {
       senderSocket.emit('messageCommandReturnStr', {
@@ -17,7 +17,7 @@ export const mtempenableregistration: Command = {
     }
 
     // Enable registration
-    Settings.toggleDisableRegistration();
+    settingsSingleton.toggleDisableRegistration();
 
     senderSocket.emit('messageCommandReturnStr', {
       message: `Site registration was temporarily enabled for 5 minutes.`,
@@ -27,10 +27,10 @@ export const mtempenableregistration: Command = {
     // Now disable registration after delay
     setTimeout(async () => {
       // Re-pull status in case it was already disabled separately.
-      const registrationStatus = Settings.getDisableRegistration();
+      const registrationStatus = settingsSingleton.getDisableRegistration();
 
       if (registrationStatus) {
-        Settings.toggleDisableRegistration();
+        settingsSingleton.toggleDisableRegistration();
       }
     }, 1000 * 60 * 5 /* 5 minutes */);
   },

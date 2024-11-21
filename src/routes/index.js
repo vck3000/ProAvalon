@@ -4,6 +4,7 @@ import sanitizeHtml from 'sanitize-html';
 import mongoose from 'mongoose';
 import fs from 'fs';
 import rateLimit from 'express-rate-limit';
+
 import User from '../models/user';
 import myNotification from '../models/notification';
 import gameRecord from '../models/gameRecord';
@@ -11,8 +12,9 @@ import statsCumulative from '../models/statsCumulative';
 import { emailExists, validEmail } from '../routes/emailVerification';
 import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
+import { config } from '../config';
 import { disallowVPNs } from '../util/vpnDetection';
-import Settings from '../settings';
+import { settingsSingleton } from '../settings';
 import { Alliance } from '../gameplay/types';
 import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
@@ -29,11 +31,11 @@ router.get('/', (req, res) => {
 
 // register route
 router.get('/register', (req, res) => {
-  res.render('register', { platform: process.env.ENV });
+  res.render('register', { platform: config.ENV });
 });
 
 const registerLimiter =
-  process.env.ENV === 'local'
+  config.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -96,7 +98,7 @@ router.post(
           passport.authenticate('local')(req, res, () => {
             res.redirect('/lobby');
           });
-          if (process.env.ENV === 'prod') {
+          if (config.ENV === 'prod') {
             sendEmailVerification(user, req.body.emailAddress);
           } else {
             user.emailVerified = true;
@@ -110,7 +112,7 @@ router.post(
 );
 
 const loginLimiter =
-  process.env.ENV === 'local'
+  config.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
@@ -234,7 +236,7 @@ router.get('/statistics', (req, res) => {
 });
 
 router.get('/resetPassword', (req, res) => {
-  res.render('resetPassword', { platform: process.env.ENV });
+  res.render('resetPassword', { platform: config.ENV });
 });
 
 router.post(
@@ -964,7 +966,7 @@ function sanitiseEmail(req, res, next) {
 }
 
 function disableRegistrationMiddleware(req, res, next) {
-  if (Settings.getDisableRegistration()) {
+  if (settingsSingleton.getDisableRegistration()) {
     req.flash(
       'error',
       'Registration is temporarily disabled. Please contact a moderator via discord if you would like to create an account.',

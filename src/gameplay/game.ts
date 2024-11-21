@@ -1,6 +1,7 @@
 // @ts-nocheck
 import _ from 'lodash';
 
+import { config } from '../config';
 import Room, { RoomConfig } from './room';
 import usernamesIndexes from '../myFunctions/usernamesIndexes';
 import User from '../models/user';
@@ -129,7 +130,7 @@ class Game extends Room {
   constructor(gameConfig: GameConfig) {
     super(gameConfig.roomConfig);
 
-    // Expand config
+    // Expand configOld
     this.muteSpectators = gameConfig.muteSpectators;
     this.disableVoteHistory = gameConfig.disableVoteHistory;
     this.roomCreationType = gameConfig.roomCreationType;
@@ -1564,7 +1565,7 @@ class Game extends Room {
         });
       }
 
-      if (process.env.NODE_ENV !== 'test') {
+      if (config.NODE_ENV !== 'test') {
         this.playersInGame.forEach((player) => {
           User.findById(player.userId)
             .populate('notifications')

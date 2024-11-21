@@ -1,10 +1,12 @@
 import { RequestHandler } from 'express';
+import { config } from '../config';
 
 const VPN_TIMEOUT = 1000 * 60 * 60 * 12; // 12 hours
 
+// TODO-kev: check if this still works
 let whitelistedUsernames: string[] = [];
-if (process.env.WHITELISTED_VPN_USERNAMES) {
-  whitelistedUsernames = process.env.WHITELISTED_VPN_USERNAMES.split(',');
+if (config.vpn.WHITELISTED_VPN_USERNAMES) {
+  whitelistedUsernames = config.vpn.WHITELISTED_VPN_USERNAMES.split(',');
 }
 
 class VpnEntry {
@@ -82,7 +84,7 @@ const isVPN = async (ip: string): Promise<boolean> => {
 
 const isVpnCheck1 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
-    `https://vpnapi.io/api/${ip}?key=${process.env.VPN_DETECTION_TOKEN}`,
+    `https://vpnapi.io/api/${ip}?key=${config.vpn.VPN_DETECTION_TOKEN}`,
   );
 
   const data = await vpnResponse.json();
@@ -99,7 +101,7 @@ const isVpnCheck1 = async (ip: string): Promise<boolean> => {
 
 const isVpnCheck2 = async (ip: string): Promise<boolean> => {
   const vpnResponse = await fetch(
-    `https://check.getipintel.net/check.php?ip=${ip}&contact=${process.env.PROAVALON_EMAIL_ADDRESS}&flags=m`,
+    `https://check.getipintel.net/check.php?ip=${ip}&contact=${config.email.PROAVALON_EMAIL_ADDRESS}&flags=m`,
   );
 
   const data = await vpnResponse.json();
@@ -116,7 +118,7 @@ const isVpnCheck2 = async (ip: string): Promise<boolean> => {
 };
 
 export const disallowVPNs: RequestHandler = (req, res, next) => {
-  if (process.env.ENV === 'local') {
+  if (config.ENV === 'local') {
     next();
     return;
   }
