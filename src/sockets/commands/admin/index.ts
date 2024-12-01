@@ -5,7 +5,7 @@ import { aresetpassword } from './aresetpassword';
 import { Commands } from '../types';
 import { atestgame } from './atestgame';
 import { acreatetestaccounts } from './acreatetestaccounts';
-import { aresetcoachaccounts } from './aresetcoachaccounts';
+import { aresettournamentaccounts } from './aresettournamentaccounts';
 import { ausernametoemail } from './ausernametoemail';
 import { asessions } from './asessions';
 
@@ -14,7 +14,7 @@ export const adminCommands: Commands = {
   [acreatetestaccounts.command]: acreatetestaccounts,
   [aemailtousername.command]: aemailtousername,
   [aip.command]: aip,
-  [aresetcoachaccounts.command]: aresetcoachaccounts,
+  [aresettournamentaccounts.command]: aresettournamentaccounts,
   [aresetpassword.command]: aresetpassword,
   [atestgame.command]: atestgame,
   [asessions.command]: asessions,
