@@ -4,7 +4,7 @@ export const TOsArray: string[] = [
   'pandamania',
   'glorious',
   'manuavalon',
-  'bremen',
+  'datboi',
   'secretwoa',
 ];
 
