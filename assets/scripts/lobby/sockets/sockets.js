@@ -665,14 +665,6 @@ socket.on('wrongRoomPassword', () => {
   });
 });
 
-socket.on('correctRoomPassword', () => {
-  // call roomchat
-  setTimeout(() => {
-    $('.room-chat-list').html('');
-    checkMessageForCommands('/roomchat', 'roomChat');
-  }, 500);
-});
-
 // this part at the moment only updates the max number of players in a game.
 socket.on('update-room-info', (data) => {
   // data.maxNumPlayers
