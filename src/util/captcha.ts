@@ -1,8 +1,9 @@
 import { RequestHandler } from 'express';
 import axios from 'axios';
+import { config } from '../config';
 
 export const captchaMiddleware: RequestHandler = async (req, res, next) => {
-  if (process.env.ENV !== 'prod') {
+  if (config.ENV !== 'prod') {
     return next();
   }
 
@@ -18,7 +19,7 @@ export const captchaMiddleware: RequestHandler = async (req, res, next) => {
     return;
   }
 
-  const secretKey = process.env.MY_SECRET_GOOGLE_CAPTCHA_KEY;
+  const secretKey = config.GOOGLE_CAPTCHA_KEY;
   const verifyUrl = `https://google.com/recaptcha/api/siteverify?secret=${secretKey}&response=${req.body.captcha}&remoteip=${req.connection.remoteAddress}`;
   const response = await axios.post(verifyUrl);
 

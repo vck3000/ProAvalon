@@ -3,15 +3,13 @@
 class Settings {
   private disableRegistration = false;
 
-  getDisableRegistration(): boolean {
+  public getDisableRegistration(): boolean {
     return this.disableRegistration;
   }
 
-  toggleDisableRegistration() {
+  public toggleDisableRegistration() {
     this.disableRegistration = !this.disableRegistration;
   }
 }
 
-const settingsSingleton = new Settings();
-
-export default settingsSingleton;
+export const settingsSingleton = new Settings();

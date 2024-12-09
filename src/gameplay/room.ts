@@ -79,7 +79,7 @@ class Room {
   readyPrompt: ReadyPrompt;
 
   constructor(roomConfig: RoomConfig) {
-    // Expand config
+    // Expand configOld
     this.host = roomConfig.host;
     this.roomId = roomConfig.roomId;
     this.io = roomConfig.io;

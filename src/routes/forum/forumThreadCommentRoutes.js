@@ -2,6 +2,8 @@ import { Router } from 'express';
 import sanitizeHtml from 'sanitize-html';
 import mongoose from 'mongoose';
 import rateLimit from 'express-rate-limit';
+
+import { config } from '../../config';
 import forumThread from '../../models/forumThread';
 import forumThreadComment from '../../models/forumThreadComment';
 import {
@@ -16,7 +18,7 @@ import { userHasReward } from '../../rewards/getRewards';
 const router = new Router();
 
 const newCommentLimiter =
-  process.env.ENV === 'local'
+  config.ENV === 'local'
     ? rateLimit({
         max: 0, // Disable if we are local
       })
