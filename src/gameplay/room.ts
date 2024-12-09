@@ -133,9 +133,6 @@ class Room {
       ) {
         if (this.joinPassword === inputPassword) {
           // console.log("Correct password!");
-
-          socket.emit('correctRoomPassword');
-          // continue on
         } else {
           // console.log("Wrong password!");
 
