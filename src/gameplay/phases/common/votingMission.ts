@@ -127,6 +127,11 @@ class VotingMission implements IPhase {
         }
       }
 
+      // Critical mission if 2 fails
+      if (numOfFails == 2) {
+        this.thisRoom.critMission = true;
+      }
+
       // game over if more than 3 fails or successes
       if (numOfFails >= 3) {
         this.thisRoom.winner = Alliance.Spy;

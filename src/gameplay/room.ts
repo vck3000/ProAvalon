@@ -637,6 +637,9 @@ class Room {
     rolesInStr += `<br>Ranked: ${this.ranked}`;
     rolesInStr += `<br>Mute Spectators: ${this.muteSpectators}`;
     rolesInStr += `<br>Default timeout: ${millisToStr(timeouts.default)}`;
+    rolesInStr += `<br>Critical Mission timeout: ${millisToStr(
+      timeouts.critMission,
+    )}`;
     rolesInStr += `<br>Assassination timeout: ${millisToStr(
       timeouts.assassination,
     )}`;
