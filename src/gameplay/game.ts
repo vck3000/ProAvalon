@@ -32,7 +32,10 @@ import { millisToStr } from '../util/time';
 import shuffleArray from '../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../sockets/sockets';
-import { gamesPlayedMetric } from '../metrics/gameMetrics';
+import {
+  gamesPlayedMetric,
+  getGameMetricRoomType,
+} from '../metrics/gameMetrics';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -527,7 +530,6 @@ class Game extends Room {
     this.pickNum = 1;
     this.missionHistory = [];
 
-    console.log(this.ranked);
     let str = '';
     if (this.ranked === true) {
       str = 'This game is ranked.';
@@ -1255,7 +1257,10 @@ class Game extends Room {
     }
 
     // From this point on, no more game moves can be made. Game is finished.
-    gamesPlayedMetric.inc(1, { status: 'finished' });
+    gamesPlayedMetric.inc(1, {
+      status: 'finished',
+      room_type: getGameMetricRoomType(this),
+    });
 
     // Clean up from here.
     for (let i = 0; i < this.allSockets.length; i++) {
@@ -2077,7 +2082,10 @@ class Game extends Room {
     }
 
     if (this.voidGameTracker.playerVoted(socket.request.user.username)) {
-      gamesPlayedMetric.inc(1, { status: 'voided' });
+      gamesPlayedMetric.inc(1, {
+        status: 'voided',
+        room_type: getGameMetricRoomType(this),
+      });
 
       this.changePhase(Phase.Voided);
       this.sendText(`Game has been voided.`, 'server-text');
