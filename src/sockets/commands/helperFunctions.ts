@@ -5,7 +5,14 @@ export function adjustCommandPrefix(
   oldPrefix: string,
   newPrefix: string,
 ): Command {
-  // TODO-kev: Add checks to see if valid command
+  // Throw error if invalid command is passed
+  if (!command.command.startsWith(oldPrefix)) {
+    throw new Error(`Incorrect command prefix. Expected: ${oldPrefix}`);
+  }
+
+  if (!command.help.startsWith(`/${oldPrefix}`)) {
+    throw new Error(`Incorrect command help prefix. Expected: /${oldPrefix}`);
+  }
 
   const shallowCopy = { ...command };
 
