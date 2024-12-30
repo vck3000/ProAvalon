@@ -70,6 +70,11 @@ socket.on('modCommands', (commands) => {
   modCommands = commands;
 });
 
+let percivalCommands;
+socket.on('percivalCommands', (commands) => {
+  percivalCommands = commands;
+});
+
 let TOCommands;
 socket.on('TOCommands', (commands) => {
   TOCommands = commands;
