@@ -1,6 +1,6 @@
 import { Command } from './types';
 
-export function adjustCommandPrefix(
+export function createCommandWithNewPrefix(
   command: Command,
   oldPrefix: string,
   newPrefix: string,
@@ -14,10 +14,9 @@ export function adjustCommandPrefix(
     throw new Error(`Incorrect command help prefix. Expected: /${oldPrefix}`);
   }
 
-  const shallowCopy = { ...command };
-
-  shallowCopy.command = shallowCopy.command.replace(oldPrefix, newPrefix);
-  shallowCopy.help = shallowCopy.help.replace(oldPrefix, newPrefix);
-
-  return shallowCopy;
+  return {
+    command: command.command.replace(oldPrefix, newPrefix),
+    help: command.help.replace(oldPrefix, newPrefix),
+    run: command.run,
+  };
 }
