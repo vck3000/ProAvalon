@@ -601,16 +601,7 @@ export const server = function (io: SocketServer): void {
       // send the user the list of commands
       socket.emit('commands', userCommands);
 
-      // initialise not mod and not admin
-      socket.isAdminSocket = false;
-      socket.isModSocket = false;
-      socket.isPercivalSocket = false; // TODO-kev: Is this needed?
-      socket.isTOSocket = false;
-
       if (isAdmin(socket.request.user.username)) {
-        // promote to admin socket
-        socket.isAdminSocket = true;
-
         // TODO this shouldn't be sent out as separate commands. Merge these.
 
         // send the user the list of commands
@@ -618,9 +609,6 @@ export const server = function (io: SocketServer): void {
       }
 
       if (isMod(socket.request.user.username)) {
-        // promote to mod socket
-        socket.isModSocket = true;
-
         // send the user the list of commands
         socket.emit('modCommands', modCommands);
 
@@ -672,15 +660,11 @@ export const server = function (io: SocketServer): void {
       }
 
       if (isPercival(socket.request.user.username)) {
-        socket.isPercivalSocket = true; // TODO-kev: Is this needed?
-
         // send the user the list of commands
         socket.emit('percivalCommands', percivalCommands);
       }
 
       if (isTO(socket.request.user.username)) {
-        socket.isTOSocket = true;
-
         // send the user the list of commands
         socket.emit('TOCommands', TOCommands);
       }
