@@ -1,22 +1,30 @@
 import { Command } from './types';
 
-export function createCommandWithNewPrefix(
-  command: Command,
-  oldPrefix: string,
-  newPrefix: string,
+enum CommandPrefix {
+  Mod = 'm',
+  Percival = 'p',
+}
+
+export function convertModCommandToPercivalCommand(
+  modCommand: Command,
 ): Command {
   // Throw error if invalid command is passed
-  if (!command.command.startsWith(oldPrefix)) {
-    throw new Error(`Incorrect command prefix. Expected: ${oldPrefix}`);
+  if (!modCommand.command.startsWith(CommandPrefix.Mod)) {
+    throw new Error(`Incorrect command prefix. Expected: ${CommandPrefix.Mod}`);
   }
 
-  if (!command.help.startsWith(`/${oldPrefix}`)) {
-    throw new Error(`Incorrect command help prefix. Expected: /${oldPrefix}`);
+  if (!modCommand.help.startsWith(`/${CommandPrefix.Mod}`)) {
+    throw new Error(
+      `Incorrect command help prefix. Expected: /${CommandPrefix.Mod}`,
+    );
   }
 
   return {
-    command: command.command.replace(oldPrefix, newPrefix),
-    help: command.help.replace(oldPrefix, newPrefix),
-    run: command.run,
+    command: modCommand.command.replace(
+      CommandPrefix.Mod,
+      CommandPrefix.Percival,
+    ),
+    help: modCommand.help.replace(CommandPrefix.Mod, CommandPrefix.Percival),
+    run: modCommand.run,
   };
 }

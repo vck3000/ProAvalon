@@ -1,9 +1,9 @@
 import { Commands } from '../types';
-import { createCommandWithNewPrefix } from '../helperFunctions';
+import { convertModCommandToPercivalCommand } from '../helperFunctions';
 import { p } from './p';
 import { mdc } from '../mod/mdc';
 
-const pdc = createCommandWithNewPrefix(mdc, 'm', 'p');
+const pdc = convertModCommandToPercivalCommand(mdc);
 
 export const percivalCommands: Commands = {
   [p.command]: p,
