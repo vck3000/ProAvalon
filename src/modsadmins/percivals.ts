@@ -1,5 +1,5 @@
-// Note the Percival role assists the Mods with site moderation.
-// It is not the role in Avalon gameplay.
+// Note this is a site Percival role that assists the Mods with site moderation.
+// It is not the Percival role in Avalon gameplay.
 
 // all in lower case
 export const percivalsArray: string[] = [];
