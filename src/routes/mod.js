@@ -130,6 +130,11 @@ router.post('/ban', async (req, res) => {
       ipsToBan = banUser.IPAddresses;
     }
 
+    // Safety mechanism. Don't allow percies to do the full IP ban.
+    if (userIsPercy) {
+      ipsToBan = banUser.lastIPAddress;
+    }
+
     // Get duration for ban:
     const now = new Date();
     const whenMade = new Date();
