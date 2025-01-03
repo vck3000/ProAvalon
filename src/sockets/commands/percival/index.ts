@@ -12,12 +12,12 @@ export function convertModCommandToPercivalCommand(
 
   // Throw error if invalid command is passed
   if (!modCommand.command.startsWith(modPrefix)) {
-    throw new Error(`Incorrect command prefix. Expected: ${modPrefix}`);
+    throw new Error(`Incorrect command prefix. Expected to start with: "${modPrefix}" Got: "${modCommand.command}"`);
   }
 
   if (!modCommand.help.startsWith(`/${modPrefix}`)) {
     throw new Error(
-      `Incorrect command help prefix. Expected: /${modPrefix}`,
+      `Incorrect command help prefix. Expected to start with: "/${modPrefix}" Got: "${modCommand.help}"`,
     );
   }
 
