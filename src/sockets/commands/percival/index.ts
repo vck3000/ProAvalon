@@ -1,6 +1,8 @@
 import { Command, Commands } from '../types';
 import { p } from './p';
 import { mdc } from '../mod/mdc';
+import { mforcemove } from '../mod/mforcemove';
+import { mclose } from '../mod/mclose';
 
 // Percival commands are intended to be a strict subset of mod commands.
 
@@ -32,8 +34,12 @@ export function convertModCommandToPercivalCommand(
 }
 
 const pdc = convertModCommandToPercivalCommand(mdc);
+const pforcemove = convertModCommandToPercivalCommand(mforcemove);
+const pclose = convertModCommandToPercivalCommand(mclose);
 
 export const percivalCommands: Commands = {
   [p.command]: p,
   [pdc.command]: pdc,
+  [pforcemove.command]: pforcemove,
+  [pclose.command]: pclose,
 };
