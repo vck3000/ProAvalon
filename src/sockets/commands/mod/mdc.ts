@@ -17,8 +17,9 @@ export const mdc: Command = {
       allSockets[getIndexFromUsername(allSockets, args[1], true)];
 
     if (targetSock) {
-      targetSock.emit('redirect', '/logout');
-      targetSock.disconnect();
+      targetSock.emit('dont-reconnect');
+      targetSock.disconnect(true);
+
       senderSocket.emit('messageCommandReturnStr', {
         message: `Disconnected ${args[1]} successfully.`,
         classStr: 'server-text',

@@ -11,6 +11,8 @@ import { Role } from './roles/types';
 import { Phase } from './phases/types';
 import { millisToStr } from '../util/time';
 import { RoomPlayer } from './types';
+import { isMod } from '../modsadmins/mods';
+import { isAdmin } from '../modsadmins/admins';
 
 export class RoomConfig {
   host: string;
@@ -113,7 +115,12 @@ class Room {
     );
 
     // check if the player is a moderator or an admin, if so bypass
-    if (!(socket.isModSocket || socket.isAdminSocket)) {
+    if (
+      !(
+        isMod(socket.request.user.username) ||
+        isAdmin(socket.request.user.username)
+      )
+    ) {
       // if the room has a password and user hasn't put one in yet
       if (
         this.joinPassword !== undefined &&

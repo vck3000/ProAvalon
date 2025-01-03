@@ -80,30 +80,24 @@ socket.on('dont-reconnect', () => {
 });
 
 socket.on('disconnect', () => {
-  if (serverRestarting) {
+  if (serverRestarting || !autoReconnect) {
     showDangerAlert(`You have been disconnected. Please refresh the page.`);
     return;
   }
 
-  if (!autoReconnect) {
-    showDangerAlert(
-      `You have logged on another device and have been disconnected.`
-    );
-  } else {
-    const chats = $('.chat-list');
-    for (const chat of chats) {
-      chat.innerHTML = '';
-    }
+  const chats = $('.chat-list');
+  for (const chat of chats) {
+    chat.innerHTML = '';
+  }
 
-    setTimeout(() => {
+  setTimeout(() => {
+    attemptReconnect();
+  }, 500);
+
+  if (!intervalId) {
+    intervalId = setInterval(() => {
       attemptReconnect();
-    }, 500);
-
-    if (!intervalId) {
-      intervalId = setInterval(() => {
-        attemptReconnect();
-      }, 5000);
-    }
+    }, 5000);
   }
 });
 

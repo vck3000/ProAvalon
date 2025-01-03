@@ -13,6 +13,7 @@ import JSON from 'circular-json';
 
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
+import { isPercival } from '../modsadmins/percivals';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import {
   GAME_MODE_NAMES,
@@ -26,6 +27,7 @@ import { MessageWithDate, Quote } from './quote';
 
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
+import { percivalCommands } from './commands/percival';
 import { userCommandsImported } from './commands/user';
 import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
@@ -599,15 +601,7 @@ export const server = function (io: SocketServer): void {
       // send the user the list of commands
       socket.emit('commands', userCommands);
 
-      // initialise not mod and not admin
-      socket.isAdminSocket = false;
-      socket.isModSocket = false;
-      socket.isTOSocket = false;
-
       if (isAdmin(socket.request.user.username)) {
-        // promote to admin socket
-        socket.isAdminSocket = true;
-
         // TODO this shouldn't be sent out as separate commands. Merge these.
 
         // send the user the list of commands
@@ -615,9 +609,6 @@ export const server = function (io: SocketServer): void {
       }
 
       if (isMod(socket.request.user.username)) {
-        // promote to mod socket
-        socket.isModSocket = true;
-
         // send the user the list of commands
         socket.emit('modCommands', modCommands);
 
@@ -668,9 +659,12 @@ export const server = function (io: SocketServer): void {
           });
       }
 
-      if (isTO(socket.request.user.username)) {
-        socket.isTOSocket = true;
+      if (isPercival(socket.request.user.username)) {
+        // send the user the list of commands
+        socket.emit('percivalCommands', percivalCommands);
+      }
 
+      if (isTO(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('TOCommands', TOCommands);
       }
@@ -1172,6 +1166,11 @@ function messageCommand(data) {
     adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
     modCommands[data.command].run(data.args, this, ioGlobal);
+  } else if (
+    percivalCommands[data.command] &&
+    isPercival(this.request.user.username)
+  ) {
+    dataToSend = percivalCommands[data.command].run(data.args, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
     dataToSend = TOCommands[data.command].run(data.args, this, ioGlobal);
   } else if (userCommands[data.command]) {
