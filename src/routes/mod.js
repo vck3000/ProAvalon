@@ -19,6 +19,8 @@ import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
 import { MongoClient } from 'mongodb';
 import { SESSIONS_COLLECTION_NAME } from '../constants';
+import { isMod } from '../modsadmins/mods';
+import { isPercival } from '../modsadmins/percivals';
 
 const router = new Router();
 
@@ -41,7 +43,20 @@ const requiredFields = [
   'descriptionByMod',
 ];
 
-router.post('/ban', isModMiddleware, async (req, res) => {
+router.post('/ban', async (req, res) => {
+  if (!isMod(req.user.username) && !isPercival(req.user.username)) {
+    res.status(401);
+    res.send(`You are not a moderator or percival.`);
+    return;
+  }
+
+  const userIsMod = isMod(req.user.username);
+  const userIsPercy = isPercival(req.user.username);
+
+  if ((userIsMod ^ userIsPercy) !== 1) {
+    throw Error("Expected requesting user to either be a mod or a Percy.");
+  }
+
   try {
     // Catch errors so that it's not shown to users.
     // Multiple checks:
@@ -141,6 +156,18 @@ router.post('/ban', isModMiddleware, async (req, res) => {
         res.status(400);
         res.send(`Invalid duration units: '${req.body['duration_units']}'.`);
         return;
+    }
+
+    // Percies can only ban up to 24 hrs. No greater.
+    if (userIsPercy) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() + 1);
+
+      if (whenRelease > cutoff) {
+        res.status(400);
+        res.send(`Percival roles cannot ban for more than 24 hours.`);
+        return;
+      }
     }
 
     // Create the data object
