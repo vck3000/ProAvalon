@@ -15,12 +15,7 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isPercival } from '../modsadmins/percivals';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import {
-  GAME_MODE_NAMES,
-  GameMode,
-  isGameMode,
-  strToGameMode,
-} from '../gameplay/gameModes';
+import { GAME_MODE_NAMES, GameMode, isGameMode, strToGameMode } from '../gameplay/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -776,6 +771,9 @@ const applyApplicableRewards = function (socket) {
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
     socket.request.badge = 'M';
+  }
+  else if (isPercival(socket.request.user.username)) {
+    socket.request.badge = 'P';
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
