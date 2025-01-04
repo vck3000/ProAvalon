@@ -571,6 +571,9 @@ function generateBadgeString(badge) {
     else if (badge === 'M') {
       title = 'Moderator';
     }
+    else if (badge === 'P') {
+      title = 'Percy';
+    }
     else if (badge === 'D') {
       title = 'Developer';
     }
