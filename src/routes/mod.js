@@ -21,6 +21,7 @@ import { MongoClient } from 'mongodb';
 import { SESSIONS_COLLECTION_NAME } from '../constants';
 import { isMod } from '../modsadmins/mods';
 import { isPercival } from '../modsadmins/percivals';
+import { sendToDiscordMods } from '../clients/discord';
 
 const router = new Router();
 
@@ -216,6 +217,11 @@ router.post('/ban', async (req, res) => {
       data: banData,
       dateCreated: new Date(),
     });
+
+    sendToDiscordMods(`${userIsMod ? "Moderator" : "Percival"} "${req.user.usernameLower}" banned "${banUser.usernameLower}" for \
+${req.body['duration']} ${req.body['duration_units']} for reason "${req.body.reason}" with description \
+"${req.body['descriptionByMod']}".`
+      , false);
 
     // Delete all the sessions associated with this username
     const dbResult = await MongoClient.connect(process.env.DATABASEURL);
