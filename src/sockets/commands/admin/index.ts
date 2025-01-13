@@ -11,7 +11,7 @@ import { ausernametoemail } from './ausernametoemail';
 import { asessions } from './asessions';
 
 // TODO-kev: Delete the below. Purely for testing purposes
-import { astartnewseason } from './astartnewseason';
+import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
 
 export const adminCommands: Commands = {
@@ -27,6 +27,6 @@ export const adminCommands: Commands = {
   [ausernametoemail.command]: ausernametoemail,
 
   // TODO-kev: Delete the below. Purely for testing purposes
-  [astartnewseason.command]: astartnewseason,
+  [acreateseason.command]: acreateseason,
   [agetcurrentseason.command]: agetcurrentseason,
 };

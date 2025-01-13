@@ -1,0 +1,28 @@
+// TODO-kev: Delete this file. Purely for testing purposes
+
+import { Command } from '../types';
+import { SocketUser } from '../../types';
+import seasonAdapter from '../../../databaseAdapters/season';
+import { sendReplyToCommand } from '../../sockets';
+import { ISeason } from '../../../models/types/season.types';
+
+export const acreateseason: Command = {
+  command: 'acs',
+  help: '/acs: Creates a new season',
+  run: async (args: string[], socket: SocketUser) => {
+    const newSeason: ISeason = await seasonAdapter.createSeason();
+
+    if (!newSeason) {
+      sendReplyToCommand(socket, 'Failed to create new season.');
+    } else {
+      const message = `Created new season:
+      seasonId = ${newSeason._id};\n
+      name = ${newSeason.name};\n
+      description = ${newSeason.description};\n
+      startDate = ${newSeason.startDate};\n
+      endDate = ${newSeason.endDate}
+      `;
+      sendReplyToCommand(socket, message);
+    }
+  },
+};
