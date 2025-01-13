@@ -9,6 +9,7 @@ interface DatabaseAdapter {
 class MongoSeasonAdapter implements DatabaseAdapter {
   async getCurrentSeason(): Promise<ISeason | null> {
     const now = new Date();
+    // TODO-kev: Maybe update this to find the one with the latest endDate?
     const currentSeason = await Season.findOne({
       startDate: { $lt: now },
       endDate: { $gt: now },
