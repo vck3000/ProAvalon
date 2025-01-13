@@ -12,6 +12,7 @@ import { asessions } from './asessions';
 
 // TODO-kev: Delete the below. Purely for testing purposes
 import { astartnewseason } from './astartnewseason';
+import { agetcurrentseason } from './agetcurrentseason';
 
 export const adminCommands: Commands = {
   [a.command]: a,
@@ -27,4 +28,5 @@ export const adminCommands: Commands = {
 
   // TODO-kev: Delete the below. Purely for testing purposes
   [astartnewseason.command]: astartnewseason,
+  [agetcurrentseason.command]: agetcurrentseason,
 };

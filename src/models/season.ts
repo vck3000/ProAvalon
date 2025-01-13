@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { ISeason } from './types/season.types';
 
 // SCHEMA SETUP
 const seasonSchema = new mongoose.Schema({
@@ -9,6 +10,6 @@ const seasonSchema = new mongoose.Schema({
 });
 
 // compile schema into a model
-const Season = mongoose.model('season', seasonSchema);
+const Season = mongoose.model<ISeason>('season', seasonSchema);
 
 export default Season;
