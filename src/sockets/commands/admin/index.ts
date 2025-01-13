@@ -10,6 +10,9 @@ import { aresettournamentaccounts } from './aresettournamentaccounts';
 import { ausernametoemail } from './ausernametoemail';
 import { asessions } from './asessions';
 
+// TODO-kev: Delete the below. Purely for testing purposes
+import { astartnewseason } from './astartnewseason';
+
 export const adminCommands: Commands = {
   [a.command]: a,
   [acreatetestaccounts.command]: acreatetestaccounts,
@@ -21,4 +24,7 @@ export const adminCommands: Commands = {
   [atestgame.command]: atestgame,
   [asessions.command]: asessions,
   [ausernametoemail.command]: ausernametoemail,
+
+  // TODO-kev: Delete the below. Purely for testing purposes
+  [astartnewseason.command]: astartnewseason,
 };

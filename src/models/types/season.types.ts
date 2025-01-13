@@ -1,4 +1,6 @@
-export interface ISeason {
+import { Document } from 'mongoose';
+
+export interface ISeason extends Document {
   name: string;
   description: string;
   startDate: Date;
