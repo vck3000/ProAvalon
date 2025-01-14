@@ -4,7 +4,6 @@ import { ISeason } from './types/season.types';
 // SCHEMA SETUP
 const seasonSchema = new mongoose.Schema({
   name: String,
-  description: String,
   startDate: Date,
   endDate: Date,
   isActive: Boolean,

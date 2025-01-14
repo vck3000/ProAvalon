@@ -10,7 +10,12 @@ export const acreateseason: Command = {
   command: 'acs',
   help: '/acs: Creates a new season',
   run: async (args: string[], socket: SocketUser) => {
-    const newSeason: ISeason = await seasonAdapter.createSeason();
+    if (args.length < 2) {
+      sendReplyToCommand(socket, 'Please include the season name.');
+    }
+
+    const seasonName = args[1];
+    const newSeason: ISeason = await seasonAdapter.createSeason(seasonName);
 
     if (!newSeason) {
       sendReplyToCommand(socket, 'Failed to create new season.');
@@ -18,7 +23,6 @@ export const acreateseason: Command = {
       const message = `Created new season:
       seasonId = ${newSeason._id};\n
       name = ${newSeason.name};\n
-      description = ${newSeason.description};\n
       startDate = ${newSeason.startDate};\n
       endDate = ${newSeason.endDate}
       `;
