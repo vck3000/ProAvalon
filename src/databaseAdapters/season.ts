@@ -10,7 +10,6 @@ class MongoSeasonAdapter implements DatabaseAdapter {
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason = await Season.findOne({
       isActive: true,
-      endDate: { $gt: new Date() },
     });
 
     return currentSeason as ISeason;
