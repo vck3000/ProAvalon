@@ -49,7 +49,7 @@ class MongoSeasonAdapter implements DatabaseAdapter {
       // Check if ongoing season
       if (currentSeason.endDate > new Date()) {
         throw new Error(
-          `Unable to reset season while season is ongoing. Season ends on ${currentSeason.endDate}.`,
+          `Unable to reset season while season is ongoing. Current season ends on ${currentSeason.endDate}.`,
         );
       }
 
