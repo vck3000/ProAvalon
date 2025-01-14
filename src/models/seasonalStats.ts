@@ -12,9 +12,40 @@ const seasonalStatsSchema = new mongoose.Schema({
     ref: 'season',
     required: true,
   },
-  totalWins: {
+
+  rating: {
+    type: Number,
+    default: 1500, // TODO-kev: Consider if there is an enum to share here
+  },
+  highestRating: {
+    type: Number,
+    default: 1500, // TODO-kev: Consider if there is an enum to share here
+  },
+  ratingBracket: {
+    type: String,
+    default: 'silver', // TODO-kev: Consider if there is an enum to share here. Or if this is needed
+  },
+
+  rankedGamesPlayed: {
     type: Number,
     default: 0,
+  },
+  rankedGamesWon: {
+    type: Number,
+    default: 0,
+  },
+  rankedGamesLost: {
+    type: Number,
+    default: 0,
+  },
+  winRate: {
+    type: Number,
+    default: 0,
+  },
+
+  lastUpdated: {
+    type: Date,
+    required: true,
   },
 });
 
