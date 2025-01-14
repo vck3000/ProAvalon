@@ -3,7 +3,7 @@ import { ISeason } from '../models/types/season.types';
 
 interface DatabaseAdapter {
   getCurrentSeason(): Promise<ISeason | null>;
-  createSeason(seasonName: string): Promise<ISeason | null>;
+  createSeason(seasonName: string): Promise<ISeason>;
 }
 
 class MongoSeasonAdapter implements DatabaseAdapter {
@@ -16,7 +16,13 @@ class MongoSeasonAdapter implements DatabaseAdapter {
     return currentSeason as ISeason;
   }
 
-  async createSeason(seasonName: string): Promise<ISeason | null> {
+  async createSeason(seasonName: string): Promise<ISeason> {
+    const currentSeason: ISeason = await this.getCurrentSeason();
+
+    if (currentSeason) {
+      throw new Error('Unable to create season as an active one exists.');
+    }
+
     // TODO-kev: This is just an example of creating a season. Consider configurable params etc
     const startDate = new Date();
     const endDate = new Date(startDate);

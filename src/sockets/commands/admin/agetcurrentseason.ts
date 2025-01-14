@@ -19,7 +19,6 @@ export const agetcurrentseason: Command = {
     const message = `Current Season details:
       seasonId = ${currentSeason._id};\n
       name = ${currentSeason.name};\n
-      description = ${currentSeason.description};\n
       startDate = ${currentSeason.startDate};\n
       endDate = ${currentSeason.endDate}
       `;
