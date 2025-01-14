@@ -7,6 +7,7 @@ const seasonSchema = new mongoose.Schema({
   description: String,
   startDate: Date,
   endDate: Date,
+  isActive: Boolean,
 });
 
 // compile schema into a model

@@ -8,17 +8,10 @@ interface DatabaseAdapter {
 
 class MongoSeasonAdapter implements DatabaseAdapter {
   async getCurrentSeason(): Promise<ISeason | null> {
-    const now = new Date();
-    // TODO-kev: Maybe update this to find the one with the latest endDate?
     const currentSeason = await Season.findOne({
-      startDate: { $lt: now },
-      endDate: { $gt: now },
+      isActive: true,
+      endDate: { $gt: new Date() },
     });
-
-    // TODO-kev: Consider how we want to handle nulls. Will there ever be a period where theres no active season? During resets?
-    if (!currentSeason) {
-      console.log(`ERROR: No current season found!!!`);
-    }
 
     return currentSeason as ISeason;
   }

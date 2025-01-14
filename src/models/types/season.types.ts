@@ -5,4 +5,5 @@ export interface ISeason extends Document {
   description: string;
   startDate: Date;
   endDate: Date;
+  isActive: boolean;
 }
