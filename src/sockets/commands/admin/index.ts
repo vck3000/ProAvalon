@@ -14,6 +14,7 @@ import { asessions } from './asessions';
 import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
 import { aresetseason } from './aresetseason';
+import { acreatestat, agetstat } from './acreatestat';
 
 export const adminCommands: Commands = {
   [a.command]: a,
@@ -31,4 +32,6 @@ export const adminCommands: Commands = {
   [acreateseason.command]: acreateseason,
   [agetcurrentseason.command]: agetcurrentseason,
   [aresetseason.command]: aresetseason,
+  [acreatestat.command]: acreatestat,
+  [agetstat.command]: agetstat,
 };

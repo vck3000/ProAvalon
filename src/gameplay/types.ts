@@ -1,5 +1,5 @@
 import Game from './game';
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 export interface RecoverEntry {
   name: RecoverableComponent;
@@ -33,7 +33,7 @@ export interface See {
   roleTags: Record<string, string>; // Username, tag
 }
 
-export interface IUser {
+export interface IUser extends Document {
   username: string;
   usernameLower?: string;
   password?: string;
@@ -75,7 +75,7 @@ export interface IUser {
   matchmakingBlacklist?: string[];
 
   // Mongoose methods
-  save: () => Promise<void>;
+  save: () => Promise<this>;
   markModified: (path: string) => void;
 }
 
