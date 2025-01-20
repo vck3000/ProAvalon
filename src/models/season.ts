@@ -19,6 +19,28 @@ const seasonSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+
+  ratingBrackets: {
+    type: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        min: {
+          type: Number,
+          required: true,
+          min: [0, 'Must be 0 or higher, got {VALUE}'],
+        },
+        max: {
+          type: Number,
+          required: true,
+          min: [0, 'Must be 0 or higher, got {VALUE}'],
+        },
+      },
+    ],
+    required: true,
+  },
 });
 
 // compile schema into a model
