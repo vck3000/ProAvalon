@@ -12,10 +12,26 @@ interface DatabaseAdapter {
     seasonId: Types.ObjectId,
     isWin: boolean,
     ratingChange: number,
-  ): Promise<void>;
+  ): Promise<ISeasonalStat>;
 }
 
 class MongoSeasonalStatAdapter implements DatabaseAdapter {
+  // TODO-kev: Delete below after usage
+  parseSeasonalStat(stat: ISeasonalStat): string {
+    const winRateFormatted = (stat.winRate * 100).toFixed(2) + '%';
+
+    return `
+      rating=${stat.rating},
+      highestRating=${stat.highestRating}, 
+      ratingBracket=${stat.ratingBracket},
+      rankedGamesPlayed=${stat.rankedGamesPlayed}, 
+      rankedGamesWon=${stat.rankedGamesWon}, 
+      rankedGamesLost=${stat.rankedGamesLost}, 
+      winRate=${winRateFormatted}, 
+      lastUpdated=${stat.lastUpdated}, 
+    `;
+  }
+
   async getStat(
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
@@ -42,7 +58,7 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
     seasonId: Types.ObjectId,
     isWin: boolean,
     ratingChange: number,
-  ): Promise<void> {
+  ): Promise<ISeasonalStat> {
     const stat: ISeasonalStat = await SeasonalStats.findOne({
       user: userId,
       season: seasonId,
@@ -64,6 +80,8 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
     stat.lastUpdated = new Date();
 
     await stat.save();
+
+    return stat;
   }
 }
 
