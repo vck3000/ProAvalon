@@ -77,6 +77,10 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
     stat.rating += ratingChange;
     stat.ratingBracket = 'Silver'; // TODO-kev: Update this part
 
+    if (stat.rating > stat.highestRating) {
+      stat.highestRating = stat.rating;
+    }
+
     stat.lastUpdated = new Date();
 
     await stat.save();
