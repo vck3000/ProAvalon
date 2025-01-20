@@ -13,10 +13,6 @@ interface DatabaseAdapter {
     isWin: boolean,
     ratingChange: number,
   ): Promise<void>;
-  createStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-  ): Promise<ISeasonalStat>;
 }
 
 class MongoSeasonalStatAdapter implements DatabaseAdapter {
@@ -24,25 +20,21 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
   ): Promise<ISeasonalStat> {
-    const stat: ISeasonalStat = await SeasonalStats.findOne({
+    let stat: ISeasonalStat = await SeasonalStats.findOne({
       user: userId,
       season: seasonId,
     });
+
+    // TODO-kev: Consider how the user stat should be prefilled across resets
+    if (!stat) {
+      stat = await SeasonalStats.create({
+        user: userId,
+        season: seasonId,
+        lastUpdated: new Date(),
+      });
+    }
 
     return stat;
-  }
-
-  async createStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-  ): Promise<ISeasonalStat> {
-    const newSeasonalStat: ISeasonalStat = await SeasonalStats.create({
-      user: userId,
-      season: seasonId,
-      lastUpdated: new Date(),
-    });
-
-    return newSeasonalStat;
   }
 
   async updateStat(

@@ -9,19 +9,6 @@ import { IUser } from '../../../gameplay/types';
 import seasonalStatAdapter from '../../../databaseAdapters/seasonalStat';
 import { ISeasonalStat } from '../../../models/types/seasonalStats.types';
 
-export const acreatestat: Command = {
-  command: 'acstat',
-  help: '/acstat: Creates a new stat',
-  run: async (args: string[], socket: SocketUser) => {
-    const season: ISeason = await seasonAdapter.getCurrentSeason();
-    const user: IUser = socket.request.user;
-
-    await seasonalStatAdapter.createStat(user._id, season._id);
-
-    sendReplyToCommand(socket, `Created stat for ${user.username}`);
-  },
-};
-
 export const agetstat: Command = {
   command: 'ags',
   help: '/ags: Get stat',
