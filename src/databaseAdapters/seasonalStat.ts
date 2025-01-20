@@ -46,7 +46,6 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
       stat = await SeasonalStats.create({
         user: userId,
         season: seasonId,
-        lastUpdated: new Date(),
       });
     }
 
