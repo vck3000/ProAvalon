@@ -40,6 +40,7 @@ const seasonSchema = new mongoose.Schema({
       },
     ],
     required: true,
+    _id: false,
   },
 });
 

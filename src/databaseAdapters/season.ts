@@ -46,7 +46,7 @@ class MongoSeasonAdapter implements DatabaseAdapter {
     });
 
     console.log(
-      `Season created: id= ${newSeason._id}; name=${newSeason.name}; startDate=${newSeason.startDate}; endDate=${newSeason.endDate}`,
+      `Season created: id= ${newSeason.id}; name=${newSeason.name}; startDate=${newSeason.startDate}; endDate=${newSeason.endDate}`,
     );
 
     return newSeason as ISeason;
@@ -67,7 +67,7 @@ class MongoSeasonAdapter implements DatabaseAdapter {
       currentSeason.isActive = false;
       await currentSeason.save();
       console.log(
-        `Deactivated season: id=${currentSeason._id}; name=${currentSeason.name}`,
+        `Deactivated season: id=${currentSeason.id}; name=${currentSeason.name}`,
       );
     }
 

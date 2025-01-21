@@ -20,9 +20,9 @@ export const acreateseason: Command = {
     try {
       const newSeason: ISeason = await seasonAdapter.createSeason(seasonName);
       const message = `Created new season:
-      seasonId = ${newSeason._id};\n
-      name = ${newSeason.name};\n
-      startDate = ${newSeason.startDate};\n
+      seasonId = ${newSeason.id};
+      name = ${newSeason.name};
+      startDate = ${newSeason.startDate};
       endDate = ${newSeason.endDate}
       `;
 
