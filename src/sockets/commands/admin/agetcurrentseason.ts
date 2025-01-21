@@ -16,12 +16,9 @@ export const agetcurrentseason: Command = {
       return;
     }
 
-    const message = `Current Season details:
-      seasonId = ${currentSeason.id};
-      name = ${currentSeason.name};
-      startDate = ${currentSeason.startDate};
-      endDate = ${currentSeason.endDate}
-      `;
+    const message = `Current Season details: ${seasonAdapter.parseSeason(
+      currentSeason,
+    )}`;
 
     sendReplyToCommand(socket, message);
   },

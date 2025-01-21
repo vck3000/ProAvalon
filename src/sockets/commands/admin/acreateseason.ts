@@ -19,12 +19,9 @@ export const acreateseason: Command = {
 
     try {
       const newSeason: ISeason = await seasonAdapter.createSeason(seasonName);
-      const message = `Created new season:
-      seasonId = ${newSeason.id};
-      name = ${newSeason.name};
-      startDate = ${newSeason.startDate};
-      endDate = ${newSeason.endDate}
-      `;
+      const message = `Created new season: ${seasonAdapter.parseSeason(
+        newSeason,
+      )}`;
 
       sendReplyToCommand(socket, message);
     } catch (error) {

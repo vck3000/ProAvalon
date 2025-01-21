@@ -1,5 +1,6 @@
 export interface ISeason {
   id: string;
+  seasonCounter: number;
   name: string;
   startDate: Date;
   endDate: Date;

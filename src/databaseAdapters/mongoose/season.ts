@@ -3,6 +3,14 @@ import { ISeason } from '../../models/types/season.types';
 
 // TODO-kev: Should we have the implement interface here or no need?
 export class MongoSeasonAdapter {
+  parseSeason(season: ISeason): string {
+    return `id= ${season.id}; 
+    seasonNumber=${season.seasonCounter}
+    name= ${season.name}; 
+    startDate= ${season.startDate}; 
+    endDate= ${season.endDate}`;
+  }
+
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason: ISeason | null = await Season.findOne({
       isActive: true,
@@ -40,9 +48,7 @@ export class MongoSeasonAdapter {
       ],
     });
 
-    console.log(
-      `Season created: id= ${newSeason.id}; name=${newSeason.name}; startDate=${newSeason.startDate}; endDate=${newSeason.endDate}`,
-    );
+    console.log(`Season created: ${this.parseSeason(newSeason)}`);
 
     return newSeason as ISeason;
   }

@@ -3,6 +3,11 @@ import { ISeason } from './types/season.types';
 
 // SCHEMA SETUP
 const seasonSchema = new mongoose.Schema({
+  seasonCounter: {
+    type: Number,
+    required: true,
+    unique: true,
+  },
   name: {
     type: String,
     required: true,
