@@ -2,7 +2,7 @@
 
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import seasonAdapter from '../../../databaseAdapters/mongoose/season';
+import { seasonAdapter } from '../../../databaseAdapters/mongoose';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season.types';
 

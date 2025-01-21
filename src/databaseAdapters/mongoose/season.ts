@@ -1,13 +1,8 @@
 import Season from '../../models/season';
 import { ISeason } from '../../models/types/season.types';
 
-interface DatabaseAdapter {
-  getCurrentSeason(): Promise<ISeason | null>;
-  createSeason(seasonName: string): Promise<ISeason>;
-  resetSeason(newSeasonName: string): Promise<void>;
-}
-
-class MongoSeasonAdapter implements DatabaseAdapter {
+// TODO-kev: Should we have the implement interface here or no need?
+export class MongoSeasonAdapter {
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason: ISeason | null = await Season.findOne({
       isActive: true,
@@ -75,6 +70,3 @@ class MongoSeasonAdapter implements DatabaseAdapter {
     await this.createSeason(newSeasonName);
   }
 }
-
-const seasonAdapter = new MongoSeasonAdapter();
-export default seasonAdapter;
