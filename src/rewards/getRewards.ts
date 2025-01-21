@@ -15,7 +15,7 @@ import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
 import { S3Agent } from '../clients/s3/S3Agent';
 import S3Controller from '../clients/s3/S3Controller';
-import { userAdapter } from '../databaseAdapters';
+import { userAdapter } from '../databaseAdapters/mongoose';
 
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());

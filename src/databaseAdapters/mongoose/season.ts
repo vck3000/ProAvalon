@@ -1,5 +1,5 @@
-import Season from '../models/season';
-import { ISeason } from '../models/types/season.types';
+import Season from '../../models/season';
+import { ISeason } from '../../models/types/season.types';
 
 interface DatabaseAdapter {
   getCurrentSeason(): Promise<ISeason | null>;

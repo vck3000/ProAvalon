@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
-import { userAdapter } from '../../../databaseAdapters';
+import { userAdapter } from '../../../databaseAdapters/mongoose';
 
 export const muted: Command = {
   command: 'muted',

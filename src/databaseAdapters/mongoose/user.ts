@@ -1,6 +1,6 @@
-import User from '../models/user';
-import { IUser } from '../gameplay/types';
-import { S3AvatarSet } from '../clients/s3/S3Agent';
+import User from '../../models/user';
+import { IUser } from '../../gameplay/types';
+import { S3AvatarSet } from '../../clients/s3/S3Agent';
 
 export class MongoUserAdapter {
   async getUser(username: string): Promise<IUser> {

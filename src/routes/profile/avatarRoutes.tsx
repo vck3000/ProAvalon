@@ -7,7 +7,7 @@ import AvatarHome from '../../views/components/avatar/avatarHome';
 import { EnrichedRequest } from '../types';
 import { checkProfileOwnership } from '../middleware';
 
-import { userAdapter } from '../../databaseAdapters';
+import { userAdapter } from '../../databaseAdapters/mongoose';
 import { S3AvatarSet, S3Agent } from '../../clients/s3/S3Agent';
 import S3Controller from '../../clients/s3/S3Controller';
 
