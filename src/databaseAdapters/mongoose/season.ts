@@ -4,11 +4,7 @@ import { ISeason } from '../../models/types/season.types';
 // TODO-kev: Should we have the implement interface here or no need?
 export class MongoSeasonAdapter {
   parseSeason(season: ISeason): string {
-    return `id= ${season.id}; 
-    seasonNumber=${season.seasonCounter}
-    name= ${season.name}; 
-    startDate= ${season.startDate}; 
-    endDate= ${season.endDate}`;
+    return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}`;
   }
 
   async getCurrentSeason(): Promise<ISeason | null> {
