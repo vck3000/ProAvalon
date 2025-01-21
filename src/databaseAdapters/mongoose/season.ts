@@ -7,6 +7,7 @@ export class MongoSeasonAdapter {
     return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}`;
   }
 
+  // TODO-kev: Consider grabbing the highest seasonCounter instead
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason: ISeason | null = await Season.findOne({
       isActive: true,
@@ -55,6 +56,7 @@ export class MongoSeasonAdapter {
     return newSeason as ISeason;
   }
 
+  // TODO-kev: Below method is incomplete
   async resetSeason(newSeasonName: string): Promise<void> {
     const currentSeason: ISeason | null = await this.getCurrentSeason();
 
