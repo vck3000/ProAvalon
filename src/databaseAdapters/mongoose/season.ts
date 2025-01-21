@@ -31,8 +31,14 @@ export class MongoSeasonAdapter {
     const endDate = new Date(startDate);
     endDate.setMonth(startDate.getMonth() + 3); // 3 months
 
+    const latestSeason: ISeason | null = await Season.findOne().sort({
+      seasonCounter: -1,
+    });
+    const seasonCounter = latestSeason ? latestSeason.seasonCounter + 1 : 0;
+
     const newSeason: ISeason = await Season.create({
       name: seasonName,
+      seasonCounter: seasonCounter,
       startDate: startDate,
       endDate: endDate,
       isActive: true,
