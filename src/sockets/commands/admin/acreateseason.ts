@@ -8,7 +8,7 @@ import { ISeason } from '../../../models/types/season.types';
 
 export const acreateseason: Command = {
   command: 'acs',
-  help: '/acs: Creates a new season',
+  help: '/acs <name>: Creates a new season',
   run: async (args: string[], socket: SocketUser) => {
     if (args.length != 2) {
       sendReplyToCommand(socket, 'Please include the season name.');
