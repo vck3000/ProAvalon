@@ -24,7 +24,7 @@ import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
-import userAdapter from '../../databaseAdapters/user';
+import { userAdapter } from '../../databaseAdapters';
 import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 import { avatarSubmissionsMetric } from '../../metrics/miscellaneousMetrics';
 

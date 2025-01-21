@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
-import userAdapter from '../../../databaseAdapters/user';
+import { userAdapter } from '../../../databaseAdapters';
 import { S3Agent } from '../../../clients/s3/S3Agent';
 import S3Controller from '../../../clients/s3/S3Controller';
 

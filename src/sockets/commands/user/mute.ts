@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
-import userAdapter from '../../../databaseAdapters/user';
+import { userAdapter } from '../../../databaseAdapters';
 
 export const mute: Command = {
   command: 'mute',
