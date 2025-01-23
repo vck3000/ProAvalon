@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { ISeasonalStat } from './types/seasonalStats';
 
 // SCHEMA SETUP
 const seasonalStatsSchema = new mongoose.Schema({
@@ -67,6 +68,9 @@ const seasonalStatsSchema = new mongoose.Schema({
 });
 
 // compile schema into a model
-const SeasonalStats = mongoose.model('seasonalStats', seasonalStatsSchema);
+const SeasonalStats = mongoose.model<ISeasonalStat>(
+  'seasonalStats',
+  seasonalStatsSchema,
+);
 
 export default SeasonalStats;

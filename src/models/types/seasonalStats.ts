@@ -1,7 +1,7 @@
 import { Types } from 'mongoose';
 
 export interface ISeasonalStat {
-  id?: Types.ObjectId;
+  id: Types.ObjectId;
   user: Types.ObjectId;
   season: Types.ObjectId;
 
