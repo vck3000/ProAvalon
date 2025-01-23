@@ -1,7 +1,9 @@
-import IUserDbAdapter from './user';
 import ISeasonDbAdapter from './season';
+import ISeasonalStatDbAdapter from './seasonalStat';
+import IUserDbAdapter from './user';
 
 export default interface IDatabaseAdapter {
-  user: IUserDbAdapter;
   season: ISeasonDbAdapter;
+  seasonalStat: ISeasonalStatDbAdapter;
+  user: IUserDbAdapter;
 }

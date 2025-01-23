@@ -1,21 +1,8 @@
-import { ISeasonalStat } from '../models/types/seasonalStats.types';
+import { ISeasonalStat } from '../../models/types/seasonalStats.types';
 import { Types } from 'mongoose';
-import SeasonalStats from '../models/seasonalStats';
+import SeasonalStats from '../../models/seasonalStats';
 
-interface DatabaseAdapter {
-  getStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-  ): Promise<ISeasonalStat>;
-  updateStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-    isWin: boolean,
-    ratingChange: number,
-  ): Promise<ISeasonalStat>;
-}
-
-class MongoSeasonalStatAdapter implements DatabaseAdapter {
+export class MongoSeasonalStatAdapter {
   // TODO-kev: Delete below after usage
   parseSeasonalStat(stat: ISeasonalStat): string {
     const winRateFormatted = (stat.winRate * 100).toFixed(2) + '%';
@@ -34,7 +21,7 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
 
   async getStat(
     userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
+    seasonId: string,
   ): Promise<ISeasonalStat> {
     let stat: ISeasonalStat = await SeasonalStats.findOne({
       user: userId,
@@ -54,7 +41,7 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
 
   async updateStat(
     userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
+    seasonId: string,
     isWin: boolean,
     ratingChange: number,
   ): Promise<ISeasonalStat> {
@@ -87,6 +74,3 @@ class MongoSeasonalStatAdapter implements DatabaseAdapter {
     return stat;
   }
 }
-
-const seasonalStatAdapter = new MongoSeasonalStatAdapter();
-export default seasonalStatAdapter;
