@@ -4,7 +4,7 @@ import { Command } from '../types';
 import { SocketUser } from '../../types';
 import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { sendReplyToCommand } from '../../sockets';
-import { ISeason } from '../../../models/types/season.types';
+import { ISeason } from '../../../models/types/season';
 
 export const acreateseason: Command = {
   command: 'acs',

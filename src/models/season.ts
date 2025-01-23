@@ -1,5 +1,5 @@
 import mongoose from 'mongoose';
-import { ISeason } from './types/season.types';
+import { ISeason } from './types/season';
 
 // SCHEMA SETUP
 const seasonSchema = new mongoose.Schema({

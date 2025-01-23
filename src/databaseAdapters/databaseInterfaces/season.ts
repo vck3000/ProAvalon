@@ -1,4 +1,4 @@
-import { ISeason } from '../../models/types/season.types';
+import { ISeason } from '../../models/types/season';
 
 export default interface ISeasonDbAdapter {
   parseSeason(season: ISeason): string;

@@ -1,5 +1,5 @@
 import Season from '../../models/season';
-import { ISeason } from '../../models/types/season.types';
+import { ISeason } from '../../models/types/season';
 
 // TODO-kev: Should we have the implement interface here or no need?
 export class MongoSeasonAdapter {
