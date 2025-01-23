@@ -7,7 +7,5 @@ class MongoDatabaseAdapter implements IDatabaseAdapter {
   user: MongoUserAdapter = new MongoUserAdapter();
 }
 
-const mongoDatabaseAdapter: MongoDatabaseAdapter = new MongoDatabaseAdapter();
-
-export const seasonAdapter: MongoSeasonAdapter = mongoDatabaseAdapter.season;
-export const userAdapter: MongoUserAdapter = mongoDatabaseAdapter.user;
+const mongoDbAdapter: MongoDatabaseAdapter = new MongoDatabaseAdapter();
+export default mongoDbAdapter;

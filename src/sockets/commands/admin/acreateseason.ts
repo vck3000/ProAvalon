@@ -2,7 +2,7 @@
 
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import { seasonAdapter } from '../../../databaseAdapters/mongoose';
+import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season.types';
 
@@ -18,8 +18,10 @@ export const acreateseason: Command = {
     const seasonName = args[1];
 
     try {
-      const newSeason: ISeason = await seasonAdapter.createSeason(seasonName);
-      const message = `Created new season: ${seasonAdapter.parseSeason(
+      const newSeason: ISeason = await mongoDbAdapter.season.createSeason(
+        seasonName,
+      );
+      const message = `Created new season: ${mongoDbAdapter.season.parseSeason(
         newSeason,
       )}`;
 
