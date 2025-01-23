@@ -16,7 +16,7 @@ export const agetstat: Command = {
     const user: IUser = socket.request.user;
 
     const stat: ISeasonalStat = await mongoDbAdapter.seasonalStat.getStat(
-      user._id,
+      user.id,
       season.id,
     );
 
@@ -44,14 +44,14 @@ export const aupdatestat: Command = {
 
     if (args[1] === 'win') {
       stat = await mongoDbAdapter.seasonalStat.updateStat(
-        user._id,
+        user.id,
         season.id,
         true,
         25,
       );
     } else {
       stat = await mongoDbAdapter.seasonalStat.updateStat(
-        user._id,
+        user.id,
         season.id,
         false,
         -10,

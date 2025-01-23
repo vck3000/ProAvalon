@@ -74,7 +74,7 @@ export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
       res.locals.bansChecked = true;
       // Check bans
       const ban = await Ban.findOne({
-        'bannedPlayer.id': user._id, // User ID match
+        'bannedPlayer.id': user.id, // User ID match
         whenRelease: { $gt: new Date() }, // Unexpired ban
         userBan: true, // User ban
         disabled: false, // Ban must be active
@@ -158,7 +158,7 @@ const checkOwnership = (name, model, query, isOwner) => [
       next();
     } else {
       console.log(
-        `${req.user._id} ${req.user.username} has attempted to do something bad`,
+        `${req.user.id} ${req.user.username} has attempted to do something bad`,
       );
       req.flash('error', 'You are not the owner!');
       res.redirect('back');
@@ -181,7 +181,7 @@ export const checkForumThreadOwnership = checkOwnership(
   (req) => ({
     _id: req.params.id,
   }),
-  (req, thread) => thread.author.id && thread.author.id.equals(req.user._id),
+  (req, thread) => thread.author.id && thread.author.id.equals(req.user.id),
 );
 
 export const checkForumThreadCommentOwnership = checkOwnership(
@@ -190,7 +190,7 @@ export const checkForumThreadCommentOwnership = checkOwnership(
   (req) => ({
     _id: req.params.comment_id,
   }),
-  (req, comment) => comment.author.id && comment.author.id.equals(req.user._id),
+  (req, comment) => comment.author.id && comment.author.id.equals(req.user.id),
 );
 
 export const checkForumThreadCommentReplyOwnership = checkOwnership(
@@ -199,7 +199,7 @@ export const checkForumThreadCommentReplyOwnership = checkOwnership(
   (req) => ({
     _id: req.params.reply_id,
   }),
-  (req, reply) => reply.author.id && reply.author.id.equals(req.user._id),
+  (req, reply) => reply.author.id && reply.author.id.equals(req.user.id),
 );
 
 export const isModMiddleware = (req, res, next) => {

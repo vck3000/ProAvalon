@@ -1,5 +1,5 @@
 import Game from './game';
-import { Document, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
 export interface RecoverEntry {
   name: RecoverableComponent;
@@ -33,7 +33,8 @@ export interface See {
   roleTags: Record<string, string>; // Username, tag
 }
 
-export interface IUser extends Document {
+export interface IUser {
+  id: Types.ObjectId;
   username: string;
   usernameLower?: string;
   password?: string;

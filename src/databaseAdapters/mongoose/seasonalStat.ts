@@ -21,7 +21,7 @@ export class MongoSeasonalStatAdapter {
 
   async getStat(
     userId: Types.ObjectId,
-    seasonId: string,
+    seasonId: Types.ObjectId,
   ): Promise<ISeasonalStat> {
     let stat: ISeasonalStat = await SeasonalStats.findOne({
       user: userId,
@@ -41,7 +41,7 @@ export class MongoSeasonalStatAdapter {
 
   async updateStat(
     userId: Types.ObjectId,
-    seasonId: string,
+    seasonId: Types.ObjectId,
     isWin: boolean,
     ratingChange: number,
   ): Promise<ISeasonalStat> {
@@ -61,7 +61,7 @@ export class MongoSeasonalStatAdapter {
     stat.winRate = stat.rankedGamesWon / stat.rankedGamesPlayed;
 
     stat.rating += ratingChange;
-    stat.ratingBracket = 'Silver'; // TODO-kev: Update this part
+    stat.ratingBracket = 'silver'; // TODO-kev: Update this part
 
     if (stat.rating > stat.highestRating) {
       stat.highestRating = stat.rating;
