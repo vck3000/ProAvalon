@@ -24,7 +24,7 @@ import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
-import userAdapter from '../../databaseAdapters/user';
+import mongoDbAdapter from '../../databaseAdapters/mongoose';
 import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 import { avatarSubmissionsMetric } from '../../metrics/miscellaneousMetrics';
 
@@ -96,7 +96,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
   const updatedAvatarRequests: Promise<UpdatedAvatarRequest[]> =
     await Promise.all(
       customAvatarRequests.map(async (avatarReq) => {
-        const user = await userAdapter.getUser(avatarReq.forUsername);
+        const user = await mongoDbAdapter.user.getUser(avatarReq.forUsername);
         const librarySize = await getAvatarLibrarySizeForUser(
           user.usernameLower,
         );
@@ -253,7 +253,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
     throw e;
   }
 
-  await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
+  await mongoDbAdapter.user.removeAvatar(targetUsername, toBeDeletedAvatarSet);
 
   await ModLog.create({
     type: 'avatarDelete',
@@ -291,7 +291,7 @@ router.post(
     }
 
     const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
-    const userRequestingAvatar = await userAdapter.getUser(
+    const userRequestingAvatar = await mongoDbAdapter.user.getUser(
       avatarReq.forUsername.toLowerCase(),
     );
 
@@ -321,7 +321,7 @@ router.post(
         userRequestingAvatar.usernameLower,
       );
 
-      await userAdapter.setAvatarAndUpdateLibrary(
+      await mongoDbAdapter.user.setAvatarAndUpdateLibrary(
         userRequestingAvatar.usernameLower,
         approvedAvatarLinks,
         librarySize,

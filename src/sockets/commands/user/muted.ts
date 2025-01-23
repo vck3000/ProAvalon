@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
-import userAdapter from '../../../databaseAdapters/user';
+import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 
 export const muted: Command = {
   command: 'muted',
@@ -15,7 +15,9 @@ export const muted: Command = {
       return;
     }
 
-    const user = await userAdapter.getUser(socket.request.user.username);
+    const user = await mongoDbAdapter.user.getUser(
+      socket.request.user.username,
+    );
 
     if (user.mutedPlayers.length === 0) {
       sendReplyToCommand(socket, 'You have no muted players.');

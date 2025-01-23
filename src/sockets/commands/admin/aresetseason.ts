@@ -2,7 +2,7 @@
 
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import seasonAdapter from '../../../databaseAdapters/season';
+import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { sendReplyToCommand } from '../../sockets';
 
 export const aresetseason: Command = {
@@ -17,7 +17,7 @@ export const aresetseason: Command = {
     const seasonName = args[1];
 
     try {
-      await seasonAdapter.resetSeason(seasonName);
+      await mongoDbAdapter.season.resetSeason(seasonName);
       sendReplyToCommand(socket, 'Successfully reset season.');
     } catch (error) {
       sendReplyToCommand(socket, error.message);
