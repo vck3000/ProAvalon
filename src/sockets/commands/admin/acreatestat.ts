@@ -4,7 +4,7 @@ import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
 import { IUser } from '../../../gameplay/types';
-import { ISeasonalStat } from '../../../models/types/seasonalStats.types';
+import { ISeasonalStat } from '../../../models/types/seasonalStats';
 import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { ISeason } from '../../../models/types/season';
 

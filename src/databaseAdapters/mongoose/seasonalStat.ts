@@ -1,4 +1,4 @@
-import { ISeasonalStat } from '../../models/types/seasonalStats.types';
+import { ISeasonalStat } from '../../models/types/seasonalStats';
 import { Types } from 'mongoose';
 import SeasonalStats from '../../models/seasonalStats';
 
@@ -23,20 +23,19 @@ export class MongoSeasonalStatAdapter {
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
   ): Promise<ISeasonalStat> {
-    let stat: ISeasonalStat = await SeasonalStats.findOne({
+    const stat: ISeasonalStat = await SeasonalStats.findOne({
       user: userId,
       season: seasonId,
     });
 
-    // TODO-kev: Consider how the user stat should be prefilled across resets
-    if (!stat) {
-      stat = await SeasonalStats.create({
+    if (stat) {
+      return stat;
+    } else {
+      return await SeasonalStats.create({
         user: userId,
         season: seasonId,
       });
     }
-
-    return stat;
   }
 
   async updateStat(

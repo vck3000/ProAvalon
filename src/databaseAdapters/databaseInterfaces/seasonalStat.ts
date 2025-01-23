@@ -1,5 +1,5 @@
 import { Types } from 'mongoose';
-import { ISeasonalStat } from '../../models/types/seasonalStats.types';
+import { ISeasonalStat } from '../../models/types/seasonalStats';
 
 export default interface ISeasonalStatDbAdapter {
   parseSeasonalStat(stat: ISeasonalStat): string;

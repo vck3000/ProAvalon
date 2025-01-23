@@ -1,6 +1,7 @@
-import { Document, Types } from 'mongoose';
+import { Types } from 'mongoose';
 
-export interface ISeasonalStat extends Document {
+export interface ISeasonalStat {
+  id?: Types.ObjectId;
   user: Types.ObjectId;
   season: Types.ObjectId;
 
@@ -14,4 +15,7 @@ export interface ISeasonalStat extends Document {
   winRate: number;
 
   lastUpdated: Date;
+
+  // Mongoose methods
+  save: () => Promise<this>;
 }
