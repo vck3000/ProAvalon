@@ -19,6 +19,16 @@ export class MongoSeasonalStatAdapter {
     `;
   }
 
+  async createStat(
+    userId: Types.ObjectId,
+    seasonId: Types.ObjectId,
+  ): Promise<ISeasonalStat> {
+    return await SeasonalStats.create({
+      user: userId,
+      season: seasonId,
+    });
+  }
+
   async getStat(
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
@@ -28,14 +38,7 @@ export class MongoSeasonalStatAdapter {
       season: seasonId,
     });
 
-    if (stat) {
-      return stat;
-    } else {
-      return await SeasonalStats.create({
-        user: userId,
-        season: seasonId,
-      });
-    }
+    return stat ? stat : await this.createStat(userId, seasonId);
   }
 
   async updateStat(
