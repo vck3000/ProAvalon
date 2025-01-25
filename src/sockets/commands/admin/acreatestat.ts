@@ -4,7 +4,7 @@ import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
 import { IUser } from '../../../gameplay/types';
-import { ISeasonalStat } from '../../../models/types/seasonalStats';
+import { IUserSeasonStat } from '../../../models/types/userSeasonStat';
 import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { ISeason } from '../../../models/types/season';
 
@@ -15,7 +15,7 @@ export const agetstat: Command = {
     const season: ISeason = await mongoDbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
 
-    const stat: ISeasonalStat = await mongoDbAdapter.seasonalStat.getStat(
+    const stat: IUserSeasonStat = await mongoDbAdapter.userSeasonStat.getStat(
       user.id,
       season.id,
     );
@@ -23,7 +23,7 @@ export const agetstat: Command = {
     const message = `
       Current stat for ${
         user.username
-      }: ${mongoDbAdapter.seasonalStat.parseSeasonalStat(stat)}`;
+      }: ${mongoDbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
 
     sendReplyToCommand(socket, message);
   },
@@ -40,17 +40,17 @@ export const aupdatestat: Command = {
     const season: ISeason = await mongoDbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
 
-    let stat: ISeasonalStat;
+    let stat: IUserSeasonStat;
 
     if (args[1] === 'win') {
-      stat = await mongoDbAdapter.seasonalStat.updateStat(
+      stat = await mongoDbAdapter.userSeasonStat.updateStat(
         user.id,
         season.id,
         true,
         25,
       );
     } else {
-      stat = await mongoDbAdapter.seasonalStat.updateStat(
+      stat = await mongoDbAdapter.userSeasonStat.updateStat(
         user.id,
         season.id,
         false,
@@ -61,7 +61,7 @@ export const aupdatestat: Command = {
     const message = `
       New stat for ${
         user.username
-      }: ${mongoDbAdapter.seasonalStat.parseSeasonalStat(stat)}`;
+      }: ${mongoDbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
 
     sendReplyToCommand(socket, message);
   },

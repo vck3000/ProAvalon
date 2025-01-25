@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import { ISeasonalStat } from './types/seasonalStats';
+import { IUserSeasonStat } from './types/userSeasonStat';
 
 // SCHEMA SETUP
-const seasonalStatsSchema = new mongoose.Schema({
+const userSeasonStatSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
@@ -58,9 +58,9 @@ const seasonalStatsSchema = new mongoose.Schema({
 });
 
 // compile schema into a model
-const SeasonalStats = mongoose.model<ISeasonalStat>(
-  'seasonalStats',
-  seasonalStatsSchema,
+const UserSeasonStat = mongoose.model<IUserSeasonStat>(
+  'userSeasonStat',
+  userSeasonStatSchema,
 );
 
-export default SeasonalStats;
+export default UserSeasonStat;

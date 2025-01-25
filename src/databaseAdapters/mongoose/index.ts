@@ -1,12 +1,12 @@
 import IDatabaseAdapter from '../databaseInterfaces';
 import { MongoSeasonAdapter } from './season';
-import { MongoSeasonalStatAdapter } from './seasonalStat';
+import { MongoUserSeasonStatAdapter } from './userSeasonStat';
 import { MongoUserAdapter } from './user';
 
 class MongoDatabaseAdapter implements IDatabaseAdapter {
   season: MongoSeasonAdapter = new MongoSeasonAdapter();
-  seasonalStat: MongoSeasonalStatAdapter = new MongoSeasonalStatAdapter();
   user: MongoUserAdapter = new MongoUserAdapter();
+  userSeasonStat: MongoUserSeasonStatAdapter = new MongoUserSeasonStatAdapter();
 }
 
 const mongoDbAdapter: MongoDatabaseAdapter = new MongoDatabaseAdapter();

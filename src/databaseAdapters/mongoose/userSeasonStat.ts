@@ -1,10 +1,11 @@
-import { ISeasonalStat } from '../../models/types/seasonalStats';
+import { IUserSeasonStat } from '../../models/types/userSeasonStat';
 import { Types } from 'mongoose';
-import SeasonalStats from '../../models/seasonalStats';
+import UserSeasonStat from '../../models/userSeasonStat';
+import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 
-export class MongoSeasonalStatAdapter {
+export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   // TODO-kev: Delete below after usage
-  parseSeasonalStat(stat: ISeasonalStat): string {
+  formatUserSeasonStat(stat: IUserSeasonStat): string {
     const winRateFormatted = (stat.winRate * 100).toFixed(2) + '%';
 
     return `
@@ -22,8 +23,8 @@ export class MongoSeasonalStatAdapter {
   async createStat(
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
-  ): Promise<ISeasonalStat> {
-    return await SeasonalStats.create({
+  ): Promise<IUserSeasonStat> {
+    return await UserSeasonStat.create({
       user: userId,
       season: seasonId,
     });
@@ -32,8 +33,8 @@ export class MongoSeasonalStatAdapter {
   async getStat(
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
-  ): Promise<ISeasonalStat> {
-    const stat: ISeasonalStat = await SeasonalStats.findOne({
+  ): Promise<IUserSeasonStat> {
+    const stat: IUserSeasonStat = await UserSeasonStat.findOne({
       user: userId,
       season: seasonId,
     });
@@ -46,8 +47,8 @@ export class MongoSeasonalStatAdapter {
     seasonId: Types.ObjectId,
     isWin: boolean,
     ratingChange: number,
-  ): Promise<ISeasonalStat> {
-    const stat: ISeasonalStat = await SeasonalStats.findOne({
+  ): Promise<IUserSeasonStat> {
+    const stat: IUserSeasonStat = await UserSeasonStat.findOne({
       user: userId,
       season: seasonId,
     });

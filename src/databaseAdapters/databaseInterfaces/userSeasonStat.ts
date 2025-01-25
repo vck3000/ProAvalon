@@ -1,20 +1,20 @@
 import { Types } from 'mongoose';
-import { ISeasonalStat } from '../../models/types/seasonalStats';
+import { IUserSeasonStat } from '../../models/types/userSeasonStat';
 
-export default interface ISeasonalStatDbAdapter {
-  parseSeasonalStat(stat: ISeasonalStat): string;
+export default interface IUserSeasonStatDbAdapter {
+  formatUserSeasonStat(stat: IUserSeasonStat): string;
   createStat(
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
-  ): Promise<ISeasonalStat>;
+  ): Promise<IUserSeasonStat>;
   getStat(
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
-  ): Promise<ISeasonalStat>;
+  ): Promise<IUserSeasonStat>;
   updateStat(
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
     isWin: boolean,
     ratingChange: number,
-  ): Promise<ISeasonalStat>;
+  ): Promise<IUserSeasonStat>;
 }

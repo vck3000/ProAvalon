@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 
-export interface ISeasonalStat {
+export interface IUserSeasonStat {
   id: Types.ObjectId;
   user: Types.ObjectId;
   season: Types.ObjectId;
