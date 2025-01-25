@@ -39,7 +39,7 @@ export const acreateseason: Command = {
         endDate,
         ratingBrackets,
       );
-      const message = `Created new season: ${mongoDbAdapter.season.parseSeason(
+      const message = `Created new season: ${mongoDbAdapter.season.formatSeason(
         newSeason,
       )}`;
 

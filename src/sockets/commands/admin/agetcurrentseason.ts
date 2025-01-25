@@ -17,7 +17,7 @@ export const agetcurrentseason: Command = {
       return;
     }
 
-    const message = `Current Season details: ${mongoDbAdapter.season.parseSeason(
+    const message = `Current Season details: ${mongoDbAdapter.season.formatSeason(
       currentSeason,
     )}`;
 

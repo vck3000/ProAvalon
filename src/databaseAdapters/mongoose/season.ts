@@ -10,7 +10,7 @@ export interface RatingBracket {
 }
 
 export class MongoSeasonAdapter implements ISeasonDbAdapter {
-  parseSeason(season: ISeason): string {
+  formatSeason(season: ISeason): string {
     return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}`;
   }
 
@@ -50,7 +50,7 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
       isActive: true,
     });
 
-    console.log(`Season created: ${this.parseSeason(newSeason)}`);
+    console.log(`Season created: ${this.formatSeason(newSeason)}`);
 
     return newSeason as ISeason;
   }
