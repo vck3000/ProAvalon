@@ -13,8 +13,6 @@ import { asessions } from './asessions';
 // TODO-kev: Delete the below. Purely for testing purposes
 import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
-import { aresetseason } from './aresetseason';
-import { agetstat, aupdatestat } from './acreatestat';
 
 export const adminCommands: Commands = {
   [a.command]: a,
@@ -31,7 +29,4 @@ export const adminCommands: Commands = {
   // TODO-kev: Delete the below. Purely for testing purposes
   [acreateseason.command]: acreateseason,
   [agetcurrentseason.command]: agetcurrentseason,
-  [aresetseason.command]: aresetseason,
-  [agetstat.command]: agetstat,
-  [aupdatestat.command]: aupdatestat,
 };
