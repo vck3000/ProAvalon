@@ -1,8 +1,15 @@
 import Season from '../../models/season';
 import { ISeason } from '../../models/types/season';
+import ISeasonDbAdapter from '../databaseInterfaces/season';
 
-// TODO-kev: Should we have the implement interface here or no need?
-export class MongoSeasonAdapter {
+// TODO-kev: Consider where to place this
+export interface RatingBracket {
+  name: string;
+  min: number;
+  max: number;
+}
+
+export class MongoSeasonAdapter implements ISeasonDbAdapter {
   parseSeason(season: ISeason): string {
     return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}`;
   }
@@ -16,7 +23,12 @@ export class MongoSeasonAdapter {
     return currentSeason as ISeason;
   }
 
-  async createSeason(seasonName: string): Promise<ISeason> {
+  async createSeason(
+    seasonName: string,
+    startDate: Date,
+    endDate: Date,
+    ratingBrackets: RatingBracket[],
+  ): Promise<ISeason> {
     const currentSeason: ISeason = await this.getCurrentSeason();
 
     if (currentSeason) {
@@ -24,10 +36,6 @@ export class MongoSeasonAdapter {
     }
 
     // TODO-kev: This is just an example of creating a season. Consider configurable params etc
-    const startDate = new Date();
-    const endDate = new Date(startDate);
-    endDate.setMonth(startDate.getMonth() + 3); // 3 months
-
     const latestSeason: ISeason | null = await Season.findOne().sort({
       seasonCounter: -1,
     });
@@ -35,20 +43,11 @@ export class MongoSeasonAdapter {
 
     const newSeason: ISeason = await Season.create({
       name: seasonName,
-      seasonCounter: seasonCounter,
-      startDate: startDate,
-      endDate: endDate,
+      seasonCounter,
+      startDate,
+      endDate,
+      ratingBrackets,
       isActive: true,
-
-      ratingBrackets: [
-        { name: 'iron', min: 0, max: 1299 }, // Lower limit set at 0
-        { name: 'bronze', min: 1300, max: 1399 },
-        { name: 'silver', min: 1400, max: 1549 },
-        { name: 'gold', min: 1550, max: 1699 },
-        { name: 'platinum', min: 1700, max: 1799 },
-        { name: 'diamond', min: 1800, max: 1899 },
-        { name: 'champion', min: 1900, max: Infinity }, // Must have no upper limit
-      ],
     });
 
     console.log(`Season created: ${this.parseSeason(newSeason)}`);
