@@ -14,10 +14,10 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
     return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}`;
   }
 
-  // TODO-kev: Consider grabbing the highest seasonCounter instead
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason: ISeason | null = await Season.findOne({
-      isActive: true,
+      startDate: { $lte: new Date() },
+      endDate: { $gte: new Date() },
     });
 
     return currentSeason as ISeason;
