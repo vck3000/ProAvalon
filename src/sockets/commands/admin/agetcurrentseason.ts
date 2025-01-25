@@ -8,12 +8,12 @@ import { ISeason } from '../../../models/types/season';
 
 export const agetcurrentseason: Command = {
   command: 'agcs',
-  help: '/agcs: Gets current season',
+  help: '/agcs: Gets current season details.',
   run: async (args: string[], socket: SocketUser) => {
     const currentSeason: ISeason =
       await mongoDbAdapter.season.getCurrentSeason();
     if (!currentSeason) {
-      sendReplyToCommand(socket, 'No current season found!!!');
+      sendReplyToCommand(socket, 'There is no active season right now.');
       return;
     }
 
