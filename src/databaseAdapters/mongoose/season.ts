@@ -55,28 +55,4 @@ export class MongoSeasonAdapter {
 
     return newSeason as ISeason;
   }
-
-  // TODO-kev: Below method is incomplete
-  async resetSeason(newSeasonName: string): Promise<void> {
-    const currentSeason: ISeason | null = await this.getCurrentSeason();
-
-    if (currentSeason) {
-      // Check if ongoing season
-      if (currentSeason.endDate > new Date()) {
-        throw new Error(
-          `Unable to reset season while season is ongoing. Current season ends on ${currentSeason.endDate}.`,
-        );
-      }
-
-      // Deactivate the current season
-      currentSeason.isActive = false;
-      await currentSeason.save();
-      console.log(
-        `Deactivated season: id=${currentSeason.id}; name=${currentSeason.name}`,
-      );
-    }
-
-    // Create a new season
-    await this.createSeason(newSeasonName);
-  }
 }
