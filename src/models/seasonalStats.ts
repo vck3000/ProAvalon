@@ -26,17 +26,7 @@ const seasonalStatsSchema = new mongoose.Schema({
   },
   ratingBracket: {
     type: String,
-    default: 'unranked', // TODO-kev: Consider if there is an enum to share here. Or if this is needed
-    enum: [
-      'unranked',
-      'iron',
-      'bronze',
-      'silver',
-      'gold',
-      'platinum',
-      'diamond',
-      'champion',
-    ],
+    default: 'unranked',
   },
 
   rankedGamesPlayed: {
