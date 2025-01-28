@@ -6,6 +6,8 @@ import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season';
 import { RatingBracket } from '../../../databaseAdapters/mongoose/season';
+import { Alliance } from '../../../gameplay/types';
+import { ISeasonRole, Role } from '../../../gameplay/roles/types';
 
 export const acreateseason: Command = {
   command: 'acs',
@@ -32,12 +34,39 @@ export const acreateseason: Command = {
       { name: 'champion', min: 1900, max: Infinity }, // Must have no upper limit
     ];
 
+    const gameMode = '6p';
+
+    const rolesAvailable: ISeasonRole[] = [
+      {
+        name: Role.Merlin,
+        alliance: Alliance.Resistance,
+      },
+      {
+        name: Role.Morgana,
+        alliance: Alliance.Spy,
+      },
+      {
+        name: Role.Percival,
+        alliance: Alliance.Resistance,
+      },
+      {
+        name: Role.Assassin,
+        alliance: Alliance.Spy,
+      },
+      {
+        name: Role.Resistance,
+        alliance: Alliance.Resistance,
+      },
+    ];
+
     try {
       const newSeason: ISeason = await mongoDbAdapter.season.createSeason(
         seasonName,
         startDate,
         endDate,
         ratingBrackets,
+        gameMode,
+        rolesAvailable,
       );
       const message = `Created new season: ${mongoDbAdapter.season.formatSeason(
         newSeason,

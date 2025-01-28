@@ -1,6 +1,7 @@
 import Season from '../../models/season';
 import { ISeason } from '../../models/types/season';
 import ISeasonDbAdapter from '../databaseInterfaces/season';
+import { ISeasonRole } from '../../gameplay/roles/types';
 
 // TODO-kev: Consider where to place this
 export interface RatingBracket {
@@ -29,6 +30,8 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
     startDate: Date,
     endDate: Date,
     ratingBrackets: RatingBracket[],
+    gameMode: string,
+    rolesAvailable: ISeasonRole[],
   ): Promise<ISeason> {
     const currentSeason: ISeason = await this.getCurrentSeason();
 
@@ -48,6 +51,8 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
       startDate,
       endDate,
       ratingBrackets,
+      gameMode,
+      rolesAvailable,
     });
 
     console.log(`Season created: ${this.formatSeason(newSeason)}`);
