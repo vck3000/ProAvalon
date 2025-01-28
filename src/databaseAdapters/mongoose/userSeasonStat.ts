@@ -4,7 +4,6 @@ import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
-  // TODO-kev: Delete below after usage
   formatUserSeasonStat(stat: IUserSeasonStat): string {
     const winRateFormatted = (stat.winRate * 100).toFixed(2) + '%';
 

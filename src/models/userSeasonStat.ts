@@ -51,6 +51,28 @@ const userSeasonStatSchema = new mongoose.Schema({
     max: [100, 'Must be less than or equal to 100, but got {VALUE}.'], // TODO-kev: Is this necessary if enforced?
   },
 
+  roleStats: {
+    type: [
+      {
+        role: {
+          type: String,
+          required: true,
+        },
+        gamesWon: {
+          type: Number,
+          default: 0,
+          min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
+        },
+        gamesLost: {
+          type: Number,
+          default: 0,
+          min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
+        },
+      },
+    ],
+    required: true,
+  },
+
   lastUpdated: {
     type: Date,
     default: new Date(),

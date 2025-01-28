@@ -14,6 +14,12 @@ export interface IUserSeasonStat {
   rankedGamesLost: number;
   winRate: number;
 
+  roleStats: {
+    role: string;
+    gamesWon: number;
+    gamesLost: number;
+  }[];
+
   lastUpdated: Date;
 
   // Mongoose methods
