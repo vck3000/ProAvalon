@@ -1,7 +1,8 @@
-import { IUserSeasonStat } from '../../models/types/userSeasonStat';
+import { IRoleStat, IUserSeasonStat } from '../../models/types/userSeasonStat';
 import { Types } from 'mongoose';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
+import Season from '../../models/season';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   formatUserSeasonStat(stat: IUserSeasonStat): string {
@@ -23,9 +24,26 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     userId: Types.ObjectId,
     seasonId: Types.ObjectId,
   ): Promise<IUserSeasonStat> {
+    // TODO-kev: Consider how to add this. Should we be using the seasonAdapter within here?
+    const season = await Season.findById(seasonId).select('rolesAvailable');
+
+    if (!season) {
+      throw new Error(`Season does not exist: seasonId=${seasonId}`);
+    }
+
+    const roleStats: { [key: string]: IRoleStat } = {};
+
+    for (const role of season.rolesAvailable) {
+      roleStats[role.name] = {
+        gamesWon: 0,
+        gamesLost: 0,
+      };
+    }
+
     return await UserSeasonStat.create({
       user: userId,
       season: seasonId,
+      roleStats,
     });
   }
 

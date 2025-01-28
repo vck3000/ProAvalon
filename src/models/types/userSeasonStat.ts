@@ -1,5 +1,10 @@
 import { Types } from 'mongoose';
 
+export interface IRoleStat {
+  gamesWon: number;
+  gamesLost: number;
+}
+
 export interface IUserSeasonStat {
   id: Types.ObjectId;
   user: Types.ObjectId;
@@ -15,10 +20,8 @@ export interface IUserSeasonStat {
   winRate: number;
 
   roleStats: {
-    role: string;
-    gamesWon: number;
-    gamesLost: number;
-  }[];
+    [role: string]: IRoleStat;
+  };
 
   lastUpdated: Date;
 

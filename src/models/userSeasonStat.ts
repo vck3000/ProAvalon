@@ -52,24 +52,20 @@ const userSeasonStatSchema = new mongoose.Schema({
   },
 
   roleStats: {
-    type: [
-      {
-        role: {
-          type: String,
-          required: true,
-        },
-        gamesWon: {
-          type: Number,
-          default: 0,
-          min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
-        },
-        gamesLost: {
-          type: Number,
-          default: 0,
-          min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
-        },
+    type: Map,
+    of: {
+      gamesWon: {
+        type: Number,
+        default: 0,
+        min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
       },
-    ],
+      gamesLost: {
+        type: Number,
+        default: 0,
+        min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
+      },
+      _id: false,
+    },
     required: true,
   },
 
