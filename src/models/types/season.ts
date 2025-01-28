@@ -16,7 +16,7 @@ export interface ISeason {
   gameMode: string;
   rolesAvailable: {
     name: string;
-    allegiance: string;
+    alliance: string;
   }[];
 
   // Mongoose methods

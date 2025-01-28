@@ -56,7 +56,7 @@ const seasonSchema = new mongoose.Schema({
           type: String,
           required: true,
         },
-        allegiance: {
+        alliance: {
           type: String,
           enum: ['Spy', 'Resistance'],
           required: true,
