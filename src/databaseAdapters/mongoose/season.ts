@@ -9,6 +9,7 @@ export interface RatingBracket {
   max: number;
 }
 
+// TODO-kev: Ensure below is updated before release
 export class MongoSeasonAdapter implements ISeasonDbAdapter {
   formatSeason(season: ISeason): string {
     return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}`;
