@@ -47,6 +47,28 @@ const seasonSchema = new mongoose.Schema({
     required: true,
     _id: false,
   },
+
+  gameMode: {
+    type: String,
+    required: true,
+  },
+
+  rolesAvailable: {
+    type: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        allegiance: {
+          type: String,
+          enum: ['Spy', 'Resistance'],
+          required: true,
+        },
+      },
+    ],
+    required: true,
+  },
 });
 
 // compile schema into a model

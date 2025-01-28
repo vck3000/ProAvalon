@@ -14,6 +14,12 @@ export interface ISeason {
     max: number;
   }[];
 
+  gameMode: string;
+  rolesAvailable: {
+    name: string;
+    allegiance: string;
+  }[];
+
   // Mongoose methods
   save: () => Promise<void>;
 }
