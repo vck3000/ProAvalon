@@ -27,4 +27,5 @@ export interface IUserSeasonStat {
 
   // Mongoose methods
   save: () => Promise<this>;
+  markModified: (path: string) => void;
 }

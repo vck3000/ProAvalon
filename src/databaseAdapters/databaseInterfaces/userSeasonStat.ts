@@ -1,5 +1,6 @@
 import { Types } from 'mongoose';
 import { IUserSeasonStat } from '../../models/types/userSeasonStat';
+import { Role } from '../../gameplay/roles/types';
 
 export default interface IUserSeasonStatDbAdapter {
   formatUserSeasonStat(stat: IUserSeasonStat): string;
@@ -16,5 +17,6 @@ export default interface IUserSeasonStatDbAdapter {
     seasonId: Types.ObjectId,
     isWin: boolean,
     ratingChange: number,
+    role: Role,
   ): Promise<IUserSeasonStat>;
 }

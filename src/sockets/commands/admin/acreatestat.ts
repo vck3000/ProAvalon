@@ -7,6 +7,7 @@ import { IUser } from '../../../gameplay/types';
 import { IUserSeasonStat } from '../../../models/types/userSeasonStat';
 import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { ISeason } from '../../../models/types/season';
+import { Role } from '../../../gameplay/roles/types';
 
 export const agetstat: Command = {
   command: 'ags',
@@ -29,25 +30,38 @@ export const agetstat: Command = {
   },
 };
 
+// TODO-kev: This command is just for testing. Delete
 export const aupdatestat: Command = {
   command: 'aus',
-  help: '/aus: Update a stat. Argument takes in "win" or "lose"',
+  help: '/aus <role> <result>: Update a stat. Argument takes in a role and then "win" or "lose"',
   run: async (args: string[], socket: SocketUser) => {
-    if (args.length !== 2 || (args[1] !== 'win' && args[1] !== 'lose')) {
+    if (args.length !== 3 || (args[2] !== 'win' && args[2] !== 'lose')) {
       sendReplyToCommand(socket, 'State "win" or "lose"');
+      return;
     }
 
     const season: ISeason = await mongoDbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
+    const roleString = args[1];
+    const result = args[2];
+    let role: Role;
+
+    if (Object.values(Role).includes(roleString as Role)) {
+      role = roleString as Role;
+    } else {
+      sendReplyToCommand(socket, 'Invalid role received"');
+      return;
+    }
 
     let stat: IUserSeasonStat;
 
-    if (args[1] === 'win') {
+    if (result === 'win') {
       stat = await mongoDbAdapter.userSeasonStat.updateStat(
         user.id,
         season.id,
         true,
         25,
+        role,
       );
     } else {
       stat = await mongoDbAdapter.userSeasonStat.updateStat(
@@ -55,6 +69,7 @@ export const aupdatestat: Command = {
         season.id,
         false,
         -10,
+        role,
       );
     }
 

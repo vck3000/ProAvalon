@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 import Season from '../../models/season';
+import { Role } from '../../gameplay/roles/types';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   formatUserSeasonStat(stat: IUserSeasonStat): string {
@@ -64,19 +65,22 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     seasonId: Types.ObjectId,
     isWin: boolean,
     ratingChange: number,
+    role: Role,
   ): Promise<IUserSeasonStat> {
-    const stat: IUserSeasonStat = await UserSeasonStat.findOne({
-      user: userId,
-      season: seasonId,
-    });
+    const stat: IUserSeasonStat = await this.getStat(userId, seasonId);
+    const roleStat: IRoleStat = stat.roleStats[role];
 
     stat.rankedGamesPlayed += 1;
 
     if (isWin) {
       stat.rankedGamesWon += 1;
+      roleStat.gamesWon += 1;
     } else {
       stat.rankedGamesLost += 1;
+      roleStat.gamesLost += 1;
     }
+
+    stat.markModified('roleStats');
 
     stat.winRate = stat.rankedGamesWon / stat.rankedGamesPlayed;
 
