@@ -26,7 +26,9 @@ export const adminCommands: Commands = {
   [asessions.command]: asessions,
   [ausernametoemail.command]: ausernametoemail,
 
-  // TODO-kev: Delete the below. Purely for testing purposes
-  [acreateseason.command]: acreateseason,
-  [agetcurrentseason.command]: agetcurrentseason,
+  // TODO-kev: Update below following season update. These commands need to be fixed
+  ...(process.env.ENABLE_SEASON === 'true' && {
+    [acreateseason.command]: acreateseason,
+    [agetcurrentseason.command]: agetcurrentseason,
+  }),
 };
