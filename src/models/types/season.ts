@@ -6,7 +6,6 @@ export interface ISeason {
   name: string;
   startDate: Date;
   endDate: Date;
-  isActive: boolean;
 
   ratingBrackets: {
     name: string;

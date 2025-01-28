@@ -48,7 +48,6 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
       startDate,
       endDate,
       ratingBrackets,
-      isActive: true,
     });
 
     console.log(`Season created: ${this.formatSeason(newSeason)}`);

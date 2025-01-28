@@ -20,10 +20,6 @@ const seasonSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    default: false,
-  },
 
   ratingBrackets: {
     type: [
