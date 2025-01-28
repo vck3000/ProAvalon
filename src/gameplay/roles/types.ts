@@ -1,5 +1,5 @@
 import Game from '../game';
-import { See } from '../types';
+import { Alliance, See } from '../types';
 
 export enum Role {
   Resistance = 'Resistance',
@@ -34,4 +34,10 @@ export interface IRole {
 
   // TODO do we need this?
   getPublicGameData(): any;
+}
+
+// TODO-kev: Consider how to incorporate this into the above
+export interface ISeasonRole {
+  name: string;
+  alliance: Alliance;
 }

@@ -20,10 +20,6 @@ const seasonSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  isActive: {
-    type: Boolean,
-    default: false,
-  },
 
   ratingBrackets: {
     type: [
@@ -46,6 +42,28 @@ const seasonSchema = new mongoose.Schema({
     ],
     required: true,
     _id: false,
+  },
+
+  gameMode: {
+    type: String,
+    required: true,
+  },
+
+  rolesAvailable: {
+    type: [
+      {
+        name: {
+          type: String,
+          required: true,
+        },
+        alliance: {
+          type: String,
+          enum: ['Spy', 'Resistance'],
+          required: true,
+        },
+      },
+    ],
+    required: true,
   },
 });
 
