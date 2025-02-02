@@ -2,7 +2,7 @@
 
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import mongoDbAdapter from '../../../databaseAdapters/mongoose';
+import dbAdapter from '../../../databaseAdapters';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season';
 import { RatingBracket } from '../../../databaseAdapters/mongoose/season';
@@ -60,7 +60,7 @@ export const acreateseason: Command = {
     ];
 
     try {
-      const newSeason: ISeason = await mongoDbAdapter.season.createSeason(
+      const newSeason: ISeason = await dbAdapter.season.createSeason(
         seasonName,
         startDate,
         endDate,
@@ -68,7 +68,7 @@ export const acreateseason: Command = {
         gameMode,
         rolesAvailable,
       );
-      const message = `Created new season: ${mongoDbAdapter.season.formatSeason(
+      const message = `Created new season: ${dbAdapter.season.formatSeason(
         newSeason,
       )}`;
 

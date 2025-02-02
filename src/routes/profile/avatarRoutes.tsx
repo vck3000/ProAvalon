@@ -7,7 +7,7 @@ import AvatarHome from '../../views/components/avatar/avatarHome';
 import { EnrichedRequest } from '../types';
 import { checkProfileOwnership } from '../middleware';
 
-import mongoDbAdapter from '../../databaseAdapters/mongoose';
+import dbAdapter from '../../databaseAdapters';
 import { S3AvatarSet, S3Agent } from '../../clients/s3/S3Agent';
 import S3Controller from '../../clients/s3/S3Controller';
 
@@ -75,7 +75,7 @@ router.post(
       return res.status(400).send('You are already using the default avatar.');
     }
 
-    await mongoDbAdapter.user.resetAvatar(req.user.username);
+    await dbAdapter.user.resetAvatar(req.user.username);
 
     return res.status(200).send('Avatar reset successful.');
   },
@@ -88,7 +88,7 @@ router.get(
   async (req: EnrichedRequest, res: Response) => {
     await getAndUpdatePatreonRewardTierForUser(req.user.usernameLower);
 
-    const user = await mongoDbAdapter.user.getUser(req.user.usernameLower);
+    const user = await dbAdapter.user.getUser(req.user.usernameLower);
 
     const result: AllAvatarsRouteReturnType = {
       currentResLink: user.avatarImgRes,
