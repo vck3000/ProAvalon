@@ -5,9 +5,9 @@ import { SocketUser } from '../../types';
 import dbAdapter from '../../../databaseAdapters';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season';
-import { RatingBracket } from '../../../databaseAdapters/mongoose/season';
 import { Alliance } from '../../../gameplay/types';
 import { ISeasonRole, Role } from '../../../gameplay/roles/types';
+import { RatingBracket } from '../../../gameplay/elo/types';
 
 export const acreateseason: Command = {
   command: 'acs',

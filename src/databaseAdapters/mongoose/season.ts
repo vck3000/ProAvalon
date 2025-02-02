@@ -2,13 +2,7 @@ import Season from '../../models/season';
 import { ISeason } from '../../models/types/season';
 import ISeasonDbAdapter from '../databaseInterfaces/season';
 import { ISeasonRole } from '../../gameplay/roles/types';
-
-// TODO-kev: Consider where to place this
-export interface RatingBracket {
-  name: string;
-  min: number;
-  max: number;
-}
+import { RatingBracket } from '../../gameplay/elo/types';
 
 // TODO-kev: Ensure below is updated before release
 export class MongoSeasonAdapter implements ISeasonDbAdapter {

@@ -1,6 +1,6 @@
 import { ISeason } from '../../models/types/season';
-import { RatingBracket } from '../mongoose/season';
 import { ISeasonRole } from '../../gameplay/roles/types';
+import { RatingBracket } from '../../gameplay/elo/types';
 
 export default interface ISeasonDbAdapter {
   getCurrentSeason(): Promise<ISeason | null>;
