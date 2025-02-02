@@ -5,18 +5,18 @@ import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
 import { IUser } from '../../../gameplay/types';
 import { IUserSeasonStat } from '../../../models/types/userSeasonStat';
-import mongoDbAdapter from '../../../databaseAdapters/mongoose';
 import { ISeason } from '../../../models/types/season';
 import { Role } from '../../../gameplay/roles/types';
+import dbAdapter from '../../../databaseAdapters';
 
 export const agetstat: Command = {
   command: 'ags',
   help: '/ags: Get stat',
   run: async (args: string[], socket: SocketUser) => {
-    const season: ISeason = await mongoDbAdapter.season.getCurrentSeason();
+    const season: ISeason = await dbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
 
-    const stat: IUserSeasonStat = await mongoDbAdapter.userSeasonStat.getStat(
+    const stat: IUserSeasonStat = await dbAdapter.userSeasonStat.getStat(
       user.id,
       season.id,
     );
@@ -24,7 +24,7 @@ export const agetstat: Command = {
     const message = `
       Current stat for ${
         user.username
-      }: ${mongoDbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
+      }: ${dbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
 
     sendReplyToCommand(socket, message);
   },
@@ -40,7 +40,7 @@ export const aupdatestat: Command = {
       return;
     }
 
-    const season: ISeason = await mongoDbAdapter.season.getCurrentSeason();
+    const season: ISeason = await dbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
     const roleString = args[1];
     const result = args[2];
@@ -56,7 +56,7 @@ export const aupdatestat: Command = {
     let stat: IUserSeasonStat;
 
     if (result === 'win') {
-      stat = await mongoDbAdapter.userSeasonStat.updateStat(
+      stat = await dbAdapter.userSeasonStat.updateStat(
         user.id,
         season.id,
         true,
@@ -64,7 +64,7 @@ export const aupdatestat: Command = {
         role,
       );
     } else {
-      stat = await mongoDbAdapter.userSeasonStat.updateStat(
+      stat = await dbAdapter.userSeasonStat.updateStat(
         user.id,
         season.id,
         false,
@@ -76,7 +76,7 @@ export const aupdatestat: Command = {
     const message = `
       New stat for ${
         user.username
-      }: ${mongoDbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
+      }: ${dbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
 
     sendReplyToCommand(socket, message);
   },
