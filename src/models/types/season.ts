@@ -18,4 +18,6 @@ export interface ISeason {
     name: string;
     alliance: string;
   }[];
+
+  stringifySeason(): string;
 }

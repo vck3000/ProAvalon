@@ -12,14 +12,6 @@ export interface RatingBracket {
 
 // TODO-kev: Ensure below is updated before release
 export class MongoSeasonAdapter implements ISeasonDbAdapter {
-  formatSeason(season: ISeason): string {
-    const roles: string = season.rolesAvailable
-      .map((role) => role.name)
-      .join(', ');
-
-    return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}, gameMode=${season.gameMode}, roles=${roles}`;
-  }
-
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason: ISeason | null = await Season.findOne({
       startDate: { $lte: new Date() },
@@ -59,7 +51,7 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
       rolesAvailable,
     });
 
-    console.log(`Season created: ${this.formatSeason(newSeason)}`);
+    console.log(`Season created: ${newSeason.stringifySeason()}`);
 
     return newSeason as ISeason;
   }

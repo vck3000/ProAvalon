@@ -68,9 +68,7 @@ export const acreateseason: Command = {
         gameMode,
         rolesAvailable,
       );
-      const message = `Created new season: ${dbAdapter.season.formatSeason(
-        newSeason,
-      )}`;
+      const message = `Created new season: ${newSeason.stringifySeason()}`;
 
       sendReplyToCommand(socket, message);
     } catch (error) {

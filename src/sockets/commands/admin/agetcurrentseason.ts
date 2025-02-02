@@ -16,9 +16,7 @@ export const agetcurrentseason: Command = {
       return;
     }
 
-    const message = `Current Season details: ${dbAdapter.season.formatSeason(
-      currentSeason,
-    )}`;
+    const message = `Current Season details: ${currentSeason.stringifySeason()}`;
 
     sendReplyToCommand(socket, message);
   },
