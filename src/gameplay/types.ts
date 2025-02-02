@@ -34,6 +34,7 @@ export interface See {
 }
 
 export interface IUser {
+  id: string;
   username: string;
   usernameLower?: string;
   password?: string;
