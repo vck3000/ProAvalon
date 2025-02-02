@@ -2,7 +2,7 @@
 
 import { Command } from '../types';
 import { SocketUser } from '../../types';
-import mongoDbAdapter from '../../../databaseAdapters/mongoose';
+import dbAdapter from '../../../databaseAdapters';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season';
 
@@ -10,16 +10,13 @@ export const agetcurrentseason: Command = {
   command: 'agcs',
   help: '/agcs: Gets current season details.',
   run: async (args: string[], socket: SocketUser) => {
-    const currentSeason: ISeason =
-      await mongoDbAdapter.season.getCurrentSeason();
+    const currentSeason: ISeason = await dbAdapter.season.getCurrentSeason();
     if (!currentSeason) {
       sendReplyToCommand(socket, 'There is no active season right now.');
       return;
     }
 
-    const message = `Current Season details: ${mongoDbAdapter.season.formatSeason(
-      currentSeason,
-    )}`;
+    const message = `Current Season details: ${currentSeason.stringifySeason()}`;
 
     sendReplyToCommand(socket, message);
   },

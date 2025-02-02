@@ -2,24 +2,10 @@ import Season from '../../models/season';
 import { ISeason } from '../../models/types/season';
 import ISeasonDbAdapter from '../databaseInterfaces/season';
 import { ISeasonRole } from '../../gameplay/roles/types';
-
-// TODO-kev: Consider where to place this
-export interface RatingBracket {
-  name: string;
-  min: number;
-  max: number;
-}
+import { RatingBracket } from '../../gameplay/elo/types';
 
 // TODO-kev: Ensure below is updated before release
 export class MongoSeasonAdapter implements ISeasonDbAdapter {
-  formatSeason(season: ISeason): string {
-    const roles: string = season.rolesAvailable
-      .map((role) => role.name)
-      .join(', ');
-
-    return `id=${season.id}; seasonNumber=${season.seasonCounter} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}, gameMode=${season.gameMode}, roles=${roles}`;
-  }
-
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason: ISeason | null = await Season.findOne({
       startDate: { $lte: new Date() },
@@ -45,13 +31,13 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
 
     // TODO-kev: This is just an example of creating a season. Consider configurable params etc
     const latestSeason: ISeason | null = await Season.findOne().sort({
-      seasonCounter: -1,
+      index: -1,
     });
-    const seasonCounter = latestSeason ? latestSeason.seasonCounter + 1 : 0;
+    const index = latestSeason ? latestSeason.index + 1 : 0;
 
     const newSeason: ISeason = await Season.create({
       name: seasonName,
-      seasonCounter,
+      index,
       startDate,
       endDate,
       ratingBrackets,
@@ -59,7 +45,7 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
       rolesAvailable,
     });
 
-    console.log(`Season created: ${this.formatSeason(newSeason)}`);
+    console.log(`Season created: ${newSeason.stringifySeason()}`);
 
     return newSeason as ISeason;
   }

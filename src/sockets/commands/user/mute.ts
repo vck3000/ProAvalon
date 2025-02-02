@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
-import mongoDbAdapter from '../../../databaseAdapters/mongoose';
+import dbAdapter from '../../../databaseAdapters';
 
 export const mute: Command = {
   command: 'mute',
@@ -12,7 +12,7 @@ export const mute: Command = {
       return;
     }
 
-    const userCallingMute = await mongoDbAdapter.user.getUser(
+    const userCallingMute = await dbAdapter.user.getUser(
       socket.request.user.username,
     );
     const usernameToMuteLower = args[1].toLowerCase();
@@ -33,14 +33,14 @@ export const mute: Command = {
       return;
     }
 
-    const userToMute = await mongoDbAdapter.user.getUser(usernameToMuteLower);
+    const userToMute = await dbAdapter.user.getUser(usernameToMuteLower);
 
     if (!userToMute) {
       sendReplyToCommand(socket, `${usernameToMuteLower} was not found.`);
       return;
     }
 
-    await mongoDbAdapter.user.muteUser(userCallingMute, usernameToMuteLower);
+    await dbAdapter.user.muteUser(userCallingMute, usernameToMuteLower);
 
     socket.emit('updateMutedPlayers', userCallingMute.mutedPlayers);
     sendReplyToCommand(socket, `Muted ${usernameToMuteLower} successfully.`);

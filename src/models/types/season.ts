@@ -2,7 +2,7 @@ import { Types } from 'mongoose';
 
 export interface ISeason {
   id: Types.ObjectId;
-  seasonCounter: number;
+  index: number;
   name: string;
   startDate: Date;
   endDate: Date;
@@ -19,6 +19,5 @@ export interface ISeason {
     alliance: string;
   }[];
 
-  // Mongoose methods
-  save: () => Promise<void>;
+  stringifySeason(): string;
 }
