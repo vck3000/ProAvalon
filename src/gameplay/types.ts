@@ -76,7 +76,7 @@ export interface IUser {
   matchmakingBlacklist?: string[];
 
   // Mongoose methods
-  save: () => Promise<void>;
+  save: () => Promise<this>;
   markModified: (path: string) => void;
 }
 
