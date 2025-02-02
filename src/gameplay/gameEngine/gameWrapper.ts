@@ -2,7 +2,7 @@
 // This wrapper mainly serves as a way to detect and make callbacks
 // to the socket.js file for updates.
 import Game, { GameConfig } from './game';
-import { SocketUser } from '../sockets/types';
+import { SocketUser } from '../../sockets/types';
 import { Alliance } from './types';
 
 type SocketServerCallback = (action: string, game: GameWrapper) => void;

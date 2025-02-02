@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { Command } from '../types';
-import gameRoom from '../../../gameplay/gameWrapper';
+import gameRoom from '../../../gameplay/gameEngine/gameWrapper';
 import { SocketUser } from '../../types';
 import { SimpleBotSocket } from '../../bot';
 import {
@@ -12,9 +12,9 @@ import {
   sendToAllChat,
   socketCallback,
 } from '../../sockets';
-import { RoomCreationType } from '../../../gameplay/roomTypes';
-import { Role } from '../../../gameplay/roles/types';
-import { Card } from '../../../gameplay/cards/types';
+import { RoomCreationType } from '../../../gameplay/gameEngine/roomTypes';
+import { Role } from '../../../gameplay/gameEngine/roles/types';
+import { Card } from '../../../gameplay/gameEngine/cards/types';
 
 function addBots(args: string[], senderSocket: SocketUser, roomId: number) {
   if (!args[1]) {

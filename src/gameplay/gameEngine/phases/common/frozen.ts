@@ -1,10 +1,9 @@
 import { ButtonSettings, IPhase, Phase } from '../types';
-import { SocketUser } from '../../../sockets/types';
+import { SocketUser } from '../../../../sockets/types';
 
-class Paused implements IPhase {
-  static phase = Phase.Paused;
-
-  phase = Phase.Paused;
+class Frozen implements IPhase {
+  static phase = Phase.Frozen;
+  phase = Phase.Frozen;
   showGuns = true;
   private thisRoom: any;
 
@@ -35,12 +34,12 @@ class Paused implements IPhase {
     };
   }
 
-  numOfTargets(indexOfPlayer: number): number | number[] {
-    return null;
+  numOfTargets(indexOfPlayer: number): number {
+    return 0;
   }
 
   getStatusMessage(indexOfPlayer: number): string {
-    return 'A moderator has paused the game. All actions are prevented.';
+    return 'The game is frozen. Waiting for all players to rejoin.';
   }
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
@@ -48,4 +47,4 @@ class Paused implements IPhase {
   }
 }
 
-export default Paused;
+export default Frozen;

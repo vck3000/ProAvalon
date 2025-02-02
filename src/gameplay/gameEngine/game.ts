@@ -2,14 +2,14 @@
 import _ from 'lodash';
 
 import Room, { RoomConfig } from './room';
-import usernamesIndexes from '../myFunctions/usernamesIndexes';
-import User from '../models/user';
-import GameRecord from '../models/gameRecord';
-import RatingPeriodGameRecord from '../models/RatingPeriodGameRecord';
-import { isMod } from '../modsadmins/mods';
-import { isTO } from '../modsadmins/tournamentOrganizers';
-import { isDev } from '../modsadmins/developers';
-import { modOrTOString } from '../modsadmins/modOrTO';
+import usernamesIndexes from '../../myFunctions/usernamesIndexes';
+import User from '../../models/user';
+import GameRecord from '../../models/gameRecord';
+import RatingPeriodGameRecord from '../../models/RatingPeriodGameRecord';
+import { isMod } from '../../modsadmins/mods';
+import { isTO } from '../../modsadmins/tournamentOrganizers';
+import { isDev } from '../../modsadmins/developers';
+import { modOrTOString } from '../../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
@@ -22,17 +22,17 @@ import {
 } from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { VoidGameTracker } from './voidGameTracker';
-import { SocketUser } from '../sockets/types';
+import { SocketUser } from '../../sockets/types';
 import { avalonRoles, rolesThatCantGuessMerlin } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Card } from './cards/types';
 import { Role } from './roles/types';
-import { millisToStr } from '../util/time';
-import shuffleArray from '../util/shuffleArray';
+import { millisToStr } from '../../util/time';
+import shuffleArray from '../../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
-import { sendReplyToCommand } from '../sockets/sockets';
-import { gamesPlayedMetric } from '../metrics/gameMetrics';
+import { sendReplyToCommand } from '../../sockets/sockets';
+import { gamesPlayedMetric } from '../../metrics/gameMetrics';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;

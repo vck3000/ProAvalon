@@ -1,14 +1,15 @@
 import { ButtonSettings, IPhase, Phase } from '../types';
-import { SocketUser } from '../../../sockets/types';
+import { SocketUser } from '../../../../sockets/types';
+import { Alliance } from '../../types';
 
-class Frozen implements IPhase {
-  static phase = Phase.Frozen;
-  phase = Phase.Frozen;
+class Finished implements IPhase {
+  static phase = Phase.Finished;
+  phase = Phase.Finished;
   showGuns = true;
   private thisRoom: any;
 
-  constructor(thisRoom_: any) {
-    this.thisRoom = thisRoom_;
+  constructor(thisRoom: any) {
+    this.thisRoom = thisRoom;
   }
 
   gameMove(
@@ -16,7 +17,7 @@ class Frozen implements IPhase {
     buttonPressed: string,
     selectedPlayers: string[],
   ): void {
-    // Game is paused, no actions.
+    // Do nothing, game is finished.
   }
 
   buttonSettings(indexOfPlayer: number): ButtonSettings {
@@ -39,7 +40,15 @@ class Frozen implements IPhase {
   }
 
   getStatusMessage(indexOfPlayer: number): string {
-    return 'The game is frozen. Waiting for all players to rejoin.';
+    let winner = 'Error, undefined';
+    if (this.thisRoom.winner === Alliance.Resistance) {
+      winner = 'resistance';
+    } else if (this.thisRoom.winner === Alliance.Spy) {
+      winner = 'spies';
+    }
+
+    const str = `Game has finished. The ${winner} have won.`;
+    return str;
   }
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
@@ -47,4 +56,4 @@ class Frozen implements IPhase {
   }
 }
 
-export default Frozen;
+export default Finished;

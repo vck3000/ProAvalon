@@ -1,6 +1,6 @@
 import { Phase } from '../../phases/types';
 import { Card, ICard } from '../types';
-import { SocketUser } from '../../../sockets/types';
+import { SocketUser } from '../../../../sockets/types';
 
 class RefOfTheRain implements ICard {
   private thisRoom: any;

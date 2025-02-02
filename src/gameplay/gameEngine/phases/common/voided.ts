@@ -1,15 +1,16 @@
 import { ButtonSettings, IPhase, Phase } from '../types';
-import { SocketUser } from '../../../sockets/types';
+import { SocketUser } from '../../../../sockets/types';
 import { Alliance } from '../../types';
 
-class Finished implements IPhase {
-  static phase = Phase.Finished;
-  phase = Phase.Finished;
+class Voided implements IPhase {
+  static phase = Phase.Voided;
+
+  phase = Phase.Voided;
   showGuns = true;
   private thisRoom: any;
 
-  constructor(thisRoom: any) {
-    this.thisRoom = thisRoom;
+  constructor(thisRoom_: any) {
+    this.thisRoom = thisRoom_;
   }
 
   gameMove(
@@ -17,7 +18,7 @@ class Finished implements IPhase {
     buttonPressed: string,
     selectedPlayers: string[],
   ): void {
-    // Do nothing, game is finished.
+    // Game is voided, no actions.
   }
 
   buttonSettings(indexOfPlayer: number): ButtonSettings {
@@ -35,20 +36,12 @@ class Finished implements IPhase {
     };
   }
 
-  numOfTargets(indexOfPlayer: number): number {
+  numOfTargets(indexOfPlayer: number): number | number[] {
     return 0;
   }
 
   getStatusMessage(indexOfPlayer: number): string {
-    let winner = 'Error, undefined';
-    if (this.thisRoom.winner === Alliance.Resistance) {
-      winner = 'resistance';
-    } else if (this.thisRoom.winner === Alliance.Spy) {
-      winner = 'spies';
-    }
-
-    const str = `Game has finished. The ${winner} have won.`;
-    return str;
+    return 'The game has been voided. All actions are prevented.';
   }
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
@@ -56,4 +49,4 @@ class Finished implements IPhase {
   }
 }
 
-export default Finished;
+export default Voided;
