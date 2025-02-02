@@ -37,13 +37,13 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
 
     // TODO-kev: This is just an example of creating a season. Consider configurable params etc
     const latestSeason: ISeason | null = await Season.findOne().sort({
-      seasonCounter: -1,
+      index: -1,
     });
-    const seasonCounter = latestSeason ? latestSeason.seasonCounter + 1 : 0;
+    const index = latestSeason ? latestSeason.index + 1 : 0;
 
     const newSeason: ISeason = await Season.create({
       name: seasonName,
-      seasonCounter,
+      index,
       startDate,
       endDate,
       ratingBrackets,
