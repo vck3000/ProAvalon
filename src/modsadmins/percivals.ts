@@ -3,7 +3,14 @@
 
 // all in lower case
 export const percivalsArray: string[] = [
-  'percytest'
+  'percytest',
+  'manuavalon',
+  'imbapingu',
+  'gawaine',
+  'jsm',
+  'not.me',
+  'sb',
+  'obeymrwalrus',
 ];
 
 export function isPercival(username: string): boolean {
