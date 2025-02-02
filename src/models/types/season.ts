@@ -18,7 +18,4 @@ export interface ISeason {
     name: string;
     alliance: string;
   }[];
-
-  // Mongoose methods
-  save: () => Promise<void>;
 }
