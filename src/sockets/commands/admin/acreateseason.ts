@@ -5,8 +5,6 @@ import { SocketUser } from '../../types';
 import dbAdapter from '../../../databaseAdapters';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season';
-import { Alliance } from '../../../gameplay/types';
-import { ISeasonRole, Role } from '../../../gameplay/roles/types';
 import { RatingBracket } from '../../../gameplay/elo/types';
 
 export const acreateseason: Command = {
@@ -34,39 +32,12 @@ export const acreateseason: Command = {
       { name: 'champion', min: 1900, max: Infinity }, // Must have no upper limit
     ];
 
-    const gameMode = '6p';
-
-    const rolesAvailable: ISeasonRole[] = [
-      {
-        name: Role.Merlin,
-        alliance: Alliance.Resistance,
-      },
-      {
-        name: Role.Morgana,
-        alliance: Alliance.Spy,
-      },
-      {
-        name: Role.Percival,
-        alliance: Alliance.Resistance,
-      },
-      {
-        name: Role.Assassin,
-        alliance: Alliance.Spy,
-      },
-      {
-        name: Role.Resistance,
-        alliance: Alliance.Resistance,
-      },
-    ];
-
     try {
       const newSeason: ISeason = await dbAdapter.season.createSeason(
         seasonName,
         startDate,
         endDate,
         ratingBrackets,
-        gameMode,
-        rolesAvailable,
       );
       const message = `Created new season: ${newSeason.stringifySeason()}`;
 

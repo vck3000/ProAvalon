@@ -1,5 +1,4 @@
 import { ISeason } from '../../models/types/season';
-import { ISeasonRole } from '../../gameplay/roles/types';
 import { RatingBracket } from '../../gameplay/elo/types';
 
 export default interface ISeasonDbAdapter {
@@ -9,7 +8,5 @@ export default interface ISeasonDbAdapter {
     startDate: Date,
     endDate: Date,
     ratingBrackets: RatingBracket[],
-    gameMode: string,
-    rolesAvailable: ISeasonRole[],
   ): Promise<ISeason>;
 }

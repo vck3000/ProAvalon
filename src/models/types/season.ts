@@ -13,11 +13,5 @@ export interface ISeason {
     max: number;
   }[];
 
-  gameMode: string;
-  rolesAvailable: {
-    name: string;
-    alliance: string;
-  }[];
-
   stringifySeason(): string;
 }
