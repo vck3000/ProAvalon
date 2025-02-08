@@ -1,4 +1,4 @@
-// TODO-kev: Delete this file. Purely for testing purposes
+// Delete the below following season update. Purely for testing purposes
 
 import { Command } from '../types';
 import { SocketUser } from '../../types';
@@ -27,7 +27,6 @@ export const agetstat: Command = {
   },
 };
 
-// TODO-kev: This command is just for testing. Delete
 export const aupdatestat: Command = {
   command: 'aus',
   help: '/aus <numPlayers> <role> <result>: Update a stat. Argument takes in a role and then "win" or "lose"',
