@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
 import { IUserSeasonStat } from '../../models/types/userSeasonStat';
-import { Role } from '../../gameplay/roles/types';
+import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export default interface IUserSeasonStatDbAdapter {
   formatUserSeasonStat(stat: IUserSeasonStat): string;

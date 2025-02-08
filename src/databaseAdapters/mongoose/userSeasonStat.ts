@@ -3,7 +3,7 @@ import { Types } from 'mongoose';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 import Season from '../../models/season';
-import { Role } from '../../gameplay/roles/types';
+import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   formatUserSeasonStat(stat: IUserSeasonStat): string {

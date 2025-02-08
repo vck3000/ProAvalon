@@ -3,10 +3,10 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
-import { IUser } from '../../../gameplay/types';
+import { IUser } from '../../../gameplay/gameEngine/types';
 import { IUserSeasonStat } from '../../../models/types/userSeasonStat';
 import { ISeason } from '../../../models/types/season';
-import { Role } from '../../../gameplay/roles/types';
+import { Role } from '../../../gameplay/gameEngine/roles/types';
 import dbAdapter from '../../../databaseAdapters';
 
 export const agetstat: Command = {
