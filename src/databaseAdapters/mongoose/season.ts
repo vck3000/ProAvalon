@@ -3,7 +3,6 @@ import { ISeason } from '../../models/types/season';
 import ISeasonDbAdapter from '../databaseInterfaces/season';
 import { RatingBracket } from '../../gameplay/elo/types';
 
-// TODO-kev: Ensure below is updated before release
 export class MongoSeasonAdapter implements ISeasonDbAdapter {
   async getCurrentSeason(): Promise<ISeason | null> {
     const currentSeason: ISeason | null = await Season.findOne({
@@ -26,7 +25,6 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
       throw new Error('Unable to create season as an active one exists.');
     }
 
-    // TODO-kev: This is just an example of creating a season. Consider configurable params etc
     const latestSeason = await Season.findOne().sort({
       index: -1,
     });
