@@ -13,6 +13,7 @@ import { asessions } from './asessions';
 // Delete the below following season update. Purely for testing purposes
 import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
+import { agetstat, aupdatestat } from './acreatestat';
 
 // Delete the below following season update. Purely for testing purposes
 const debugCommands =
@@ -20,6 +21,8 @@ const debugCommands =
     ? {
         [acreateseason.command]: acreateseason,
         [agetcurrentseason.command]: agetcurrentseason,
+        [agetstat.command]: agetstat,
+        [aupdatestat.command]: aupdatestat,
       }
     : {};
 

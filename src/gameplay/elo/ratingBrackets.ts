@@ -9,3 +9,17 @@ export const RATING_BRACKETS: RatingBracket[] = [
   { name: 'diamond', min: 1800, max: 1899 },
   { name: 'champion', min: 1900, max: Infinity }, // Must have no upper limit
 ];
+
+export function getRatingBracket(
+  rating: number,
+  ratingBrackets: RatingBracket[],
+): string {
+  // Assumes there are no overlapping rating brackets
+  for (const bracket of ratingBrackets) {
+    if (rating >= bracket.min && rating <= bracket.max) {
+      return bracket.name;
+    }
+  }
+
+  throw new Error(`Could not assign rating ${rating} to a bracket.`);
+}
