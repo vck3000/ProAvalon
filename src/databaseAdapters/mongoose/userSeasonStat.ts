@@ -5,21 +5,6 @@ import Season from '../../models/season';
 import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
-  formatUserSeasonStat(stat: IUserSeasonStat): string {
-    const winRateFormatted = (stat.winRate * 100).toFixed(2) + '%';
-
-    return `
-      rating=${stat.rating},
-      highestRating=${stat.highestRating}, 
-      ratingBracket=${stat.ratingBracket},
-      rankedGamesPlayed=${stat.rankedGamesPlayed}, 
-      rankedGamesWon=${stat.rankedGamesWon}, 
-      rankedGamesLost=${stat.rankedGamesLost}, 
-      winRate=${winRateFormatted}, 
-      lastUpdated=${stat.lastUpdated}, 
-    `;
-  }
-
   async createStat(userId: string, seasonId: string): Promise<IUserSeasonStat> {
     // TODO-kev: Consider how to add this. Should we be using the seasonAdapter within here?
     // Also think about validating userId
@@ -84,4 +69,19 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
 
     return stat;
   }
+}
+
+export function stringifyUserSeasonStat(stat: IUserSeasonStat) {
+  const winRateFormatted = (stat.winRate * 100).toFixed(2) + '%';
+
+  return `
+      rating=${stat.rating},
+      highestRating=${stat.highestRating}, 
+      ratingBracket=${stat.ratingBracket},
+      rankedGamesPlayed=${stat.rankedGamesPlayed}, 
+      rankedGamesWon=${stat.rankedGamesWon}, 
+      rankedGamesLost=${stat.rankedGamesLost}, 
+      winRate=${winRateFormatted}, 
+      lastUpdated=${stat.lastUpdated}, 
+    `;
 }

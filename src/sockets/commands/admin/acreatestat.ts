@@ -8,6 +8,7 @@ import { IUserSeasonStat } from '../../../models/types/userSeasonStat';
 import { ISeason } from '../../../models/types/season';
 import { Role } from '../../../gameplay/gameEngine/roles/types';
 import dbAdapter from '../../../databaseAdapters';
+import { stringifyUserSeasonStat } from '../../../databaseAdapters/mongoose/userSeasonStat';
 
 export const agetstat: Command = {
   command: 'ags',
@@ -22,9 +23,7 @@ export const agetstat: Command = {
     );
 
     const message = `
-      Current stat for ${
-        user.username
-      }: ${dbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
+      Current stat for ${user.username}: ${stringifyUserSeasonStat(stat)}`;
 
     sendReplyToCommand(socket, message);
   },
@@ -74,9 +73,7 @@ export const aupdatestat: Command = {
     }
 
     const message = `
-      New stat for ${
-        user.username
-      }: ${dbAdapter.userSeasonStat.formatUserSeasonStat(stat)}`;
+      New stat for ${user.username}: ${stringifyUserSeasonStat(stat)}`;
 
     sendReplyToCommand(socket, message);
   },
