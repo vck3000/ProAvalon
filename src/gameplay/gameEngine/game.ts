@@ -422,7 +422,7 @@ class Game extends Room {
       // assign them the sockets but with shuffled.
       this.playersInGame[i].username =
         this.socketsOfPlayers[i].request.user.username;
-      this.playersInGame[i].userId = this.socketsOfPlayers[i].request.user._id;
+      this.playersInGame[i].userId = this.socketsOfPlayers[i].request.user.id;
 
       this.playersInGame[i].request = this.socketsOfPlayers[i].request;
 

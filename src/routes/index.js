@@ -918,7 +918,7 @@ router.get('/ajax/hideNotification', (req, res) => {
 router.get('/ajax/hideAllNotifications', (req, res) => {
   // console.log("hide all nofications");
 
-  User.findById(req.user._id)
+  User.findById(req.user.id)
     .populate('notifications')
     .exec(async (err, foundUser) => {
       if (err) {

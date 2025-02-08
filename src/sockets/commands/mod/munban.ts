@@ -33,7 +33,7 @@ export const munban: Command = {
       ModLog.create({
         type: 'munban',
         modWhoMade: {
-          id: modUser._id,
+          id: modUser.id,
           username: modUser.username,
           usernameLower: modUser.usernameLower,
         },
