@@ -41,8 +41,12 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
       ratingBrackets,
     });
 
-    console.log(`Season created: ${newSeason.stringifySeason()}`);
+    console.log(`Season created: ${stringifySeason(newSeason)}`);
 
     return newSeason as ISeason;
   }
+}
+
+export function stringifySeason(season: ISeason) {
+  return `id=${season.id}; seasonNumber=${season.index} name=${season.name}; startDate=${season.startDate}; endDate=${season.endDate}`;
 }

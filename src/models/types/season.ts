@@ -12,6 +12,4 @@ export interface ISeason {
     min: number;
     max: number;
   }[];
-
-  stringifySeason(): string;
 }

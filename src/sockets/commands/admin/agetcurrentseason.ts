@@ -5,6 +5,7 @@ import { SocketUser } from '../../types';
 import dbAdapter from '../../../databaseAdapters';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season';
+import { stringifySeason } from '../../../databaseAdapters/mongoose/season';
 
 export const agetcurrentseason: Command = {
   command: 'agcs',
@@ -16,7 +17,7 @@ export const agetcurrentseason: Command = {
       return;
     }
 
-    const message = `Current Season details: ${currentSeason.stringifySeason()}`;
+    const message = `Current Season details: ${stringifySeason(currentSeason)}`;
 
     sendReplyToCommand(socket, message);
   },

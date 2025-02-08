@@ -45,10 +45,6 @@ const seasonSchema = new mongoose.Schema({
   },
 });
 
-seasonSchema.methods.stringifySeason = function (): string {
-  return `id=${this.id}; seasonNumber=${this.index} name=${this.name}; startDate=${this.startDate}; endDate=${this.endDate}`;
-};
-
 // compile schema into a model
 const Season = mongoose.model<ISeason>('season', seasonSchema);
 

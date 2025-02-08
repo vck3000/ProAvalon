@@ -6,6 +6,7 @@ import dbAdapter from '../../../databaseAdapters';
 import { sendReplyToCommand } from '../../sockets';
 import { ISeason } from '../../../models/types/season';
 import { RatingBracket } from '../../../gameplay/elo/types';
+import { stringifySeason } from '../../../databaseAdapters/mongoose/season';
 
 export const acreateseason: Command = {
   command: 'acs',
@@ -39,7 +40,7 @@ export const acreateseason: Command = {
         endDate,
         ratingBrackets,
       );
-      const message = `Created new season: ${newSeason.stringifySeason()}`;
+      const message = `Created new season: ${stringifySeason(newSeason)}`;
 
       sendReplyToCommand(socket, message);
     } catch (error) {
