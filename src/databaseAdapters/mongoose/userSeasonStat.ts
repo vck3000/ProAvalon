@@ -2,6 +2,8 @@ import { IUserSeasonStat } from '../../models/types/userSeasonStat';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 import { Role } from '../../gameplay/gameEngine/roles/types';
+import Season from '../../models/season';
+import { getRatingBracket } from '../../gameplay/elo/ratingBrackets';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   async findOrCreateStat(
@@ -27,7 +29,7 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   async registerGameOutcome(
     userSeasonStat: IUserSeasonStat,
     isWin: boolean,
-    ratingChange: number,
+    ratingChange: number, // TODO-kev: Consider if we pass in the new rating instead + ratingBracket
     numPlayers: number,
     role: Role,
   ): Promise<IUserSeasonStat> {
@@ -68,7 +70,10 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     const updatedRating = stat.rating + ratingChange;
     stat.rating = Math.min(updatedRating, 0);
     stat.highestRating = Math.max(updatedRating, stat.highestRating);
-    stat.ratingBracket = 'silver'; // TODO-kev: Update this part
+
+    // TODO-kev: Consider if this is the best way
+    const season = await Season.findById(stat.seasonId);
+    stat.ratingBracket = getRatingBracket(stat.rating, season.ratingBrackets);
 
     stat.lastUpdated = new Date();
 
