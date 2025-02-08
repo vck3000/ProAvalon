@@ -5,29 +5,26 @@ import Season from '../../models/season';
 import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
-  async createStat(userId: string, seasonId: string): Promise<IUserSeasonStat> {
-    // TODO-kev: Consider how to add this. Should we be using the seasonAdapter within here?
-    // Also think about validating userId
-    const season = await Season.findById(seasonId);
+  async findOrCreate(
+    userId: string,
+    seasonId: string,
+  ): Promise<IUserSeasonStat> {
+    let stat: IUserSeasonStat = await UserSeasonStat.findOne({
+      user: userId,
+      season: seasonId,
+    });
 
-    if (!season) {
-      throw new Error(`Season does not exist: seasonId=${seasonId}`);
+    if (!stat) {
+      stat = await UserSeasonStat.create({
+        user: userId,
+        season: seasonId,
+        roleStats: {},
+      });
+
+      console.log(`User season stat created: ${stringifyUserSeasonStat(stat)}`);
     }
 
-    return await UserSeasonStat.create({
-      user: userId,
-      season: seasonId,
-      roleStats: {},
-    });
-  }
-
-  async getStat(userId: string, seasonId: string): Promise<IUserSeasonStat> {
-    const stat: IUserSeasonStat = await UserSeasonStat.findOne({
-      user: userId,
-      season: seasonId,
-    });
-
-    return stat ? stat : await this.createStat(userId, seasonId);
+    return stat;
   }
 
   async updateStat(
@@ -37,7 +34,7 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     ratingChange: number,
     role: Role,
   ): Promise<IUserSeasonStat> {
-    const stat: IUserSeasonStat = await this.getStat(userId, seasonId);
+    const stat: IUserSeasonStat = await this.findOrCreate(userId, seasonId);
 
     // TODO-kev: Update below if it doesnt exist
     const roleStat: IRoleStat = stat.roleStats[role];

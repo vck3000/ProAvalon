@@ -2,8 +2,7 @@ import { IUserSeasonStat } from '../../models/types/userSeasonStat';
 import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export default interface IUserSeasonStatDbAdapter {
-  createStat(userId: string, seasonId: string): Promise<IUserSeasonStat>;
-  getStat(userId: string, seasonId: string): Promise<IUserSeasonStat>;
+  findOrCreate(userId: string, seasonId: string): Promise<IUserSeasonStat>;
   updateStat(
     userId: string,
     seasonId: string,

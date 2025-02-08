@@ -17,7 +17,7 @@ export const agetstat: Command = {
     const season: ISeason = await dbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
 
-    const stat: IUserSeasonStat = await dbAdapter.userSeasonStat.getStat(
+    const stat: IUserSeasonStat = await dbAdapter.userSeasonStat.findOrCreate(
       user.id,
       season.id,
     );
