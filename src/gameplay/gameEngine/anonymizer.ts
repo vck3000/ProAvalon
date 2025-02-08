@@ -1,4 +1,4 @@
-import shuffleArray from '../util/shuffleArray';
+import shuffleArray from '../../util/shuffleArray';
 import { IRecoverable, RecoverableComponent } from './types';
 
 const ANON_NAMES = [

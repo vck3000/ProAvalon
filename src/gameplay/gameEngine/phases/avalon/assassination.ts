@@ -1,6 +1,6 @@
-import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
+import usernamesIndexes from '../../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../types';
-import { SocketUser } from '../../../sockets/types';
+import { SocketUser } from '../../../../sockets/types';
 import { Alliance } from '../../types';
 import { Role } from '../../roles/types';
 

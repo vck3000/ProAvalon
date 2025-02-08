@@ -1,5 +1,5 @@
 import User from '../models/user';
-import { IUser } from '../gameplay/types';
+import { IUser } from '../gameplay/gameEngine/types';
 import { S3AvatarSet } from '../clients/s3/S3Agent';
 
 interface DatabaseAdapter {

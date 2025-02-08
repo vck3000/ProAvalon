@@ -1,4 +1,4 @@
-import { SocketUser } from '../../sockets/types';
+import { SocketUser } from '../../../sockets/types';
 
 export enum Card {
   LadyOfTheLake = 'Lady of the Lake',

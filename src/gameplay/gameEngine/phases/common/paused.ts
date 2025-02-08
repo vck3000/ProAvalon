@@ -1,11 +1,10 @@
 import { ButtonSettings, IPhase, Phase } from '../types';
-import { SocketUser } from '../../../sockets/types';
-import { Alliance } from '../../types';
+import { SocketUser } from '../../../../sockets/types';
 
-class Voided implements IPhase {
-  static phase = Phase.Voided;
+class Paused implements IPhase {
+  static phase = Phase.Paused;
 
-  phase = Phase.Voided;
+  phase = Phase.Paused;
   showGuns = true;
   private thisRoom: any;
 
@@ -18,7 +17,7 @@ class Voided implements IPhase {
     buttonPressed: string,
     selectedPlayers: string[],
   ): void {
-    // Game is voided, no actions.
+    // Game is paused, no actions.
   }
 
   buttonSettings(indexOfPlayer: number): ButtonSettings {
@@ -37,11 +36,11 @@ class Voided implements IPhase {
   }
 
   numOfTargets(indexOfPlayer: number): number | number[] {
-    return 0;
+    return null;
   }
 
   getStatusMessage(indexOfPlayer: number): string {
-    return 'The game has been voided. All actions are prevented.';
+    return 'A moderator has paused the game. All actions are prevented.';
   }
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
@@ -49,4 +48,4 @@ class Voided implements IPhase {
   }
 }
 
-export default Voided;
+export default Paused;
