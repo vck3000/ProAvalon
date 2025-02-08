@@ -21,7 +21,6 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
 
       console.log(`User season stat created: ${stringifyUserSeasonStat(stat)}`);
     }
-
     return stat;
   }
 
@@ -29,36 +28,51 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     userSeasonStat: IUserSeasonStat,
     isWin: boolean,
     ratingChange: number,
+    numPlayers: number,
     role: Role,
   ): Promise<IUserSeasonStat> {
-    const dbUserSeasonStat = await UserSeasonStat.findById(userSeasonStat.id);
-
-    // TODO-kev: Update below if it doesnt exist
-    // const roleStat: IRoleStat = userSeasonStat.roleStats[role];
-
-    dbUserSeasonStat.rankedGamesPlayed += 1;
-
-    if (isWin) {
-      dbUserSeasonStat.rankedGamesWon += 1;
-      // roleStat.gamesWon += 1;
+    if (numPlayers < 5 || numPlayers > 10) {
+      throw new Error(`Invalid number of players: ${numPlayers}`);
     }
 
-    dbUserSeasonStat.markModified('roleStats');
+    if (!Object.values(Role).includes(role as Role)) {
+      throw new Error(`Invalid role received: ${role}"`);
+    }
 
-    dbUserSeasonStat.winRate =
-      dbUserSeasonStat.rankedGamesWon / dbUserSeasonStat.rankedGamesPlayed;
+    const stat = await UserSeasonStat.findById(userSeasonStat.id);
 
-    dbUserSeasonStat.rating += ratingChange;
-    dbUserSeasonStat.ratingBracket = 'silver'; // TODO-kev: Update this part
-    dbUserSeasonStat.highestRating = Math.max(
-      dbUserSeasonStat.rating,
-      dbUserSeasonStat.highestRating,
-    );
+    // Initialise roleStats object if not present
+    if (!stat.roleStats[`${numPlayers}p`]) {
+      stat.roleStats[`${numPlayers}p`] = {};
+    }
 
-    dbUserSeasonStat.lastUpdated = new Date();
+    if (!stat.roleStats[`${numPlayers}p`][role]) {
+      stat.roleStats[`${numPlayers}p`][role] = {
+        gamesPlayed: 0,
+        gamesWon: 0,
+      };
+    }
 
-    await dbUserSeasonStat.save();
+    stat.rankedGamesPlayed += 1;
+    stat.roleStats[`${numPlayers}p`][role].gamesPlayed += 1;
 
+    if (isWin) {
+      stat.rankedGamesWon += 1;
+      stat.roleStats[`${numPlayers}p`][role].gamesWon += 1;
+    }
+
+    stat.markModified('roleStats');
+
+    stat.winRate = stat.rankedGamesWon / stat.rankedGamesPlayed;
+
+    const updatedRating = stat.rating + ratingChange;
+    stat.rating = Math.min(updatedRating, 0);
+    stat.highestRating = Math.max(updatedRating, stat.highestRating);
+    stat.ratingBracket = 'silver'; // TODO-kev: Update this part
+
+    stat.lastUpdated = new Date();
+
+    await stat.save();
     return userSeasonStat;
   }
 }

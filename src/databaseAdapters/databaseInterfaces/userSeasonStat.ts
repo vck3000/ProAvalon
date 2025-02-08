@@ -7,6 +7,7 @@ export default interface IUserSeasonStatDbAdapter {
     userSeasonStat: IUserSeasonStat,
     isWin: boolean,
     ratingChange: number,
+    numPlayers: number,
     role: Role,
   ): Promise<IUserSeasonStat>;
 }

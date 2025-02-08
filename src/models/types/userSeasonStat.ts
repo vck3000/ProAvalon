@@ -1,8 +1,8 @@
 export interface IRoleStatsMap {
-  [role: string]: IRoleStats;
+  [role: string]: IRoleStat;
 }
 
-export interface IRoleStats {
+export interface IRoleStat {
   gamesPlayed: number;
   gamesWon: number;
 }

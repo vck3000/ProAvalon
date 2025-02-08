@@ -30,9 +30,26 @@ export const agetstat: Command = {
 // TODO-kev: This command is just for testing. Delete
 export const aupdatestat: Command = {
   command: 'aus',
-  help: '/aus <role> <result>: Update a stat. Argument takes in a role and then "win" or "lose"',
+  help: '/aus <numPlayers> <role> <result>: Update a stat. Argument takes in a role and then "win" or "lose"',
   run: async (args: string[], socket: SocketUser) => {
-    if (args.length !== 3 || (args[2] !== 'win' && args[2] !== 'lose')) {
+    if (args.length !== 4) {
+      sendReplyToCommand(
+        socket,
+        'Insufficient arguments: <numPlayers> <role> <result>',
+      );
+      return;
+    }
+
+    const numPlayers = Number(args[1]);
+    const role = args[2] as Role;
+    const result = args[3];
+
+    if (isNaN(numPlayers)) {
+      sendReplyToCommand(socket, 'Number of players must be a number');
+      return;
+    }
+
+    if (result !== 'win' && result !== 'lose') {
       sendReplyToCommand(socket, 'State "win" or "lose"');
       return;
     }
@@ -41,13 +58,8 @@ export const aupdatestat: Command = {
     const user: IUser = socket.request.user;
     const userSeasonStat: IUserSeasonStat =
       await dbAdapter.userSeasonStat.findOrCreateStat(user.id, season.id);
-    const roleString = args[1];
-    const result = args[2];
-    let role: Role;
 
-    if (Object.values(Role).includes(roleString as Role)) {
-      role = roleString as Role;
-    } else {
+    if (!Object.values(Role).includes(role as Role)) {
       sendReplyToCommand(socket, 'Invalid role received"');
       return;
     }
@@ -59,6 +71,7 @@ export const aupdatestat: Command = {
         userSeasonStat,
         true,
         25,
+        numPlayers,
         role,
       );
     } else {
@@ -66,6 +79,7 @@ export const aupdatestat: Command = {
         userSeasonStat,
         false,
         -10,
+        numPlayers,
         role,
       );
     }
