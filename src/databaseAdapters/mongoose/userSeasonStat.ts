@@ -68,7 +68,7 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     stat.winRate = stat.rankedGamesWon / stat.rankedGamesPlayed;
 
     const updatedRating = stat.rating + ratingChange;
-    stat.rating = Math.min(updatedRating, 0);
+    stat.rating = Math.max(updatedRating, 0);
     stat.highestRating = Math.max(updatedRating, stat.highestRating);
 
     // TODO-kev: Consider if this is the best way
