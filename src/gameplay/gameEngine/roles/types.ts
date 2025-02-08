@@ -1,5 +1,5 @@
 import Game from '../game';
-import { Alliance, See } from '../types';
+import { See } from '../types';
 
 export enum Role {
   Resistance = 'Resistance',
