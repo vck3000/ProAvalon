@@ -19,20 +19,23 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
     endDate: Date,
     ratingBrackets: RatingBracket[],
   ): Promise<ISeason> {
-    const currentSeason = await this.getCurrentSeason();
-
-    if (currentSeason) {
-      throw new Error('Unable to create season as an active one exists.');
+    if (startDate > endDate) {
+      throw new Error(`Season start date must be before its end date`);
     }
 
     const latestSeason = await Season.findOne().sort({
       index: -1,
     });
-    const index = latestSeason ? latestSeason.index + 1 : 0;
+
+    if (latestSeason && startDate <= latestSeason.endDate) {
+      throw new Error(
+        `Unable to create season: Start date must be after ${latestSeason.endDate}`,
+      );
+    }
 
     const newSeason = await Season.create({
       name: seasonName,
-      index,
+      index: latestSeason ? latestSeason.index + 1 : 0,
       startDate,
       endDate,
       ratingBrackets,
