@@ -17,10 +17,8 @@ export const agetstat: Command = {
     const season: ISeason = await dbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
 
-    const stat: IUserSeasonStat = await dbAdapter.userSeasonStat.findOrCreate(
-      user.id,
-      season.id,
-    );
+    const stat: IUserSeasonStat =
+      await dbAdapter.userSeasonStat.findOrCreateStat(user.id, season.id);
 
     const message = `
       Current stat for ${user.username}: ${stringifyUserSeasonStat(stat)}`;
@@ -42,7 +40,7 @@ export const aupdatestat: Command = {
     const season: ISeason = await dbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
     const userSeasonStat: IUserSeasonStat =
-      await dbAdapter.userSeasonStat.findOrCreate(user.id, season.id);
+      await dbAdapter.userSeasonStat.findOrCreateStat(user.id, season.id);
     const roleString = args[1];
     const result = args[2];
     let role: Role;

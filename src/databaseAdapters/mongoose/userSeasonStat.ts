@@ -4,7 +4,7 @@ import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
-  async findOrCreate(
+  async findOrCreateStat(
     userId: string,
     seasonId: string,
   ): Promise<IUserSeasonStat> {
