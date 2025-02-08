@@ -14,6 +14,15 @@ import { asessions } from './asessions';
 import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
 
+// Delete the below following season update. Purely for testing purposes
+const debugCommands =
+  process.env.ENV === 'local'
+    ? {
+        [acreateseason.command]: acreateseason,
+        [agetcurrentseason.command]: agetcurrentseason,
+      }
+    : {};
+
 export const adminCommands: Commands = {
   [a.command]: a,
   [acreatetestaccounts.command]: acreatetestaccounts,
@@ -25,10 +34,5 @@ export const adminCommands: Commands = {
   [atestgame.command]: atestgame,
   [asessions.command]: asessions,
   [ausernametoemail.command]: ausernametoemail,
-
-  // Update below following season update. These commands need to be fixed
-  ...(process.env.ENABLE_SEASON === 'true' && {
-    [acreateseason.command]: acreateseason,
-    [agetcurrentseason.command]: agetcurrentseason,
-  }),
+  ...debugCommands,
 };
