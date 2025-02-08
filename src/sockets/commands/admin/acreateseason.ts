@@ -1,5 +1,3 @@
-// TODO-kev: Delete this file. Purely for testing purposes
-
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import dbAdapter from '../../../databaseAdapters';
@@ -8,6 +6,7 @@ import { ISeason } from '../../../models/types/season';
 import { stringifySeason } from '../../../databaseAdapters/mongoose/season';
 import { RATING_BRACKETS } from '../../../gameplay/elo/ratingBrackets';
 
+// Debug command only available in local
 export const acreateseason: Command = {
   command: 'acs',
   help: '/acs <name>: Creates a new season',
