@@ -1,8 +1,9 @@
 import User from '../../models/user';
-import { IUser } from '../../gameplay/types';
+import { IUser } from '../../gameplay/gameEngine/types';
 import { S3AvatarSet } from '../../clients/s3/S3Agent';
+import IUserDbAdapter from '../databaseInterfaces/user';
 
-export class MongoUserAdapter {
+export class MongoUserAdapter implements IUserDbAdapter {
   async getUser(username: string): Promise<IUser> {
     return (await User.findOne({
       usernameLower: username.toLowerCase(),

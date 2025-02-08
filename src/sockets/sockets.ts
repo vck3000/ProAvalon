@@ -2,7 +2,7 @@
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
-import GameWrapper from '../gameplay/gameWrapper';
+import GameWrapper from '../gameplay/gameEngine/gameWrapper';
 
 import savedGameObj from '../models/savedGame';
 import { getAllRewardsForUser } from '../rewards/getRewards';
@@ -15,7 +15,12 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isPercival } from '../modsadmins/percivals';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { GAME_MODE_NAMES, GameMode, isGameMode, strToGameMode } from '../gameplay/gameModes';
+import {
+  GAME_MODE_NAMES,
+  GameMode,
+  isGameMode,
+  strToGameMode,
+} from '../gameplay/gameEngine/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -28,16 +33,16 @@ import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import * as util from 'util';
-import { RoomCreationType } from '../gameplay/roomTypes';
+import { RoomCreationType } from '../gameplay/gameEngine/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
-import Game, { GameConfig } from '../gameplay/game';
-import { RoomConfig } from '../gameplay/room';
+import Game, { GameConfig } from '../gameplay/gameEngine/game';
+import { RoomConfig } from '../gameplay/gameEngine/room';
 import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
-import { Role } from '../gameplay/roles/types';
-import { Phase } from '../gameplay/phases/types';
-import { Card } from '../gameplay/cards/types';
+import { Role } from '../gameplay/gameEngine/roles/types';
+import { Phase } from '../gameplay/gameEngine/phases/types';
+import { Card } from '../gameplay/gameEngine/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
@@ -771,8 +776,7 @@ const applyApplicableRewards = function (socket) {
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
     socket.request.badge = 'M';
-  }
-  else if (isPercival(socket.request.user.username)) {
+  } else if (isPercival(socket.request.user.username)) {
     socket.request.badge = 'P';
   }
   // TO badge

@@ -93,7 +93,7 @@ export const miplinkedaccs: Command = {
     ModLog.create({
       type: 'miplinkedaccs',
       modWhoMade: {
-        id: modUser._id,
+        id: modUser.id,
         username: modUser.username,
         usernameLower: modUser.usernameLower,
       },

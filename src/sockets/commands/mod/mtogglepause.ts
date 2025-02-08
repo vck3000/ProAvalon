@@ -1,6 +1,6 @@
 import { Command } from '../types';
 import { rooms } from '../../sockets';
-import { Phase } from '../../../gameplay/phases/types';
+import { Phase } from '../../../gameplay/gameEngine/phases/types';
 
 export const mtogglepause: Command = {
   command: 'mtogglepause',

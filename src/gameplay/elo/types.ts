@@ -1,5 +1,5 @@
 export interface RatingBracket {
   name: string;
-  min: number;
-  max: number;
+  min: number; // Inclusive
+  max: number; // Inclusive
 }
