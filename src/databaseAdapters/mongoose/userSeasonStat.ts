@@ -25,44 +25,44 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     return stat;
   }
 
-  async updateStat(
-    userId: string,
-    seasonId: string,
+  async registerGameOutcome(
+    userSeasonStat: IUserSeasonStat,
     isWin: boolean,
     ratingChange: number,
     role: Role,
   ): Promise<IUserSeasonStat> {
-    const stat: IUserSeasonStat = await this.findOrCreate(userId, seasonId);
+    const dbUserSeasonStat = await UserSeasonStat.findById(userSeasonStat.id);
 
     // TODO-kev: Update below if it doesnt exist
-    const roleStat: IRoleStat = stat.roleStats[role];
+    const roleStat: IRoleStat = userSeasonStat.roleStats[role];
 
-    stat.rankedGamesPlayed += 1;
+    dbUserSeasonStat.rankedGamesPlayed += 1;
 
     if (isWin) {
-      stat.rankedGamesWon += 1;
+      dbUserSeasonStat.rankedGamesWon += 1;
       roleStat.gamesWon += 1;
     } else {
-      stat.rankedGamesLost += 1;
+      dbUserSeasonStat.rankedGamesLost += 1;
       roleStat.gamesLost += 1;
     }
 
-    stat.markModified('roleStats');
+    dbUserSeasonStat.markModified('roleStats');
 
-    stat.winRate = stat.rankedGamesWon / stat.rankedGamesPlayed;
+    dbUserSeasonStat.winRate =
+      dbUserSeasonStat.rankedGamesWon / dbUserSeasonStat.rankedGamesPlayed;
 
-    stat.rating += ratingChange;
-    stat.ratingBracket = 'silver'; // TODO-kev: Update this part
+    dbUserSeasonStat.rating += ratingChange;
+    dbUserSeasonStat.ratingBracket = 'silver'; // TODO-kev: Update this part
 
-    if (stat.rating > stat.highestRating) {
-      stat.highestRating = stat.rating;
+    if (dbUserSeasonStat.rating > dbUserSeasonStat.highestRating) {
+      dbUserSeasonStat.highestRating = dbUserSeasonStat.rating;
     }
 
-    stat.lastUpdated = new Date();
+    dbUserSeasonStat.lastUpdated = new Date();
 
-    await stat.save();
+    await dbUserSeasonStat.save();
 
-    return stat;
+    return userSeasonStat;
   }
 }
 

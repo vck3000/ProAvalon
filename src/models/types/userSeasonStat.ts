@@ -24,8 +24,4 @@ export interface IUserSeasonStat {
   };
 
   lastUpdated: Date;
-
-  // Mongoose methods
-  save: () => Promise<this>;
-  markModified: (path: string) => void;
 }

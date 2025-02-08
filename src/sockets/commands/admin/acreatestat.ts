@@ -41,6 +41,8 @@ export const aupdatestat: Command = {
 
     const season: ISeason = await dbAdapter.season.getCurrentSeason();
     const user: IUser = socket.request.user;
+    const userSeasonStat: IUserSeasonStat =
+      await dbAdapter.userSeasonStat.findOrCreate(user.id, season.id);
     const roleString = args[1];
     const result = args[2];
     let role: Role;
@@ -55,17 +57,15 @@ export const aupdatestat: Command = {
     let stat: IUserSeasonStat;
 
     if (result === 'win') {
-      stat = await dbAdapter.userSeasonStat.updateStat(
-        user.id,
-        season.id,
+      stat = await dbAdapter.userSeasonStat.registerGameOutcome(
+        userSeasonStat,
         true,
         25,
         role,
       );
     } else {
-      stat = await dbAdapter.userSeasonStat.updateStat(
-        user.id,
-        season.id,
+      stat = await dbAdapter.userSeasonStat.registerGameOutcome(
+        userSeasonStat,
         false,
         -10,
         role,

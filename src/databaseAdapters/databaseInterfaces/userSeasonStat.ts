@@ -3,9 +3,8 @@ import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export default interface IUserSeasonStatDbAdapter {
   findOrCreate(userId: string, seasonId: string): Promise<IUserSeasonStat>;
-  updateStat(
-    userId: string,
-    seasonId: string,
+  registerGameOutcome(
+    userSeasonStat: IUserSeasonStat,
     isWin: boolean,
     ratingChange: number,
     role: Role,
