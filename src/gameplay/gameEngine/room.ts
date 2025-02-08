@@ -1,18 +1,18 @@
 // @ts-nocheck
 import { GAME_MODE_NAMES, GameMode } from './gameModes';
-import { SocketUser } from '../sockets/types';
+import { SocketUser } from '../../sockets/types';
 import Game, { MIN_PLAYERS } from './game';
 import { Timeouts } from './gameTimer';
-import { ReadyPrompt } from '../sockets/readyPrompt';
+import { ReadyPrompt } from '../../sockets/readyPrompt';
 import { avalonRoles } from './roles/roles';
 import { avalonCards } from './cards/cards';
 import { avalonPhases, commonPhases } from './phases/phases';
 import { Role } from './roles/types';
 import { Phase } from './phases/types';
-import { millisToStr } from '../util/time';
+import { millisToStr } from '../../util/time';
 import { RoomPlayer } from './types';
-import { isMod } from '../modsadmins/mods';
-import { isAdmin } from '../modsadmins/admins';
+import { isMod } from '../../modsadmins/mods';
+import { isAdmin } from '../../modsadmins/admins';
 
 export class RoomConfig {
   host: string;

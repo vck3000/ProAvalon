@@ -1,7 +1,7 @@
-import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
+import usernamesIndexes from '../../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../types';
 import { MIN_PLAYERS, NUM_PLAYERS_ON_MISSION } from '../../game';
-import { SocketUser } from '../../../sockets/types';
+import { SocketUser } from '../../../../sockets/types';
 
 class PickingTeam implements IPhase {
   static phase = Phase.PickingTeam;

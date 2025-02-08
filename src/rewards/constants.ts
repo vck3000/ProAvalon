@@ -1,4 +1,4 @@
-import { Role } from '../gameplay/roles/types';
+import { Role } from '../gameplay/gameEngine/roles/types';
 
 const constants = {
   ADMIN_BADGE: 'ADMIN_BADGE',

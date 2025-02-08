@@ -13,8 +13,12 @@ import { sendEmailVerification } from '../myFunctions/sendEmailVerification';
 
 import { disallowVPNs } from '../util/vpnDetection';
 import Settings from '../settings';
-import { Alliance } from '../gameplay/types';
-import { resRoles, rolesToAlliances, spyRoles } from '../gameplay/roles/roles';
+import { Alliance } from '../gameplay/gameEngine/types';
+import {
+  resRoles,
+  rolesToAlliances,
+  spyRoles,
+} from '../gameplay/gameEngine/roles/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
 import uuid from 'uuid';
 import { captchaMiddleware } from '../util/captcha';

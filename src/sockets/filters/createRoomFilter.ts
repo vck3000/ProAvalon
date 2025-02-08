@@ -1,5 +1,5 @@
-import GameWrapper from '../../gameplay/gameWrapper';
-import { WAITING } from '../../gameplay/game';
+import GameWrapper from '../../gameplay/gameEngine/gameWrapper';
+import { WAITING } from '../../gameplay/gameEngine/game';
 
 export class CreateRoomFilter {
   // Returns true if user can create a room. Else false.

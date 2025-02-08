@@ -1,4 +1,4 @@
-import usernamesIndexes from '../../../myFunctions/usernamesIndexes';
+import usernamesIndexes from '../../../../myFunctions/usernamesIndexes';
 import { Phase } from '../types';
 import { Card } from '../../cards/types';
 

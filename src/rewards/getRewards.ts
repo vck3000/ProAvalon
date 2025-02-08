@@ -10,7 +10,7 @@ import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isDev } from '../modsadmins/developers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
-import { IUser } from '../gameplay/types';
+import { IUser } from '../gameplay/gameEngine/types';
 import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
 import { S3Agent } from '../clients/s3/S3Agent';

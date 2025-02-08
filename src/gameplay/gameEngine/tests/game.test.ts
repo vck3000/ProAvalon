@@ -1,7 +1,7 @@
 import Game, { GameConfig, NUM_PLAYERS_ON_MISSION } from '../game';
 import { RoomConfig } from '../room';
 import { GameMode } from '../gameModes';
-import { ReadyPrompt } from '../../sockets/readyPrompt';
+import { ReadyPrompt } from '../../../sockets/readyPrompt';
 import { RoomCreationType } from '../roomTypes';
 import { Phase } from '../phases/types';
 import { Alliance } from '../types';
@@ -9,9 +9,9 @@ import { Card } from '../cards/types';
 import { Role } from '../roles/types';
 
 jest.mock('../gameWrapper');
-jest.mock('../../models/gameRecord');
-jest.mock('../../models/user');
-jest.mock('../../models/RatingPeriodGameRecord');
+jest.mock('../../../models/gameRecord');
+jest.mock('../../../models/user');
+jest.mock('../../../models/RatingPeriodGameRecord');
 
 describe('Game Engine', () => {
   let game: Game;
