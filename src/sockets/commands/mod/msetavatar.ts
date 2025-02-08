@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { sendReplyToCommand } from '../../sockets';
 import { SocketUser } from '../../types';
-import userAdapter from '../../../databaseAdapters/user';
+import dbAdapter from '../../../databaseAdapters';
 import { S3Agent } from '../../../clients/s3/S3Agent';
 import S3Controller from '../../../clients/s3/S3Controller';
 
@@ -30,7 +30,7 @@ export const msetavatar: Command = {
       sendReplyToCommand(senderSocket, `Invalid avatar links provided.`);
     }
 
-    const user = await userAdapter.getUser(username);
+    const user = await dbAdapter.user.getUser(username);
     if (!user) {
       sendReplyToCommand(
         senderSocket,
@@ -38,7 +38,7 @@ export const msetavatar: Command = {
       );
     }
 
-    await userAdapter.setAvatarLinks(username, resLink, spyLink);
+    await dbAdapter.user.setAvatarLinks(username, resLink, spyLink);
     sendReplyToCommand(
       senderSocket,
       `Successfully changed avatars for user: ${username}.`,
