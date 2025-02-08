@@ -1,7 +1,5 @@
-import { Types } from 'mongoose';
-
 export interface ISeason {
-  id: Types.ObjectId;
+  id: string;
   index: number;
   name: string;
   startDate: Date;
