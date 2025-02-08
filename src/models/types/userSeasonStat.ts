@@ -6,9 +6,9 @@ export interface IRoleStat {
 }
 
 export interface IUserSeasonStat {
-  id: Types.ObjectId;
-  user: Types.ObjectId;
-  season: Types.ObjectId;
+  id: string;
+  userId: string;
+  seasonId: string;
 
   rating: number;
   highestRating: number;

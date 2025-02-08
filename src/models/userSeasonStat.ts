@@ -3,12 +3,12 @@ import { IUserSeasonStat } from './types/userSeasonStat';
 
 // SCHEMA SETUP
 const userSeasonStatSchema = new mongoose.Schema({
-  user: {
+  userId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'user',
     required: true,
   },
-  season: {
+  seasonId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'season',
     required: true,

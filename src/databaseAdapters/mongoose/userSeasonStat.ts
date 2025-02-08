@@ -1,7 +1,6 @@
 import { IRoleStat, IUserSeasonStat } from '../../models/types/userSeasonStat';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
-import Season from '../../models/season';
 import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
@@ -10,15 +9,14 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     seasonId: string,
   ): Promise<IUserSeasonStat> {
     let stat: IUserSeasonStat = await UserSeasonStat.findOne({
-      user: userId,
-      season: seasonId,
+      userId,
+      seasonId,
     });
 
     if (!stat) {
       stat = await UserSeasonStat.create({
-        user: userId,
-        season: seasonId,
-        roleStats: {},
+        userId,
+        seasonId,
       });
 
       console.log(`User season stat created: ${stringifyUserSeasonStat(stat)}`);
