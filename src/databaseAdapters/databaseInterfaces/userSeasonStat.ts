@@ -1,20 +1,13 @@
-import { Types } from 'mongoose';
 import { IUserSeasonStat } from '../../models/types/userSeasonStat';
 import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export default interface IUserSeasonStatDbAdapter {
   formatUserSeasonStat(stat: IUserSeasonStat): string;
-  createStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-  ): Promise<IUserSeasonStat>;
-  getStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-  ): Promise<IUserSeasonStat>;
+  createStat(userId: string, seasonId: string): Promise<IUserSeasonStat>;
+  getStat(userId: string, seasonId: string): Promise<IUserSeasonStat>;
   updateStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
+    userId: string,
+    seasonId: string,
     isWin: boolean,
     ratingChange: number,
     role: Role,

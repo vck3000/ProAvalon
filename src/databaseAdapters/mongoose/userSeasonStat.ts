@@ -1,5 +1,4 @@
 import { IRoleStat, IUserSeasonStat } from '../../models/types/userSeasonStat';
-import { Types } from 'mongoose';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 import Season from '../../models/season';
@@ -21,37 +20,23 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     `;
   }
 
-  async createStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-  ): Promise<IUserSeasonStat> {
+  async createStat(userId: string, seasonId: string): Promise<IUserSeasonStat> {
     // TODO-kev: Consider how to add this. Should we be using the seasonAdapter within here?
-    const season = await Season.findById(seasonId).select('rolesAvailable');
+    // Also think about validating userId
+    const season = await Season.findById(seasonId);
 
     if (!season) {
       throw new Error(`Season does not exist: seasonId=${seasonId}`);
     }
 
-    const roleStats: { [key: string]: IRoleStat } = {};
-
-    for (const role of season.rolesAvailable) {
-      roleStats[role.name] = {
-        gamesWon: 0,
-        gamesLost: 0,
-      };
-    }
-
     return await UserSeasonStat.create({
       user: userId,
       season: seasonId,
-      roleStats,
+      roleStats: {},
     });
   }
 
-  async getStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
-  ): Promise<IUserSeasonStat> {
+  async getStat(userId: string, seasonId: string): Promise<IUserSeasonStat> {
     const stat: IUserSeasonStat = await UserSeasonStat.findOne({
       user: userId,
       season: seasonId,
@@ -61,13 +46,15 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   }
 
   async updateStat(
-    userId: Types.ObjectId,
-    seasonId: Types.ObjectId,
+    userId: string,
+    seasonId: string,
     isWin: boolean,
     ratingChange: number,
     role: Role,
   ): Promise<IUserSeasonStat> {
     const stat: IUserSeasonStat = await this.getStat(userId, seasonId);
+
+    // TODO-kev: Update below if it doesnt exist
     const roleStat: IRoleStat = stat.roleStats[role];
 
     stat.rankedGamesPlayed += 1;
