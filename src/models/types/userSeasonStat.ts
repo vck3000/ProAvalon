@@ -1,8 +1,10 @@
-import { Types } from 'mongoose';
+export interface IRoleStatsMap {
+  [role: string]: IRoleStats;
+}
 
-export interface IRoleStat {
+export interface IRoleStats {
+  gamesPlayed: number;
   gamesWon: number;
-  gamesLost: number;
 }
 
 export interface IUserSeasonStat {
@@ -19,7 +21,7 @@ export interface IUserSeasonStat {
   winRate: number;
 
   roleStats: {
-    [role: string]: IRoleStat;
+    [playerCount: string]: IRoleStatsMap;
   };
 
   lastUpdated: Date;

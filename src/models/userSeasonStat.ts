@@ -66,23 +66,26 @@ const userSeasonStatSchema = new mongoose.Schema({
 
   roleStats: {
     type: Object,
-    required: true,
+    default: {},
     validate: {
       validator: function (value: any) {
-        for (const key in value) {
-          if (value.hasOwnProperty(key)) {
-            const roleStat = value[key];
-            if (
-              typeof roleStat.gamesWon !== 'number' ||
-              roleStat.gamesWon < 0
-            ) {
-              return false;
-            }
-            if (
-              typeof roleStat.gamesLost !== 'number' ||
-              roleStat.gamesLost < 0
-            ) {
-              return false;
+        for (const playerCount in value) {
+          if (value.hasOwnProperty(playerCount)) {
+            const roleStatsMap = value[playerCount];
+
+            for (const role in roleStatsMap) {
+              if (roleStatsMap.hasOwnProperty(role)) {
+                const roleStat = roleStatsMap[role];
+
+                if (
+                  typeof roleStat.gamesPlayed !== 'number' ||
+                  roleStat.gamesPlayed < 0 ||
+                  typeof roleStat.gamesWon !== 'number' ||
+                  roleStat.gamesWon < 0
+                ) {
+                  return false;
+                }
+              }
             }
           }
         }

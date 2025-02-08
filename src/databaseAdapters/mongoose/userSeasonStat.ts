@@ -1,4 +1,4 @@
-import { IRoleStat, IUserSeasonStat } from '../../models/types/userSeasonStat';
+import { IUserSeasonStat } from '../../models/types/userSeasonStat';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 import { Role } from '../../gameplay/gameEngine/roles/types';
@@ -34,13 +34,13 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     const dbUserSeasonStat = await UserSeasonStat.findById(userSeasonStat.id);
 
     // TODO-kev: Update below if it doesnt exist
-    const roleStat: IRoleStat = userSeasonStat.roleStats[role];
+    // const roleStat: IRoleStat = userSeasonStat.roleStats[role];
 
     dbUserSeasonStat.rankedGamesPlayed += 1;
 
     if (isWin) {
       dbUserSeasonStat.rankedGamesWon += 1;
-      roleStat.gamesWon += 1;
+      // roleStat.gamesWon += 1;
     }
 
     dbUserSeasonStat.markModified('roleStats');
