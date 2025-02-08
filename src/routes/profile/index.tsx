@@ -258,7 +258,7 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
   await ModLog.create({
     type: 'avatarDelete',
     modWhoMade: {
-      id: modWhoProcessed._id,
+      id: modWhoProcessed.id,
       username: modWhoProcessed.username,
       usernameLower: modWhoProcessed.usernameLower,
     },
@@ -329,7 +329,7 @@ router.post(
 
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
       createNotification(
-        userRequestingAvatar._id,
+        userRequestingAvatar.id,
         str,
         '#',
         modWhoProcessed.username,
@@ -342,7 +342,7 @@ router.post(
 
       let str = `Your avatar request was rejected by ${modWhoProcessed.username}. Their comment was: "${modComment}"`;
       createNotification(
-        userRequestingAvatar._id,
+        userRequestingAvatar.id,
         str,
         '#',
         modWhoProcessed.username,
@@ -353,7 +353,7 @@ router.post(
     ModLog.create({
       type: 'avatar',
       modWhoMade: {
-        id: modWhoProcessed._id,
+        id: modWhoProcessed.id,
         username: modWhoProcessed.username,
         usernameLower: modWhoProcessed.usernameLower,
       },

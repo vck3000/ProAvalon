@@ -40,7 +40,7 @@ router.get(
       });
     });
 
-    const userIdString = req.user._id.toString().replace(' ', '');
+    const userIdString = req.user.id.toString().replace(' ', '');
 
     const idsOfLikedPosts = [];
     const addToLikedPosts = (item) => {
@@ -189,7 +189,7 @@ router.post(
       timeLastEdit: new Date(),
       whoLastEdit: req.user.username,
       author: {
-        id: req.user._id,
+        id: req.user.id,
         username: req.user.username,
       },
       comments: [],

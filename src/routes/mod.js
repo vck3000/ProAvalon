@@ -55,7 +55,7 @@ router.post('/ban', async (req, res) => {
   const userIsPercy = isPercival(req.user.username);
 
   if ((userIsMod ^ userIsPercy) !== 1) {
-    throw Error("Expected requesting user to either be a mod or a Percy.");
+    throw Error('Expected requesting user to either be a mod or a Percy.');
   }
 
   try {
@@ -186,13 +186,13 @@ router.post('/ban', async (req, res) => {
       singleIPBan: req.body['SingleIPBanCheckbox'] === 'on' ? true : false,
       userBan: req.body['userBanCheckbox'] === 'on' ? true : false,
       bannedPlayer: {
-        id: banUser._id,
+        id: banUser.id,
         username: banUser.username,
         usernameLower: banUser.usernameLower,
       },
       bannedIPs: ipsToBan,
       modWhoBanned: {
-        id: modUser._id,
+        id: modUser.id,
         username: modUser.username,
         usernameLower: modUser.usernameLower,
       },
@@ -210,7 +210,7 @@ router.post('/ban', async (req, res) => {
     await ModLog.create({
       type: 'ban',
       modWhoMade: {
-        id: modUser._id,
+        id: modUser.id,
         username: modUser.username,
         usernameLower: modUser.usernameLower,
       },
@@ -218,10 +218,16 @@ router.post('/ban', async (req, res) => {
       dateCreated: new Date(),
     });
 
-    sendToDiscordMods(`${userIsMod ? "Moderator" : "Percival"} "${req.user.usernameLower}" banned "${banUser.usernameLower}" for \
-${req.body['duration']} ${req.body['duration_units']} for reason "${req.body.reason}" with description \
-"${req.body['descriptionByMod']}".`
-      , false);
+    sendToDiscordMods(
+      `${userIsMod ? 'Moderator' : 'Percival'} "${
+        req.user.usernameLower
+      }" banned "${banUser.usernameLower}" for \
+${req.body['duration']} ${req.body['duration_units']} for reason "${
+        req.body.reason
+      }" with description \
+"${req.body['descriptionByMod']}".`,
+      false,
+    );
 
     // Delete all the sessions associated with this username
     const dbResult = await MongoClient.connect(process.env.DATABASEURL);
@@ -355,10 +361,10 @@ router.post('/report', async (req, res) => {
     reason: req.body.reason,
     reportedPlayer: {
       username: reportedUser.username.toLowerCase(),
-      id: reportedUser._id,
+      id: reportedUser.id,
     },
     playerWhoReported: {
-      id: userWhoReported._id,
+      id: userWhoReported.id,
       username: userWhoReported.username.toLowerCase(),
     },
     description: req.body.desc,

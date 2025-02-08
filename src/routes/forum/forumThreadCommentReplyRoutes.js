@@ -75,7 +75,7 @@ async function createCommentReply(req, res) {
       allowedAttributes: sanitizeHtmlAllowedAttributesForumThread,
     }),
 
-    author: { id: req.user._id, username: req.user.username },
+    author: { id: req.user.id, username: req.user.username },
 
     timeCreated: d,
     timeLastEdit: d,

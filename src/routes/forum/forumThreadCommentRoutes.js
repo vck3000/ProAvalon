@@ -44,7 +44,7 @@ router.post(
         allowedTags: sanitizeHtml.defaults.allowedTags.concat(allowedHtmlTags),
         allowedAttributes: allowedHtmlAttributes,
       }),
-      author: { id: req.user._id, username: req.user.username },
+      author: { id: req.user.id, username: req.user.username },
       timeCreated: new Date(),
       timeLastEdit: new Date(),
       likes: 0,

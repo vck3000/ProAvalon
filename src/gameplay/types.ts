@@ -34,6 +34,7 @@ export interface See {
 }
 
 export interface IUser {
+  id: string;
   username: string;
   usernameLower?: string;
   password?: string;
@@ -75,7 +76,7 @@ export interface IUser {
   matchmakingBlacklist?: string[];
 
   // Mongoose methods
-  save: () => Promise<void>;
+  save: () => Promise<this>;
   markModified: (path: string) => void;
 }
 
