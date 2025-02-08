@@ -41,9 +41,6 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     if (isWin) {
       dbUserSeasonStat.rankedGamesWon += 1;
       roleStat.gamesWon += 1;
-    } else {
-      dbUserSeasonStat.rankedGamesLost += 1;
-      roleStat.gamesLost += 1;
     }
 
     dbUserSeasonStat.markModified('roleStats');
@@ -74,8 +71,7 @@ export function stringifyUserSeasonStat(stat: IUserSeasonStat) {
       highestRating=${stat.highestRating}, 
       ratingBracket=${stat.ratingBracket},
       rankedGamesPlayed=${stat.rankedGamesPlayed}, 
-      rankedGamesWon=${stat.rankedGamesWon}, 
-      rankedGamesLost=${stat.rankedGamesLost}, 
+      rankedGamesWon=${stat.rankedGamesWon},
       winRate=${winRateFormatted}, 
       lastUpdated=${stat.lastUpdated}, 
     `;

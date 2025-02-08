@@ -39,11 +39,6 @@ const userSeasonStatSchema = new mongoose.Schema({
     default: 0,
     min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'], // TODO-kev: Is this necessary if enforced?
   },
-  rankedGamesLost: {
-    type: Number,
-    default: 0,
-    min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'], // TODO-kev: Is this necessary if enforced?
-  },
   winRate: {
     type: Number,
     default: 0,

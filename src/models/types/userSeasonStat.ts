@@ -16,7 +16,6 @@ export interface IUserSeasonStat {
 
   rankedGamesPlayed: number;
   rankedGamesWon: number;
-  rankedGamesLost: number;
   winRate: number;
 
   roleStats: {
