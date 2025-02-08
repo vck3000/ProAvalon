@@ -53,10 +53,10 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
 
     dbUserSeasonStat.rating += ratingChange;
     dbUserSeasonStat.ratingBracket = 'silver'; // TODO-kev: Update this part
-
-    if (dbUserSeasonStat.rating > dbUserSeasonStat.highestRating) {
-      dbUserSeasonStat.highestRating = dbUserSeasonStat.rating;
-    }
+    dbUserSeasonStat.highestRating = Math.max(
+      dbUserSeasonStat.rating,
+      dbUserSeasonStat.highestRating,
+    );
 
     dbUserSeasonStat.lastUpdated = new Date();
 
