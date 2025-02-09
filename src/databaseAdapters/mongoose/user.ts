@@ -1,26 +1,9 @@
-import User from '../models/user';
-import { IUser } from '../gameplay/gameEngine/types';
-import { S3AvatarSet } from '../clients/s3/S3Agent';
+import { S3AvatarSet } from '../../clients/s3/S3Agent';
+import IUserDbAdapter from '../databaseInterfaces/user';
+import { IUser } from '../../gameplay/gameEngine/types';
+import User from '../../models/user';
 
-interface DatabaseAdapter {
-  getUser(username: string): Promise<IUser>;
-  setAvatarLinks(
-    username: string,
-    resLink: string,
-    spyLink: string,
-  ): Promise<void>;
-  muteUser(userCallingMute: IUser, usernameToMute: string): Promise<void>;
-  unmuteUser(userCallingUnmute: IUser, usernameToUnmute: string): Promise<void>;
-  resetAvatar(username: string): Promise<void>;
-  setAvatarAndUpdateLibrary(
-    username: string,
-    avatarSet: S3AvatarSet,
-    librarySize: number,
-  ): Promise<void>;
-  removeAvatar(username: string, avatarSet: S3AvatarSet): Promise<void>;
-}
-
-class MongoUserAdapter implements DatabaseAdapter {
+export class MongoUserAdapter implements IUserDbAdapter {
   async getUser(username: string): Promise<IUser> {
     return (await User.findOne({
       usernameLower: username.toLowerCase(),
@@ -95,6 +78,3 @@ class MongoUserAdapter implements DatabaseAdapter {
     await user.save();
   }
 }
-
-const userAdapter = new MongoUserAdapter();
-export default userAdapter;

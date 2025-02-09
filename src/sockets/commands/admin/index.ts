@@ -10,6 +10,18 @@ import { aresettournamentaccounts } from './aresettournamentaccounts';
 import { ausernametoemail } from './ausernametoemail';
 import { asessions } from './asessions';
 
+// Delete the below following season update. Purely for testing purposes
+import { acreateseason } from './acreateseason';
+import { agetcurrentseason } from './agetcurrentseason';
+
+const debugCommands =
+  process.env.ENV === 'local'
+    ? {
+        [acreateseason.command]: acreateseason,
+        [agetcurrentseason.command]: agetcurrentseason,
+      }
+    : {};
+
 export const adminCommands: Commands = {
   [a.command]: a,
   [acreatetestaccounts.command]: acreatetestaccounts,
@@ -21,4 +33,5 @@ export const adminCommands: Commands = {
   [atestgame.command]: atestgame,
   [asessions.command]: asessions,
   [ausernametoemail.command]: ausernametoemail,
+  ...debugCommands,
 };

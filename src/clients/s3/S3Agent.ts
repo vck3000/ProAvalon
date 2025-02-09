@@ -1,5 +1,3 @@
-import userAdapter from '../../databaseAdapters/user';
-
 enum FolderName {
   APPROVED = 'approved_avatars',
   PENDING = 'pending_avatars',

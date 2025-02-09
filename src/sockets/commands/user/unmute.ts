@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { sendReplyToCommand } from '../../sockets';
-import userAdapter from '../../../databaseAdapters/user';
+import dbAdapter from '../../../databaseAdapters';
 
 export const unmute: Command = {
   command: 'unmute',
@@ -12,7 +12,7 @@ export const unmute: Command = {
       return;
     }
 
-    const userCallingUnmute = await userAdapter.getUser(
+    const userCallingUnmute = await dbAdapter.user.getUser(
       socket.request.user.username,
     );
     const usernameToUnmuteLower = args[1].toLowerCase();
@@ -25,14 +25,14 @@ export const unmute: Command = {
       return;
     }
 
-    const userToMute = await userAdapter.getUser(usernameToUnmuteLower);
+    const userToMute = await dbAdapter.user.getUser(usernameToUnmuteLower);
 
     if (!userToMute) {
       sendReplyToCommand(socket, `${usernameToUnmuteLower} was not found.`);
       return;
     }
 
-    await userAdapter.unmuteUser(userCallingUnmute, usernameToUnmuteLower);
+    await dbAdapter.user.unmuteUser(userCallingUnmute, usernameToUnmuteLower);
 
     socket.emit('updateMutedPlayers', userCallingUnmute.mutedPlayers);
     sendReplyToCommand(

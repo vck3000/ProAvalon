@@ -15,7 +15,7 @@ import { PatreonController } from '../clients/patreon/patreonController';
 import constants from './constants';
 import { S3Agent } from '../clients/s3/S3Agent';
 import S3Controller from '../clients/s3/S3Controller';
-import userAdapter from '../databaseAdapters/user';
+import dbAdapter from '../databaseAdapters';
 
 const s3Agent = new S3Agent(new S3Controller());
 const patreonAgent = new PatreonAgent(new PatreonController());
@@ -116,7 +116,7 @@ export async function getAvatarLibrarySizeForUser(
   patreonReward?: RewardType,
 ): Promise<number> {
   const defaultLibrarySize = async () => {
-    const user = await userAdapter.getUser(usernameLower);
+    const user = await dbAdapter.user.getUser(usernameLower);
     if (user.totalGamesPlayed > 500) {
       return 2;
     } else if (user.totalGamesPlayed > 100) {
@@ -159,7 +159,7 @@ async function updateUsersAvatarLibrary(
   usernameLower: string,
   patreonReward: any,
 ) {
-  const user = await userAdapter.getUser(usernameLower);
+  const user = await dbAdapter.user.getUser(usernameLower);
   const librarySize = await getAvatarLibrarySizeForUser(
     usernameLower,
     patreonReward,
