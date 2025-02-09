@@ -43,7 +43,7 @@ export class MongoSeasonAdapter implements ISeasonDbAdapter {
 
     console.log(`Season created: ${stringifySeason(newSeason)}`);
 
-    return newSeason as ISeason;
+    return newSeason;
   }
 }
 

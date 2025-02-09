@@ -14,7 +14,6 @@ import { asessions } from './asessions';
 import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
 
-// Delete the below following season update. Purely for testing purposes
 const debugCommands =
   process.env.ENV === 'local'
     ? {
