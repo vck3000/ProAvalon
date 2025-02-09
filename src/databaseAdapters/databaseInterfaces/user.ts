@@ -1,5 +1,6 @@
 import { IUser } from '../../gameplay/gameEngine/types';
 import { S3AvatarSet } from '../../clients/s3/S3Agent';
+
 export default interface IUserDbAdapter {
   getUser(username: string): Promise<IUser>;
   setAvatarLinks(

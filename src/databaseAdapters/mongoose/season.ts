@@ -5,12 +5,12 @@ import { RatingBracket } from '../../gameplay/elo/types';
 
 export class MongoSeasonAdapter implements ISeasonDbAdapter {
   async getCurrentSeason(): Promise<ISeason | null> {
-    const currentSeason: ISeason | null = await Season.findOne({
-      startDate: { $lte: new Date() },
-      endDate: { $gte: new Date() },
-    });
+    const currentDate = new Date();
 
-    return currentSeason as ISeason;
+    return Season.findOne({
+      startDate: { $lte: currentDate },
+      endDate: { $gte: currentDate },
+    });
   }
 
   async createSeason(
