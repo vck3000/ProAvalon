@@ -10,7 +10,7 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     userId: string,
     seasonId: string,
   ): Promise<IUserSeasonStat> {
-    let stat: IUserSeasonStat = await UserSeasonStat.findOne({
+    let stat = await UserSeasonStat.findOne({
       userId,
       seasonId,
     });
@@ -37,7 +37,7 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
       throw new Error(`Invalid number of players: ${numPlayers}`);
     }
 
-    if (!Object.values(Role).includes(role as Role)) {
+    if (!Object.values(Role).includes(role)) {
       throw new Error(`Invalid role received: ${role}"`);
     }
 
@@ -69,7 +69,7 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
 
     const updatedRating = stat.rating + ratingChange;
     stat.rating = Math.max(updatedRating, 0);
-    stat.highestRating = Math.max(updatedRating, stat.highestRating);
+    stat.highestRating = Math.max(stat.highestRating, updatedRating);
 
     // TODO-kev: Consider if this is the best way
     const season = await Season.findById(stat.seasonId);
@@ -78,20 +78,19 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
     stat.lastUpdated = new Date();
 
     await stat.save();
-    return userSeasonStat;
+
+    return stat;
   }
 }
 
 export function stringifyUserSeasonStat(stat: IUserSeasonStat) {
-  const winRateFormatted = (stat.winRate * 100).toFixed(2) + '%';
-
   return `
       rating=${stat.rating},
       highestRating=${stat.highestRating}, 
       ratingBracket=${stat.ratingBracket},
       rankedGamesPlayed=${stat.rankedGamesPlayed}, 
       rankedGamesWon=${stat.rankedGamesWon},
-      winRate=${winRateFormatted}, 
+      winRate=${stat.winRate}, 
       lastUpdated=${stat.lastUpdated}, 
     `;
 }
