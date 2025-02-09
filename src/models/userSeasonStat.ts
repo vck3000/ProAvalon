@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
 import { IUserSeasonStat } from './types/userSeasonStat';
+import { DEFAULT_RATING } from '../gameplay/elo/ratings';
 
 // SCHEMA SETUP
 const userSeasonStatSchema = new mongoose.Schema({
@@ -16,7 +17,7 @@ const userSeasonStatSchema = new mongoose.Schema({
 
   rating: {
     type: Number,
-    default: 1500, // TODO-kev: Consider if there is an enum to share here
+    default: DEFAULT_RATING,
     min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
   },
   highestRating: {
@@ -45,24 +46,6 @@ const userSeasonStatSchema = new mongoose.Schema({
     min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'], // TODO-kev: Is this necessary if enforced?
     max: [100, 'Must be less than or equal to 100, but got {VALUE}.'], // TODO-kev: Is this necessary if enforced?
   },
-
-  // roleStats: {
-  //   type: Map,
-  //   of: {
-  //     gamesWon: {
-  //       type: Number,
-  //       default: 0,
-  //       min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
-  //     },
-  //     gamesLost: {
-  //       type: Number,
-  //       default: 0,
-  //       min: [0, 'Must be greater than or equal to 0, but got {VALUE}.'],
-  //     },
-  //     _id: false,
-  //   },
-  //   required: true,
-  // },
 
   roleStats: {
     type: Object,
