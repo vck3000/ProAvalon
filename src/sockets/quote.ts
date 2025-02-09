@@ -71,7 +71,7 @@ export class Quote {
     // Get the Message
 
     // Take out timestamp
-    const splittedChatLines = chat.split(/\[\d\d:\d\d\]\s/);
+    const splittedChatLines = chat.split(/\[\d\d:\d\d(?::\d\d)?\]\s/);
 
     // First element must be empty string because timestamp must be first.
     if (splittedChatLines[0] !== '') {
