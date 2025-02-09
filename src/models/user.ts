@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 // @ts-ignore
 import passportLocalMongoose from 'passport-local-mongoose';
 import type { IUser } from '../gameplay/gameEngine/types';
+import { DEFAULT_RATING } from '../gameplay/elo/ratings';
 
 const UserSchema = new mongoose.Schema<IUser>({
   username: {
@@ -84,7 +85,7 @@ const UserSchema = new mongoose.Schema<IUser>({
   playerRating: {
     // currently elo, possible change in future
     type: Number,
-    default: 1500,
+    default: DEFAULT_RATING,
   },
   ratingBracket: {
     type: String,

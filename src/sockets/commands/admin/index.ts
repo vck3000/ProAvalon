@@ -13,12 +13,15 @@ import { asessions } from './asessions';
 // Delete the below following season update. Purely for testing purposes
 import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
+import { agetstat, aupdatestat } from './acreatestat';
 
 const debugCommands =
   process.env.ENV === 'local'
     ? {
         [acreateseason.command]: acreateseason,
         [agetcurrentseason.command]: agetcurrentseason,
+        [agetstat.command]: agetstat,
+        [aupdatestat.command]: aupdatestat,
       }
     : {};
 
