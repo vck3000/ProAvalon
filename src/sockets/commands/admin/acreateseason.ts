@@ -22,7 +22,7 @@ export const acreateseason: Command = {
     endDate.setMonth(startDate.getMonth() + 3); // 3 months
 
     try {
-      const newSeason: ISeason = await dbAdapter.season.createSeason(
+      const newSeason = await dbAdapter.season.createSeason(
         seasonName,
         startDate,
         endDate,
