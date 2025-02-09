@@ -9,6 +9,7 @@ import { ISeason } from '../../../models/types/season';
 import { Role } from '../../../gameplay/gameEngine/roles/types';
 import dbAdapter from '../../../databaseAdapters';
 import { stringifyUserSeasonStat } from '../../../databaseAdapters/mongoose/userSeasonStat';
+import { getRatingBracket } from '../../../gameplay/elo/ratingBrackets';
 
 export const agetstat: Command = {
   command: 'ags',
@@ -65,11 +66,23 @@ export const aupdatestat: Command = {
 
     let stat: IUserSeasonStat;
 
+    const updatedRating =
+      result === 'win'
+        ? (userSeasonStat.rating += 25)
+        : Math.max((userSeasonStat.rating -= 10), 0);
+    const ratingBracket = getRatingBracket(
+      updatedRating,
+      season.ratingBrackets,
+    );
+
+    console.log(updatedRating);
+
     if (result === 'win') {
       stat = await dbAdapter.userSeasonStat.registerGameOutcome(
         userSeasonStat,
         true,
-        25,
+        updatedRating,
+        ratingBracket,
         numPlayers,
         role,
       );
@@ -77,7 +90,8 @@ export const aupdatestat: Command = {
       stat = await dbAdapter.userSeasonStat.registerGameOutcome(
         userSeasonStat,
         false,
-        -10,
+        updatedRating,
+        ratingBracket,
         numPlayers,
         role,
       );

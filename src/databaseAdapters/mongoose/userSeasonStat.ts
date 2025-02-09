@@ -2,8 +2,7 @@ import { IUserSeasonStat } from '../../models/types/userSeasonStat';
 import UserSeasonStat from '../../models/userSeasonStat';
 import IUserSeasonStatDbAdapter from '../databaseInterfaces/userSeasonStat';
 import { Role } from '../../gameplay/gameEngine/roles/types';
-import Season from '../../models/season';
-import { getRatingBracket } from '../../gameplay/elo/ratingBrackets';
+import { RatingBracketName } from '../../gameplay/elo/ratingBrackets';
 
 export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   async findOrCreateStat(
@@ -29,16 +28,28 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
   async registerGameOutcome(
     userSeasonStat: IUserSeasonStat,
     isWin: boolean,
-    ratingChange: number, // TODO-kev: Consider if we pass in the new rating instead + ratingBracket
+    rating: number,
+    ratingBracket: RatingBracketName,
     numPlayers: number,
     role: Role,
   ): Promise<IUserSeasonStat> {
+    // Validate inputs
     if (numPlayers < 5 || numPlayers > 10) {
       throw new Error(`Invalid number of players: ${numPlayers}`);
     }
 
     if (!Object.values(Role).includes(role)) {
       throw new Error(`Invalid role received: ${role}"`);
+    }
+
+    if (rating < 0) {
+      throw new Error(
+        `Rating must be greater than or equal to 0. Received: ${rating}`,
+      );
+    }
+
+    if (!Object.values(RatingBracketName).includes(ratingBracket)) {
+      throw new Error(`Invalid rating bracket received: ${ratingBracket}`);
     }
 
     const stat = await UserSeasonStat.findById(userSeasonStat.id);
@@ -55,6 +66,7 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
       };
     }
 
+    // Update stats
     stat.rankedGamesPlayed += 1;
     stat.roleStats[`${numPlayers}p`][role].gamesPlayed += 1;
 
@@ -67,13 +79,9 @@ export class MongoUserSeasonStatAdapter implements IUserSeasonStatDbAdapter {
 
     stat.winRate = stat.rankedGamesWon / stat.rankedGamesPlayed;
 
-    const updatedRating = stat.rating + ratingChange;
-    stat.rating = Math.max(updatedRating, 0);
-    stat.highestRating = Math.max(stat.highestRating, updatedRating);
-
-    // TODO-kev: Consider if this is the best way
-    const season = await Season.findById(stat.seasonId);
-    stat.ratingBracket = getRatingBracket(stat.rating, season.ratingBrackets);
+    stat.rating = rating;
+    stat.highestRating = Math.max(stat.highestRating, rating);
+    stat.ratingBracket = ratingBracket;
 
     stat.lastUpdated = new Date();
 

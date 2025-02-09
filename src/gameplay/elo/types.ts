@@ -1,5 +1,7 @@
+import { RatingBracketName } from './ratingBrackets';
+
 export interface RatingBracket {
-  name: string;
+  name: RatingBracketName;
   min: number; // Inclusive
   max: number; // Inclusive
 }

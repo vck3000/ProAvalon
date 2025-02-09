@@ -2,9 +2,8 @@ import { Command } from '../types';
 import { SocketUser } from '../../types';
 import dbAdapter from '../../../databaseAdapters';
 import { sendReplyToCommand } from '../../sockets';
-import { ISeason } from '../../../models/types/season';
 import { stringifySeason } from '../../../databaseAdapters/mongoose/season';
-import { RATING_BRACKETS } from '../../../gameplay/elo/ratingBrackets';
+import { DEFAULT_RATING_BRACKETS } from '../../../gameplay/elo/ratingBrackets';
 
 // Debug command only available in local
 export const acreateseason: Command = {
@@ -26,7 +25,7 @@ export const acreateseason: Command = {
         seasonName,
         startDate,
         endDate,
-        RATING_BRACKETS,
+        DEFAULT_RATING_BRACKETS,
       );
       const message = `Created new season: ${stringifySeason(newSeason)}`;
 
