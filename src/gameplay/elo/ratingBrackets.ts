@@ -25,6 +25,10 @@ export function getRatingBracket(
   rating: number,
   ratingBrackets: RatingBracket[],
 ): RatingBracketName {
+  if (rating < 0) {
+    throw new Error(`Rating must be greater than or equal to 0: ${rating}`);
+  }
+
   // Assumes there are no overlapping rating brackets
   for (const bracket of ratingBrackets) {
     if (rating >= bracket.min && rating <= bracket.max) {
