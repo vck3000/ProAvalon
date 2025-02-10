@@ -3,6 +3,7 @@ import { S3AvatarSet } from '../../clients/s3/S3Agent';
 
 export default interface IUserDbAdapter {
   getUser(username: string): Promise<IUser>;
+  getUserById(id: string): Promise<IUser>;
   setAvatarLinks(
     username: string,
     resLink: string,

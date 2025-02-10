@@ -1,8 +1,16 @@
 import { Alliance } from '../gameEngine/types';
 import Game from '../gameEngine/game';
+import { Role } from '../gameEngine/roles/types';
+import dbAdapter from '../../databaseAdapters';
 
 export const DEFAULT_RATING = 1500;
 const PROVISIONAL_GAMES_REQUIRED = 20;
+
+export interface PlayerInGameRoleInfo {
+  userId: string;
+  alliance: Alliance;
+  role: Role;
+}
 
 /*
 ELO RATING CALCULATION:
@@ -19,22 +27,35 @@ Usual formula: R_new = R_old + k(Actual - Expected)
 5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
 */
 
-export function calculateResistanceRatingChange(
+async function getPlayerRating(userId: string): Promise<number> {
+  const user = await dbAdapter.user.getUserById(userId);
+
+  return user.playerRating;
+}
+
+export async function calculateResistanceRatingChange(
   winningTeam: Alliance,
   provisionalGame: boolean,
   game: Game,
+  playersInGameRoleInfo: PlayerInGameRoleInfo[],
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
   const playerSizeEloChanges = [62, 56, 71, 116, 18, 80];
   // k value parameter for calculation
   const k = 42;
   // Calculate ratings for each team by averaging elo of players
-  const resTeamEloRatings = game.playersInGame
-    .filter((soc) => soc.alliance === Alliance.Resistance)
-    .map((soc) => soc.request.user.playerRating);
-  const spyTeamEloRatings = game.playersInGame
-    .filter((soc) => soc.alliance === Alliance.Spy)
-    .map((soc) => soc.request.user.playerRating);
+  const resTeamEloRatings: number[] = [];
+  const spyTeamEloRatings: number[] = [];
+
+  for (const playerRoleInfo of playersInGameRoleInfo) {
+    const playerRating = await getPlayerRating(playerRoleInfo.userId);
+
+    if (playerRoleInfo.alliance === Alliance.Resistance) {
+      resTeamEloRatings.push(playerRating);
+    } else if (playerRoleInfo.alliance === Alliance.Spy) {
+      spyTeamEloRatings.push(playerRating);
+    }
+  }
 
   let total = 0;
   for (let i = 0; i < resTeamEloRatings.length; i++) {

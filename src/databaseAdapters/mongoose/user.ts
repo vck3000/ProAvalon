@@ -10,6 +10,10 @@ export class MongoUserAdapter implements IUserDbAdapter {
     })) as IUser;
   }
 
+  async getUserById(id: string): Promise<IUser> {
+    return (await User.findById(id)) as IUser;
+  }
+
   async muteUser(userCallingMute: IUser, usernameToMute: string) {
     if (!userCallingMute.mutedPlayers) {
       userCallingMute.mutedPlayers = [];

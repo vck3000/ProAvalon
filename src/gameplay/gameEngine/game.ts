@@ -36,6 +36,7 @@ import { gamesPlayedMetric } from '../../metrics/gameMetrics';
 import {
   calculateNewProvisionalRating,
   calculateResistanceRatingChange,
+  PlayerInGameRoleInfo,
 } from '../elo/ratings';
 
 export const WAITING = 'Waiting';
@@ -1234,7 +1235,7 @@ class Game extends Room {
     return WAITING;
   }
 
-  finishGame(toBeWinner: Alliance) {
+  async finishGame(toBeWinner: Alliance) {
     const timeStarted = new Date(this.startGameTime);
     const timeFinished = new Date();
     const gameDuration = new Date(timeFinished - timeStarted);
@@ -1474,12 +1475,22 @@ class Game extends Room {
         provisionalGame = true;
       }
 
+      const playerRoleInfos: PlayerInGameRoleInfo[] = this.playersInGame.map(
+        (soc) => ({
+          userId: soc.request.user.id,
+          alliance: soc.alliance,
+          role: soc.role,
+        }),
+      );
+
       // calculate team 1v1 elo adjustment
-      const teamResChange = calculateResistanceRatingChange(
+      const teamResChange = await calculateResistanceRatingChange(
         this.winner,
         provisionalGame,
         this,
+        playerRoleInfos,
       );
+
       const teamSpyChange = -teamResChange;
 
       // individual changes per player, to one decimal place.
