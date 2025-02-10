@@ -1483,6 +1483,15 @@ class Game extends Room {
         }),
       );
 
+      // TODO-kev: This looks dodgey. Relook at it
+      // winning team should always be defined
+      if (this.winner !== Alliance.Resistance || this.winner !== Alliance.Spy) {
+        game.sendText(
+          'Error in elo calculation, no winning team specified.',
+          'server-text',
+        );
+      }
+
       // calculate team 1v1 elo adjustment
       const teamResChange = await calculateResistanceRatingChange(
         this.winner,

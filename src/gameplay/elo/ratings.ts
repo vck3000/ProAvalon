@@ -57,43 +57,33 @@ export async function calculateResistanceRatingChange(
     }
   }
 
-  let total = 0;
-  for (let i = 0; i < resTeamEloRatings.length; i++) {
-    total += resTeamEloRatings[i];
-  }
-  let resElo = total / resTeamEloRatings.length;
+  const resEloAvg =
+    resTeamEloRatings.reduce((sum, rating) => sum + rating, 0) /
+    resTeamEloRatings.length;
 
-  total = 0;
-  for (let i = 0; i < spyTeamEloRatings.length; i++) {
-    total += spyTeamEloRatings[i];
-  }
-  let spyElo = total / spyTeamEloRatings.length;
+  const spyEloAvg =
+    spyTeamEloRatings.reduce((sum, rating) => sum + rating, 0) /
+    spyTeamEloRatings.length;
 
   // Adjust ratings for sitewide winrates. Using hardcoded based on current.
-  spyElo += playerSizeEloChanges[game.playersInGame.length - 5];
+  const numPlayers = playersInGameRoleInfo.length;
+  const spyEloAdjusted = spyEloAvg + playerSizeEloChanges[numPlayers - 5];
 
-  console.log('Resistance Team Elo: ' + resElo);
-  console.log('Spy Team Elo: ' + spyElo);
+  console.log('Resistance Team Elo: ' + resEloAvg);
+  console.log('Spy Team Elo: ' + spyEloAdjusted);
 
   // Calculate elo change, adjusting for player size, difference is 1- or just -
   let eloChange = 0;
   if (winningTeam === Alliance.Resistance) {
     eloChange =
       k *
-      (1 - 1 / (1 + Math.pow(10, -(resElo - spyElo) / 500))) *
-      (game.playersInGame.length / 5); //smoothed from 400 to 500 division
+      (1 - 1 / (1 + Math.pow(10, -(resEloAvg - spyEloAdjusted) / 500))) *
+      (numPlayers / 5); //smoothed from 400 to 500 division
   } else if (winningTeam === Alliance.Spy) {
     eloChange =
       k *
-      (-1 / (1 + Math.pow(10, -(resElo - spyElo) / 500))) *
-      (game.playersInGame.length / 5); //smoothed from 400 to 500 division
-  } else {
-    // winning team should always be defined
-    game.sendText(
-      'Error in elo calculation, no winning team specified.',
-      'server-text',
-    );
-    return;
+      (-1 / (1 + Math.pow(10, -(resEloAvg - spyEloAdjusted) / 500))) *
+      (numPlayers / 5); //smoothed from 400 to 500 division
   }
 
   // If the game is provisional, apply a multiplicative reduction in elo change based on how experienced the players are.
@@ -108,9 +98,8 @@ export async function calculateResistanceRatingChange(
     }
     eloChange =
       ((totalProvisionalGames +
-        (game.playersInGame.length - provisionalPlayers.length) *
-          PROVISIONAL_GAMES_REQUIRED) /
-        (PROVISIONAL_GAMES_REQUIRED * game.playersInGame.length)) *
+        (numPlayers - provisionalPlayers.length) * PROVISIONAL_GAMES_REQUIRED) /
+        (PROVISIONAL_GAMES_REQUIRED * numPlayers)) *
       eloChange;
   }
   return eloChange;
