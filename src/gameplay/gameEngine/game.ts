@@ -1465,28 +1465,18 @@ class Game extends Room {
       });
 
     if (botUsernames.length === 0) {
-      // Check if the game contains any provisional players.
-      let provisionalGame = false;
-      if (
-        this.playersInGame.filter(
-          (soc) => soc.request.user.ratingBracket === 'unranked',
-        ).length > 0
-      ) {
-        provisionalGame = true;
-      }
-
       const playerRoleInfos: PlayerInGameRoleInfo[] = this.playersInGame.map(
         (soc) => ({
-          userId: soc.request.user.id,
+          user: soc.request.user,
           alliance: soc.alliance,
           role: soc.role,
         }),
       );
 
-      // TODO-kev: This looks dodgey. Relook at it
+      // TODO-kev: This looks dodgey. Relook at it if should throw error
       // winning team should always be defined
-      if (this.winner !== Alliance.Resistance || this.winner !== Alliance.Spy) {
-        game.sendText(
+      if (this.winner !== Alliance.Resistance && this.winner !== Alliance.Spy) {
+        this.sendText(
           'Error in elo calculation, no winning team specified.',
           'server-text',
         );
@@ -1494,10 +1484,8 @@ class Game extends Room {
 
       // calculate team 1v1 elo adjustment
       const teamResChange = await calculateResistanceRatingChange(
-        this.winner,
-        provisionalGame,
-        this,
         playerRoleInfos,
+        this.winner,
       );
 
       const teamSpyChange = -teamResChange;

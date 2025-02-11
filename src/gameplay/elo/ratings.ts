@@ -1,13 +1,11 @@
-import { Alliance } from '../gameEngine/types';
-import Game from '../gameEngine/game';
+import { Alliance, IUser } from '../gameEngine/types';
 import { Role } from '../gameEngine/roles/types';
-import dbAdapter from '../../databaseAdapters';
 
 export const DEFAULT_RATING = 1500;
 const PROVISIONAL_GAMES_REQUIRED = 20;
 
 export interface PlayerInGameRoleInfo {
-  userId: string;
+  user: IUser;
   alliance: Alliance;
   role: Role;
 }
@@ -27,17 +25,9 @@ Usual formula: R_new = R_old + k(Actual - Expected)
 5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
 */
 
-async function getPlayerRating(userId: string): Promise<number> {
-  const user = await dbAdapter.user.getUserById(userId);
-
-  return user.playerRating;
-}
-
 export async function calculateResistanceRatingChange(
-  winningTeam: Alliance,
-  provisionalGame: boolean,
-  game: Game,
   playersInGameRoleInfo: PlayerInGameRoleInfo[],
+  winningTeam: Alliance,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
   const playerSizeEloChanges = [62, 56, 71, 116, 18, 80];
@@ -47,13 +37,11 @@ export async function calculateResistanceRatingChange(
   const resTeamEloRatings: number[] = [];
   const spyTeamEloRatings: number[] = [];
 
-  for (const playerRoleInfo of playersInGameRoleInfo) {
-    const playerRating = await getPlayerRating(playerRoleInfo.userId);
-
-    if (playerRoleInfo.alliance === Alliance.Resistance) {
-      resTeamEloRatings.push(playerRating);
-    } else if (playerRoleInfo.alliance === Alliance.Spy) {
-      spyTeamEloRatings.push(playerRating);
+  for (const playerInGameRoleInfo of playersInGameRoleInfo) {
+    if (playerInGameRoleInfo.alliance === Alliance.Resistance) {
+      resTeamEloRatings.push(playerInGameRoleInfo.user.playerRating);
+    } else if (playerInGameRoleInfo.alliance === Alliance.Spy) {
+      spyTeamEloRatings.push(playerInGameRoleInfo.user.playerRating);
     }
   }
 
@@ -69,6 +57,7 @@ export async function calculateResistanceRatingChange(
   const numPlayers = playersInGameRoleInfo.length;
   const spyEloAdjusted = spyEloAvg + playerSizeEloChanges[numPlayers - 5];
 
+  // TODO-kev: Do we need this? Was there before however can remove
   console.log('Resistance Team Elo: ' + resEloAvg);
   console.log('Spy Team Elo: ' + spyEloAdjusted);
 
@@ -87,21 +76,26 @@ export async function calculateResistanceRatingChange(
   }
 
   // If the game is provisional, apply a multiplicative reduction in elo change based on how experienced the players are.
-  if (provisionalGame) {
-    const provisionalPlayers = game.playersInGame.filter(
-      (soc) => soc.request.user.ratingBracket === 'unranked',
-    );
-    let totalProvisionalGames = 0;
-    for (let i = 0; i < provisionalPlayers.length; i++) {
-      totalProvisionalGames +=
-        provisionalPlayers[i].request.user.totalRankedGamesPlayed;
+  let numProvisionalPlayers = 0;
+  let totalProvisionalGames = 0;
+
+  for (const playerInGameRoleInfo of playersInGameRoleInfo) {
+    const user = playerInGameRoleInfo.user;
+
+    if (user.totalRankedGamesPlayed < PROVISIONAL_GAMES_REQUIRED) {
+      numProvisionalPlayers += 1;
+      totalProvisionalGames += user.totalRankedGamesPlayed;
     }
+  }
+
+  if (numProvisionalPlayers > 0) {
     eloChange =
       ((totalProvisionalGames +
-        (numPlayers - provisionalPlayers.length) * PROVISIONAL_GAMES_REQUIRED) /
+        (numPlayers - numProvisionalPlayers) * PROVISIONAL_GAMES_REQUIRED) /
         (PROVISIONAL_GAMES_REQUIRED * numPlayers)) *
       eloChange;
   }
+
   return eloChange;
 }
 
