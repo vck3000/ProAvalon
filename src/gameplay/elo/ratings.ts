@@ -3,7 +3,7 @@ import { Alliance, IUser } from '../gameEngine/types';
 export const DEFAULT_RATING = 1500;
 const PROVISIONAL_GAMES_REQUIRED = 20;
 
-export interface PlayerInGameRoleInfo {
+export interface PlayerInGameInfo {
   user: IUser;
   alliance: Alliance;
 }
@@ -24,7 +24,7 @@ Usual formula: R_new = R_old + k(Actual - Expected)
 */
 
 export async function calculateResistanceRatingChange(
-  playersInGameRoleInfo: PlayerInGameRoleInfo[],
+  playersInGameInfo: PlayerInGameInfo[],
   winningTeam: Alliance,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
@@ -35,11 +35,11 @@ export async function calculateResistanceRatingChange(
   const resTeamEloRatings: number[] = [];
   const spyTeamEloRatings: number[] = [];
 
-  for (const playerInGameRoleInfo of playersInGameRoleInfo) {
-    if (playerInGameRoleInfo.alliance === Alliance.Resistance) {
-      resTeamEloRatings.push(playerInGameRoleInfo.user.playerRating);
-    } else if (playerInGameRoleInfo.alliance === Alliance.Spy) {
-      spyTeamEloRatings.push(playerInGameRoleInfo.user.playerRating);
+  for (const playerInGameInfo of playersInGameInfo) {
+    if (playerInGameInfo.alliance === Alliance.Resistance) {
+      resTeamEloRatings.push(playerInGameInfo.user.playerRating);
+    } else if (playerInGameInfo.alliance === Alliance.Spy) {
+      spyTeamEloRatings.push(playerInGameInfo.user.playerRating);
     }
   }
 
@@ -52,7 +52,7 @@ export async function calculateResistanceRatingChange(
     spyTeamEloRatings.length;
 
   // Adjust ratings for sitewide winrates. Using hardcoded based on current.
-  const numPlayers = playersInGameRoleInfo.length;
+  const numPlayers = playersInGameInfo.length;
   const spyEloAdjusted = spyEloAvg + playerSizeEloChanges[numPlayers - 5];
 
   // TODO-kev: Do we need this? Was there before however can remove
@@ -77,8 +77,8 @@ export async function calculateResistanceRatingChange(
   let numProvisionalPlayers = 0;
   let totalProvisionalGames = 0;
 
-  for (const playerInGameRoleInfo of playersInGameRoleInfo) {
-    const user = playerInGameRoleInfo.user;
+  for (const playerInGameInfo of playersInGameInfo) {
+    const user = playerInGameInfo.user;
 
     if (user.totalRankedGamesPlayed < PROVISIONAL_GAMES_REQUIRED) {
       numProvisionalPlayers += 1;
@@ -116,33 +116,46 @@ Could possibly lead to some people abusing their early rating by only playing wi
 */
 export function calculateNewProvisionalRating(
   winningTeam: Alliance,
+  targetPlayer: PlayerInGameInfo,
+  playersInGameInfo: PlayerInGameInfo[],
   playerSocket: any,
   playerRatings: number[],
   game: any,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
-  const playerSizeWinrates = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
+  const PLAYER_SIZE_WINRATES = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
   let Result = playerSocket.alliance === winningTeam ? 1 : -1;
 
   // Calculate new rating
-  const R_old = playerSocket.request.user.playerRating;
-  const N_old = playerSocket.request.user.totalRankedGamesPlayed;
+  const R_old = targetPlayer.user.playerRating;
+  const N_old = targetPlayer.user.totalRankedGamesPlayed;
   const ratingsSum = playerRatings.reduce((sum, a) => sum + a, 0);
 
   // Prototype team adjustment is hardcoded, players are rewarded more for winning and penalised less for losing as res.
   // Also all changes are scaled with relation to team size to prevent deflation in provisional games.
+  let numResPlayers = 0;
+  let numSpyPlayers = 0;
+
+  for (const playerInGame of playersInGameInfo) {
+    if (playerInGame.alliance === Alliance.Resistance) {
+      numResPlayers += 1;
+    } else if (playerInGame.alliance === Alliance.Spy) {
+      numSpyPlayers += 1;
+    }
+  }
+
   let teamAdj = 0;
-  const resReduction =
-    game.spyUsernames.length / game.resistanceUsernames.length;
-  const sizeWinrate = playerSizeWinrates[game.playersInGame.length - 5];
-  if (playerSocket.alliance === Alliance.Resistance) {
-    if (winningTeam === playerSocket.alliance) {
+  const resReduction = numSpyPlayers / numResPlayers;
+  const sizeWinrate = PLAYER_SIZE_WINRATES[playersInGameInfo.length - 5];
+
+  if (targetPlayer.alliance === Alliance.Resistance) {
+    if (winningTeam === targetPlayer.alliance) {
       teamAdj = (sizeWinrate / (1 - sizeWinrate)) * resReduction;
     } else {
       teamAdj = resReduction;
     }
   } else {
-    if (winningTeam === playerSocket.alliance) {
+    if (winningTeam === targetPlayer.alliance) {
       teamAdj = 1;
     } else {
       teamAdj = sizeWinrate / (1 - sizeWinrate);
@@ -157,15 +170,15 @@ export function calculateNewProvisionalRating(
 
   // Prevent losing rating on win and gaining rating on loss in fringe scenarios with weird players.
   if (
-    (winningTeam === playerSocket.alliance && newRating < R_old) ||
-    (!(winningTeam === playerSocket.alliance) && newRating > R_old)
+    (winningTeam === targetPlayer.alliance && newRating < R_old) ||
+    (!(winningTeam === targetPlayer.alliance) && newRating > R_old)
   ) {
     newRating = R_old;
   }
-  if (winningTeam === playerSocket.alliance && newRating > R_old + 100) {
+  if (winningTeam === targetPlayer.alliance && newRating > R_old + 100) {
     newRating = R_old + 100;
   }
-  if (!(winningTeam === playerSocket.alliance) && newRating < R_old - 100) {
+  if (!(winningTeam === targetPlayer.alliance) && newRating < R_old - 100) {
     newRating = R_old - 100;
   }
   return newRating;

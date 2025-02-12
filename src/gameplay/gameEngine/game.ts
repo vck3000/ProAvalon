@@ -36,7 +36,7 @@ import { gamesPlayedMetric } from '../../metrics/gameMetrics';
 import {
   calculateNewProvisionalRating,
   calculateResistanceRatingChange,
-  PlayerInGameRoleInfo,
+  PlayerInGameInfo,
 } from '../elo/ratings';
 
 export const WAITING = 'Waiting';
@@ -1465,11 +1465,10 @@ class Game extends Room {
       });
 
     if (botUsernames.length === 0) {
-      const playerRoleInfos: PlayerInGameRoleInfo[] = this.playersInGame.map(
+      const playersInGameInfo: PlayerInGameInfo[] = this.playersInGame.map(
         (soc) => ({
           user: soc.request.user,
           alliance: soc.alliance,
-          role: soc.role,
         }),
       );
 
@@ -1484,7 +1483,7 @@ class Game extends Room {
 
       // calculate team 1v1 elo adjustment
       const teamResChange = await calculateResistanceRatingChange(
-        playerRoleInfos,
+        playersInGameInfo,
         this.winner,
       );
 
@@ -1514,6 +1513,10 @@ class Game extends Room {
           if (player.request.user.ratingBracket === 'unranked') {
             // Ensure this value is changed in time for the callbacks, requires a refresh to get the actual db value.
             player.request.user.totalRankedGamesPlayed += 1;
+            const playerInfo: PlayerInGameInfo = {
+              user: player.request.user,
+              alliance: player.alliance,
+            };
 
             // If there are multiple provisional players, use all ratings, otherwise just the other players' ratings.
             if (
@@ -1522,8 +1525,11 @@ class Game extends Room {
               ).length > 1
             ) {
               const playerRatings = oldPlayersInfo.map((data) => data.rating);
+
               player.request.user.playerRating = calculateNewProvisionalRating(
                 this.winner,
+                playerInfo,
+                playersInGameInfo,
                 player,
                 playerRatings,
                 this,
@@ -1536,6 +1542,8 @@ class Game extends Room {
                 .map((data) => data.rating);
               player.request.user.playerRating = calculateNewProvisionalRating(
                 this.winner,
+                playerInfo,
+                playersInGameInfo,
                 player,
                 otherPlayerRatings,
                 this,
