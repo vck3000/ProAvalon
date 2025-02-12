@@ -118,13 +118,24 @@ export function calculateNewProvisionalRating(
   winningTeam: Alliance,
   targetPlayer: PlayerInGameInfo,
   playersInGameInfo: PlayerInGameInfo[],
-  playerSocket: any,
   playerRatings: number[],
-  game: any,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
   const PLAYER_SIZE_WINRATES = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
-  let Result = playerSocket.alliance === winningTeam ? 1 : -1;
+  let Result = targetPlayer.alliance === winningTeam ? 1 : -1;
+
+  // If there are multiple provisional players, use all ratings, otherwise just the other players' ratings.
+  const numProvisionalPlayers = playersInGameInfo.filter(
+    (playerInGame) => playerInGame.user.ratingBracket === 'unranked',
+  ).length;
+
+  // TODO-kev: Cannot use this yet since playerRatings are already updated by the time it reaches here
+  const playerRatingsA =
+    numProvisionalPlayers > 1
+      ? playersInGameInfo.map((player) => player.user.playerRating)
+      : playersInGameInfo
+          .filter((player) => player.user.id !== targetPlayer.user.id)
+          .map((player) => player.user.playerRating);
 
   // Calculate new rating
   const R_old = targetPlayer.user.playerRating;

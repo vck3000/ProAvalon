@@ -1530,9 +1530,7 @@ class Game extends Room {
                 this.winner,
                 playerInfo,
                 playersInGameInfo,
-                player,
                 playerRatings,
-                this,
               );
             } else {
               const otherPlayerRatings = oldPlayersInfo
@@ -1544,9 +1542,7 @@ class Game extends Room {
                 this.winner,
                 playerInfo,
                 playersInGameInfo,
-                player,
                 otherPlayerRatings,
-                this,
               );
             }
             const difference =
