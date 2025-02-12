@@ -1,5 +1,4 @@
 import { Alliance, IUser } from '../gameEngine/types';
-import { Role } from '../gameEngine/roles/types';
 
 export const DEFAULT_RATING = 1500;
 const PROVISIONAL_GAMES_REQUIRED = 20;
@@ -7,7 +6,6 @@ const PROVISIONAL_GAMES_REQUIRED = 20;
 export interface PlayerInGameRoleInfo {
   user: IUser;
   alliance: Alliance;
-  role: Role;
 }
 
 /*
