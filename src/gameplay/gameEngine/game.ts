@@ -35,6 +35,7 @@ import { sendReplyToCommand } from '../../sockets/sockets';
 import { gamesPlayedMetric } from '../../metrics/gameMetrics';
 import {
   calculateNewProvisionalRating,
+  calculateNewRatings,
   calculateResistanceRatingChange,
   PlayerInGameInfo,
 } from '../elo/ratings';
@@ -1481,8 +1482,10 @@ class Game extends Room {
         );
       }
 
+      const newRatings = calculateNewRatings(playersInGameInfo, this.winner);
+
       // calculate team 1v1 elo adjustment
-      const teamResChange = await calculateResistanceRatingChange(
+      const teamResChange = calculateResistanceRatingChange(
         playersInGameInfo,
         this.winner,
       );

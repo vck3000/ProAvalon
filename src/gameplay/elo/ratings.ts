@@ -23,7 +23,7 @@ Usual formula: R_new = R_old + k(Actual - Expected)
 5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
 */
 
-export async function calculateResistanceRatingChange(
+export function calculateResistanceRatingChange(
   playersInGameInfo: PlayerInGameInfo[],
   winningTeam: Alliance,
 ) {
@@ -118,7 +118,8 @@ export function calculateNewProvisionalRating(
   winningTeam: Alliance,
   targetPlayer: PlayerInGameInfo,
   playersInGameInfo: PlayerInGameInfo[],
-  playerRatings: number[],
+  playerRatingsB: number[],
+  newMethod: boolean,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
   const PLAYER_SIZE_WINRATES = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
@@ -136,6 +137,8 @@ export function calculateNewProvisionalRating(
       : playersInGameInfo
           .filter((player) => player.user.id !== targetPlayer.user.id)
           .map((player) => player.user.playerRating);
+
+  const playerRatings = newMethod ? playerRatingsA : playerRatingsB;
 
   // Calculate new rating
   const R_old = targetPlayer.user.playerRating;
@@ -193,4 +196,86 @@ export function calculateNewProvisionalRating(
     newRating = R_old - 100;
   }
   return newRating;
+}
+
+export interface PlayerNewRating {
+  user: IUser;
+  newRating: number;
+}
+
+export function calculateNewRatings(
+  playersInGameInfo: PlayerInGameInfo[],
+  winningTeam: Alliance,
+): PlayerNewRating[] {
+  const resChange = calculateResistanceRatingChange(
+    playersInGameInfo,
+    winningTeam,
+  );
+
+  let numResPlayers = 0;
+  let numSpyPlayers = 0;
+
+  for (const playerInGame of playersInGameInfo) {
+    if (playerInGame.alliance === Alliance.Resistance) {
+      numResPlayers += 1;
+    } else if (playerInGame.alliance === Alliance.Spy) {
+      numSpyPlayers += 1;
+    }
+  }
+
+  const spyChange = -resChange;
+
+  // TODO-kev: This used to only add 1dp rating changes, not full rating changes
+  const indResChange = resChange / numResPlayers;
+  const indSpyChange = spyChange / numSpyPlayers;
+
+  const roundedResChange = Math.round(indResChange * 10) / 10;
+  const roundedSpyChange = Math.round(indSpyChange * 10) / 10;
+
+  console.log(`Res change: ${roundedResChange}`);
+  console.log(`Spy change: ${roundedSpyChange}`);
+
+  const provisionalPlayers = playersInGameInfo.filter(
+    (player) => player.user.ratingBracket === 'unranked',
+  );
+
+  const result: PlayerNewRating[] = [];
+
+  for (const playerInGame of playersInGameInfo) {
+    if (playerInGame.user.ratingBracket !== 'unranked') {
+      if (playerInGame.alliance === Alliance.Resistance) {
+        result.push({
+          user: playerInGame.user,
+          newRating: playerInGame.user.playerRating + roundedResChange,
+        });
+      } else if (playerInGame.alliance === Alliance.Spy) {
+        result.push({
+          user: playerInGame.user,
+          newRating: playerInGame.user.playerRating + roundedSpyChange,
+        });
+      }
+    } else {
+      result.push({
+        user: playerInGame.user,
+        newRating: calculateNewProvisionalRating(
+          winningTeam,
+          playerInGame,
+          playersInGameInfo,
+          [],
+          true,
+        ),
+      });
+    }
+  }
+
+  for (const res of result) {
+    const oldRating = Math.round(res.user.playerRating * 10) / 10;
+    const newRating = Math.round(res.newRating * 10) / 10;
+    const diff = newRating - oldRating;
+    console.log(
+      `User=${res.user.username}; oldRating=${oldRating}; newRating=${newRating}; diff=${diff}`,
+    );
+  }
+
+  return result;
 }
