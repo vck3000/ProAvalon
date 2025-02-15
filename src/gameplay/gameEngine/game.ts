@@ -33,7 +33,7 @@ import shuffleArray from '../../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../../sockets/sockets';
 import { gamesPlayedMetric } from '../../metrics/gameMetrics';
-import { calculateNewRatings, PlayerInGameInfo } from '../elo/ratings';
+import { calculateAndUpdateNewRatings, PlayerInGameInfo } from '../elo/ratings';
 import dbAdapter from '../../databaseAdapters';
 
 export const WAITING = 'Waiting';
@@ -1481,18 +1481,13 @@ class Game extends Room {
 
       // if we're in a ranked game show the elo adjustments
       if (this.ranked) {
-        const playerPostGameRatingInfos = calculateNewRatings(
+        const playerPostGameRatingInfos = await calculateAndUpdateNewRatings(
           playersInGameInfo,
           this.winner,
         );
         this.sendText('Rating Adjustments:', 'server-text');
 
         for (const playerPostGameRatingInfo of playerPostGameRatingInfos) {
-          await dbAdapter.user.updateRankedInfo(
-            playerPostGameRatingInfo.user.id,
-            playerPostGameRatingInfo.newRating,
-          );
-
           const diff =
             Math.round(
               (playerPostGameRatingInfo.newRating -

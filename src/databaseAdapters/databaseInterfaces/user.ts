@@ -18,6 +18,7 @@ export default interface IUserDbAdapter {
     librarySize: number,
   ): Promise<void>;
   removeAvatar(username: string, avatarSet: S3AvatarSet): Promise<void>;
+  updateRating(userId: string, newRating: number): Promise<void>;
   processGame(
     userId: string,
     timePlayed: Date,
@@ -26,6 +27,5 @@ export default interface IUserDbAdapter {
     numPlayers: number,
     win: boolean,
     ranked: boolean,
-    newRating?: number,
   ): Promise<void>;
 }

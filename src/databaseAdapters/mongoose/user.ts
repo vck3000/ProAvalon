@@ -79,6 +79,17 @@ export class MongoUserAdapter implements IUserDbAdapter {
     await user.save();
   }
 
+  async updateRating(userId: string, newRating: number): Promise<void> {
+    if (newRating < 0) {
+      throw new Error(`Invalid rating received: ${newRating}`);
+    }
+
+    const user = await User.findById(userId);
+    user.playerRating = newRating;
+
+    await user.save();
+  }
+
   async processGame(
     userId: string,
     timePlayed: Date,
@@ -87,12 +98,7 @@ export class MongoUserAdapter implements IUserDbAdapter {
     numPlayers: number,
     win: boolean,
     ranked: boolean,
-    newRating?: number,
   ): Promise<void> {
-    if (ranked && newRating === undefined) {
-      throw new Error(`Rating is not defined for ranked game.`);
-    }
-
     const user = await User.findById(userId);
     const totalTimePlayed = user.totalTimePlayed as Date;
 
@@ -103,7 +109,6 @@ export class MongoUserAdapter implements IUserDbAdapter {
 
     if (ranked) {
       user.totalRankedGamesPlayed += 1;
-      user.playerRating = newRating;
     }
 
     // Initialise roleStats object if not present

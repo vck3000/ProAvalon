@@ -1,5 +1,6 @@
 import { Alliance, IUser } from '../gameEngine/types';
 import { Role } from '../gameEngine/roles/types';
+import dbAdapter from '../../databaseAdapters';
 
 export const DEFAULT_RATING = 1500;
 const PROVISIONAL_GAMES_REQUIRED = 20;
@@ -204,10 +205,10 @@ export function calculateNewProvisionalRating(
   return newRating;
 }
 
-export function calculateNewRatings(
+export async function calculateAndUpdateNewRatings(
   playersInGameInfo: PlayerInGameInfo[],
   winningTeam: Alliance,
-): PlayerPostGameRatingInfo[] {
+): Promise<PlayerPostGameRatingInfo[]> {
   const resChange = calculateResistanceRatingChange(
     playersInGameInfo,
     winningTeam,
@@ -240,29 +241,35 @@ export function calculateNewRatings(
 
   for (const playerInGame of playersInGameInfo) {
     if (playerInGame.user.ratingBracket !== 'unranked') {
-      if (playerInGame.alliance === Alliance.Resistance) {
-        result.push({
-          user: playerInGame.user,
-          newRating: playerInGame.user.playerRating + roundedResChange,
-          alliance: playerInGame.alliance,
-          role: playerInGame.role,
-        });
-      } else if (playerInGame.alliance === Alliance.Spy) {
-        result.push({
-          user: playerInGame.user,
-          newRating: playerInGame.user.playerRating + roundedSpyChange,
-          alliance: playerInGame.alliance,
-          role: playerInGame.role,
-        });
-      }
-    } else {
+      const playerRatingChange =
+        playerInGame.alliance === Alliance.Resistance
+          ? indResChange
+          : indSpyChange;
+
+      const newRating = Math.max(
+        playerInGame.user.playerRating + playerRatingChange,
+        0,
+      );
+
+      await dbAdapter.user.updateRating(playerInGame.user.id, newRating);
+
       result.push({
         user: playerInGame.user,
-        newRating: calculateNewProvisionalRating(
-          winningTeam,
-          playerInGame,
-          playersInGameInfo,
-        ),
+        newRating,
+        alliance: playerInGame.alliance,
+        role: playerInGame.role,
+      });
+    } else {
+      const newRating = calculateNewProvisionalRating(
+        winningTeam,
+        playerInGame,
+        playersInGameInfo,
+      );
+      await dbAdapter.user.updateRating(playerInGame.user.id, newRating);
+
+      result.push({
+        user: playerInGame.user,
+        newRating,
         alliance: playerInGame.alliance,
         role: playerInGame.role,
       });
