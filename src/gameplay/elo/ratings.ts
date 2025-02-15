@@ -1,1 +1,1 @@
-export const DEFAULT_RATING = 26;
+export const DEFAULT_RATING = 1500;
