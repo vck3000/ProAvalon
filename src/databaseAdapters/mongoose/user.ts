@@ -101,6 +101,7 @@ export class MongoUserAdapter implements IUserDbAdapter {
   ): Promise<void> {
     const user = await User.findById(userId);
     const totalTimePlayed = user.totalTimePlayed as Date;
+    const lowercaseRole = role.toLowerCase();
 
     user.totalTimePlayed = new Date(
       totalTimePlayed.getTime() + timePlayed.getTime(),
@@ -116,19 +117,19 @@ export class MongoUserAdapter implements IUserDbAdapter {
       user.roleStats[`${numPlayers}p`] = {};
     }
 
-    if (!user.roleStats[`${numPlayers}p`][role]) {
-      user.roleStats[`${numPlayers}p`][role] = {
+    if (!user.roleStats[`${numPlayers}p`][lowercaseRole]) {
+      user.roleStats[`${numPlayers}p`][lowercaseRole] = {
         wins: 0,
         losses: 0,
       };
     }
 
-    if (isNaN(user.roleStats[`${numPlayers}p`][role].wins)) {
-      user.roleStats[`${numPlayers}p`][role].wins = 0;
+    if (isNaN(user.roleStats[`${numPlayers}p`][lowercaseRole].wins)) {
+      user.roleStats[`${numPlayers}p`][lowercaseRole].wins = 0;
     }
 
-    if (isNaN(user.roleStats[`${numPlayers}p`][role].losses)) {
-      user.roleStats[`${numPlayers}p`][role].losses = 0;
+    if (isNaN(user.roleStats[`${numPlayers}p`][lowercaseRole].losses)) {
+      user.roleStats[`${numPlayers}p`][lowercaseRole].losses = 0;
     }
 
     // Initialise winsLossesGameSizeBreakdown object if not present
@@ -153,7 +154,7 @@ export class MongoUserAdapter implements IUserDbAdapter {
         user.totalResWins += 1;
       }
 
-      user.roleStats[`${numPlayers}p`][role].wins += 1;
+      user.roleStats[`${numPlayers}p`][lowercaseRole].wins += 1;
       user.winsLossesGameSizeBreakdown[`${numPlayers}p`].wins += 1;
     } else {
       user.totalLosses += 1;
@@ -161,7 +162,7 @@ export class MongoUserAdapter implements IUserDbAdapter {
         user.totalResLosses += 1;
       }
 
-      user.roleStats[`${numPlayers}p`][role].losses += 1;
+      user.roleStats[`${numPlayers}p`][lowercaseRole].losses += 1;
       user.winsLossesGameSizeBreakdown[`${numPlayers}p`].losses += 1;
     }
 
