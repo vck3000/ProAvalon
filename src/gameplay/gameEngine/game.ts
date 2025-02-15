@@ -1506,17 +1506,19 @@ class Game extends Room {
         }
       }
 
-      // TODO-kev: Might need to still update the socket directly?
-      for (const playerInGameInfo of playersInGameInfo) {
-        await dbAdapter.user.processGame(
-          playerInGameInfo.user.id,
-          gameDuration,
-          playerInGameInfo.alliance,
-          playerInGameInfo.role,
-          playersInGameInfo.length,
-          playerInGameInfo.alliance === this.winner,
-          this.ranked,
-        );
+      if (process.env.NODE_ENV !== 'test') {
+        // TODO-kev: Might need to still update the socket directly?
+        for (const playerInGameInfo of playersInGameInfo) {
+          await dbAdapter.user.processGame(
+            playerInGameInfo.user.id,
+            gameDuration,
+            playerInGameInfo.alliance,
+            playerInGameInfo.role,
+            playersInGameInfo.length,
+            playerInGameInfo.alliance === this.winner,
+            this.ranked,
+          );
+        }
       }
 
       // if (process.env.NODE_ENV !== 'test') {
