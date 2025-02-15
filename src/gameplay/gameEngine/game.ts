@@ -33,12 +33,8 @@ import shuffleArray from '../../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../../sockets/sockets';
 import { gamesPlayedMetric } from '../../metrics/gameMetrics';
-import {
-  calculateNewProvisionalRating,
-  calculateNewRatings,
-  calculateResistanceRatingChange,
-  PlayerInGameInfo,
-} from '../elo/ratings';
+import { calculateNewRatings, PlayerInGameInfo } from '../elo/ratings';
+import dbAdapter from '../../databaseAdapters';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -1470,6 +1466,7 @@ class Game extends Room {
         (soc) => ({
           user: soc.request.user,
           alliance: soc.alliance,
+          role: soc.role,
         }),
       );
 
@@ -1482,106 +1479,36 @@ class Game extends Room {
         );
       }
 
-      const newRatings = calculateNewRatings(playersInGameInfo, this.winner);
-
-      // calculate team 1v1 elo adjustment
-      const teamResChange = calculateResistanceRatingChange(
-        playersInGameInfo,
-        this.winner,
-      );
-
-      const teamSpyChange = -teamResChange;
-
-      // individual changes per player, to one decimal place.
-      const indResChange =
-        Math.round((teamResChange / this.resistanceUsernames.length) * 10) / 10;
-      const indSpyChange =
-        Math.round((teamSpyChange / this.spyUsernames.length) * 10) / 10;
-
       // if we're in a ranked game show the elo adjustments
       if (this.ranked) {
-        // Get the old player ratings (with usernames) for use in provisional calculations.
-        const oldPlayersInfo = this.playersInGame.map((soc) => {
-          const data = {};
-          data.username = soc.request.user.username;
-          data.rating = soc.request.user.playerRating;
-          return data;
-        });
-
-        // Broadcast elo adjustments in chat first, if broadcasted in the updating process, its slow
+        const playerPostGameRatingInfos = calculateNewRatings(
+          playersInGameInfo,
+          this.winner,
+        );
         this.sendText('Rating Adjustments:', 'server-text');
-        this.playersInGame.forEach((player) => {
-          const rating = player.request.user.playerRating;
-          // If player is provisional, different adjustment.
-          if (player.request.user.ratingBracket === 'unranked') {
-            // Ensure this value is changed in time for the callbacks, requires a refresh to get the actual db value.
-            player.request.user.totalRankedGamesPlayed += 1;
-            const playerInfo: PlayerInGameInfo = {
-              user: player.request.user,
-              alliance: player.alliance,
-            };
 
-            // If there are multiple provisional players, use all ratings, otherwise just the other players' ratings.
-            if (
-              this.playersInGame.filter(
-                (soc) => soc.request.user.ratingBracket === 'unranked',
-              ).length > 1
-            ) {
-              const playerRatings = oldPlayersInfo.map((data) => data.rating);
+        for (const playerPostGameRatingInfo of playerPostGameRatingInfos) {
+          await dbAdapter.user.updateRankedInfo(
+            playerPostGameRatingInfo.user.id,
+            playerPostGameRatingInfo.newRating,
+          );
 
-              player.request.user.playerRating = calculateNewProvisionalRating(
-                this.winner,
-                playerInfo,
-                playersInGameInfo,
-                playerRatings,
-              );
-            } else {
-              const otherPlayerRatings = oldPlayersInfo
-                .filter(
-                  (data) => !(data.username === player.request.user.username),
-                )
-                .map((data) => data.rating);
-              player.request.user.playerRating = calculateNewProvisionalRating(
-                this.winner,
-                playerInfo,
-                playersInGameInfo,
-                otherPlayerRatings,
-              );
-            }
-            const difference =
-              Math.round((player.request.user.playerRating - rating) * 10) / 10;
-            this.sendText(
-              `${player.request.user.username}: ${Math.floor(
-                rating,
-              )} -> ${Math.floor(player.request.user.playerRating)} (${
-                difference > 0 ? '+' + difference : difference
-              })`,
-              'server-text',
-            );
-          } else {
-            if (player.alliance === Alliance.Resistance) {
-              this.sendText(
-                `${player.request.user.username}: ${Math.floor(
-                  rating,
-                )} -> ${Math.floor(rating + indResChange)} (${
-                  indResChange > 0 ? '+' + indResChange : indResChange
-                })`,
-                'server-text',
-              );
-              player.request.user.playerRating += indResChange;
-            } else if (player.alliance === Alliance.Spy) {
-              this.sendText(
-                `${player.request.user.username}: ${Math.floor(
-                  rating,
-                )} -> ${Math.floor(rating + indSpyChange)} (${
-                  indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
-                })`,
-                'server-text',
-              );
-              player.request.user.playerRating += indSpyChange;
-            }
-          }
-        });
+          const diff =
+            Math.round(
+              (playerPostGameRatingInfo.newRating -
+                playerPostGameRatingInfo.user.playerRating) *
+                10,
+            ) / 10;
+
+          this.sendText(
+            `${playerPostGameRatingInfo.user.username}: ${Math.floor(
+              playerPostGameRatingInfo.user.playerRating,
+            )} -> ${Math.floor(playerPostGameRatingInfo.newRating)} (${
+              diff > 0 ? '+' + diff : diff
+            })`,
+            'server-text',
+          );
+        }
       }
 
       if (process.env.NODE_ENV !== 'test') {

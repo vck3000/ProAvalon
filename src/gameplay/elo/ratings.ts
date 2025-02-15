@@ -1,4 +1,5 @@
 import { Alliance, IUser } from '../gameEngine/types';
+import { Role } from '../gameEngine/roles/types';
 
 export const DEFAULT_RATING = 1500;
 const PROVISIONAL_GAMES_REQUIRED = 20;
@@ -6,6 +7,14 @@ const PROVISIONAL_GAMES_REQUIRED = 20;
 export interface PlayerInGameInfo {
   user: IUser;
   alliance: Alliance;
+  role: Role;
+}
+
+export interface PlayerPostGameRatingInfo {
+  user: IUser;
+  newRating: number;
+  alliance: Alliance;
+  role: Role;
 }
 
 /*
@@ -118,8 +127,6 @@ export function calculateNewProvisionalRating(
   winningTeam: Alliance,
   targetPlayer: PlayerInGameInfo,
   playersInGameInfo: PlayerInGameInfo[],
-  playerRatingsB: number[],
-  newMethod: boolean,
 ) {
   // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
   const PLAYER_SIZE_WINRATES = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
@@ -131,18 +138,17 @@ export function calculateNewProvisionalRating(
   ).length;
 
   // TODO-kev: Cannot use this yet since playerRatings are already updated by the time it reaches here
-  const playerRatingsA =
+  const playerRatings =
     numProvisionalPlayers > 1
       ? playersInGameInfo.map((player) => player.user.playerRating)
       : playersInGameInfo
           .filter((player) => player.user.id !== targetPlayer.user.id)
           .map((player) => player.user.playerRating);
 
-  const playerRatings = newMethod ? playerRatingsA : playerRatingsB;
-
   // Calculate new rating
   const R_old = targetPlayer.user.playerRating;
   const N_old = targetPlayer.user.totalRankedGamesPlayed;
+
   const ratingsSum = playerRatings.reduce((sum, a) => sum + a, 0);
 
   // Prototype team adjustment is hardcoded, players are rewarded more for winning and penalised less for losing as res.
@@ -198,15 +204,10 @@ export function calculateNewProvisionalRating(
   return newRating;
 }
 
-export interface PlayerNewRating {
-  user: IUser;
-  newRating: number;
-}
-
 export function calculateNewRatings(
   playersInGameInfo: PlayerInGameInfo[],
   winningTeam: Alliance,
-): PlayerNewRating[] {
+): PlayerPostGameRatingInfo[] {
   const resChange = calculateResistanceRatingChange(
     playersInGameInfo,
     winningTeam,
@@ -235,11 +236,7 @@ export function calculateNewRatings(
   console.log(`Res change: ${roundedResChange}`);
   console.log(`Spy change: ${roundedSpyChange}`);
 
-  const provisionalPlayers = playersInGameInfo.filter(
-    (player) => player.user.ratingBracket === 'unranked',
-  );
-
-  const result: PlayerNewRating[] = [];
+  const result: PlayerPostGameRatingInfo[] = [];
 
   for (const playerInGame of playersInGameInfo) {
     if (playerInGame.user.ratingBracket !== 'unranked') {
@@ -247,11 +244,15 @@ export function calculateNewRatings(
         result.push({
           user: playerInGame.user,
           newRating: playerInGame.user.playerRating + roundedResChange,
+          alliance: playerInGame.alliance,
+          role: playerInGame.role,
         });
       } else if (playerInGame.alliance === Alliance.Spy) {
         result.push({
           user: playerInGame.user,
           newRating: playerInGame.user.playerRating + roundedSpyChange,
+          alliance: playerInGame.alliance,
+          role: playerInGame.role,
         });
       }
     } else {
@@ -261,13 +262,14 @@ export function calculateNewRatings(
           winningTeam,
           playerInGame,
           playersInGameInfo,
-          [],
-          true,
         ),
+        alliance: playerInGame.alliance,
+        role: playerInGame.role,
       });
     }
   }
 
+  // TODO-kev: Remove
   for (const res of result) {
     const oldRating = Math.round(res.user.playerRating * 10) / 10;
     const newRating = Math.round(res.newRating * 10) / 10;
