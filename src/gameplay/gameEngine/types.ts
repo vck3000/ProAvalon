@@ -33,6 +33,15 @@ export interface See {
   roleTags: Record<string, string>; // Username, tag
 }
 
+interface IUserGameStatsMap {
+  [role: string]: IUserGameStat;
+}
+
+interface IUserGameStat {
+  wins: number;
+  losses: number;
+}
+
 export interface IUser {
   id: string;
   username: string;
@@ -61,12 +70,16 @@ export interface IUser {
   totalResLosses?: number;
   playerRating?: number;
   ratingBracket?: string;
-  winsLossesGameSizeBreakdown?: Record<string, unknown>;
+  winsLossesGameSizeBreakdown?: {
+    [playerCount: string]: IUserGameStat;
+  };
   nationality?: string;
   nationCode?: string;
   timeZone?: string;
   biography?: string;
-  roleStats?: Record<string, unknown>;
+  roleStats?: {
+    [playerCount: string]: IUserGameStatsMap;
+  };
   notifications?: Types.ObjectId;
   expiredPatreonNotification?: boolean;
   modAction?: Types.ObjectId;

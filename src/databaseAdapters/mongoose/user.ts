@@ -1,7 +1,8 @@
 import { S3AvatarSet } from '../../clients/s3/S3Agent';
 import IUserDbAdapter from '../databaseInterfaces/user';
-import { IUser } from '../../gameplay/gameEngine/types';
+import { Alliance, IUser } from '../../gameplay/gameEngine/types';
 import User from '../../models/user';
+import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export class MongoUserAdapter implements IUserDbAdapter {
   async getUser(username: string): Promise<IUser> {
@@ -74,6 +75,99 @@ export class MongoUserAdapter implements IUserDbAdapter {
     if (user.avatarImgSpy === avatarSet.spyLink) {
       user.avatarImgSpy = null;
     }
+
+    await user.save();
+  }
+
+  async updateRating(userId: string, newRating: number): Promise<void> {
+    if (newRating < 0) {
+      throw new Error(`Invalid rating received: ${newRating}`);
+    }
+
+    const user = await User.findById(userId);
+    user.playerRating = newRating;
+
+    await user.save();
+  }
+
+  async processGame(
+    userId: string,
+    timePlayed: Date,
+    alliance: Alliance,
+    role: Role,
+    numPlayers: number,
+    win: boolean,
+    ranked: boolean,
+  ): Promise<void> {
+    const user = await User.findById(userId);
+    const totalTimePlayed = user.totalTimePlayed as Date;
+    const lowercaseRole = role.toLowerCase();
+
+    user.totalTimePlayed = new Date(
+      totalTimePlayed.getTime() + timePlayed.getTime(),
+    );
+    user.totalGamesPlayed += 1;
+
+    if (ranked) {
+      user.totalRankedGamesPlayed += 1;
+    }
+
+    // Initialise roleStats object if not present
+    if (!user.roleStats[`${numPlayers}p`]) {
+      user.roleStats[`${numPlayers}p`] = {};
+    }
+
+    if (!user.roleStats[`${numPlayers}p`][lowercaseRole]) {
+      user.roleStats[`${numPlayers}p`][lowercaseRole] = {
+        wins: 0,
+        losses: 0,
+      };
+    }
+
+    if (isNaN(user.roleStats[`${numPlayers}p`][lowercaseRole].wins)) {
+      user.roleStats[`${numPlayers}p`][lowercaseRole].wins = 0;
+    }
+
+    if (isNaN(user.roleStats[`${numPlayers}p`][lowercaseRole].losses)) {
+      user.roleStats[`${numPlayers}p`][lowercaseRole].losses = 0;
+    }
+
+    // Initialise winsLossesGameSizeBreakdown object if not present
+    if (!user.winsLossesGameSizeBreakdown[`${numPlayers}p`]) {
+      user.winsLossesGameSizeBreakdown[`${numPlayers}p`] = {
+        wins: 0,
+        losses: 0,
+      };
+    } else {
+      if (isNaN(user.winsLossesGameSizeBreakdown[`${numPlayers}p`].wins)) {
+        user.winsLossesGameSizeBreakdown[`${numPlayers}p`].wins = 0;
+      }
+
+      if (isNaN(user.winsLossesGameSizeBreakdown[`${numPlayers}p`].losses)) {
+        user.winsLossesGameSizeBreakdown[`${numPlayers}p`].losses = 0;
+      }
+    }
+
+    if (win) {
+      user.totalWins += 1;
+      if (alliance === Alliance.Resistance) {
+        user.totalResWins += 1;
+      }
+
+      user.roleStats[`${numPlayers}p`][lowercaseRole].wins += 1;
+      user.winsLossesGameSizeBreakdown[`${numPlayers}p`].wins += 1;
+    } else {
+      user.totalLosses += 1;
+      if (alliance === Alliance.Resistance) {
+        user.totalResLosses += 1;
+      }
+
+      user.roleStats[`${numPlayers}p`][lowercaseRole].losses += 1;
+      user.winsLossesGameSizeBreakdown[`${numPlayers}p`].losses += 1;
+    }
+
+    user.markModified('roleStats');
+    user.markModified('winsLossesGameSizeBreakdown');
 
     await user.save();
   }
