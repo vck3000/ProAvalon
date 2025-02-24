@@ -101,69 +101,68 @@ export class MongoUserAdapter implements IUserDbAdapter {
   ): Promise<void> {
     const user = await User.findById(userId);
     const totalTimePlayed = user.totalTimePlayed as Date;
+    const gameSizeKey = `${numPlayers}p`;
     const lowercaseRole = role.toLowerCase();
 
     user.totalTimePlayed = new Date(
       totalTimePlayed.getTime() + timePlayed.getTime(),
     );
-    user.totalGamesPlayed += 1;
 
+    user.totalGamesPlayed += 1;
     if (ranked) {
       user.totalRankedGamesPlayed += 1;
     }
 
     // Initialise roleStats object if not present
-    if (!user.roleStats[`${numPlayers}p`]) {
-      user.roleStats[`${numPlayers}p`] = {};
+    if (!user.roleStats[gameSizeKey]) {
+      user.roleStats[gameSizeKey] = {};
     }
 
-    if (!user.roleStats[`${numPlayers}p`][lowercaseRole]) {
-      user.roleStats[`${numPlayers}p`][lowercaseRole] = {
+    if (!user.roleStats[gameSizeKey][lowercaseRole]) {
+      user.roleStats[gameSizeKey][lowercaseRole] = {
         wins: 0,
         losses: 0,
       };
     }
 
-    if (isNaN(user.roleStats[`${numPlayers}p`][lowercaseRole].wins)) {
-      user.roleStats[`${numPlayers}p`][lowercaseRole].wins = 0;
+    // TODO-kev: Is this check even required?
+    if (isNaN(user.roleStats[gameSizeKey][lowercaseRole].wins)) {
+      user.roleStats[gameSizeKey][lowercaseRole].wins = 0;
     }
 
-    if (isNaN(user.roleStats[`${numPlayers}p`][lowercaseRole].losses)) {
-      user.roleStats[`${numPlayers}p`][lowercaseRole].losses = 0;
+    if (isNaN(user.roleStats[gameSizeKey][lowercaseRole].losses)) {
+      user.roleStats[gameSizeKey][lowercaseRole].losses = 0;
     }
 
     // Initialise winsLossesGameSizeBreakdown object if not present
-    if (!user.winsLossesGameSizeBreakdown[`${numPlayers}p`]) {
-      user.winsLossesGameSizeBreakdown[`${numPlayers}p`] = {
+    if (!user.winsLossesGameSizeBreakdown[gameSizeKey]) {
+      user.winsLossesGameSizeBreakdown[gameSizeKey] = {
         wins: 0,
         losses: 0,
       };
     } else {
-      if (isNaN(user.winsLossesGameSizeBreakdown[`${numPlayers}p`].wins)) {
-        user.winsLossesGameSizeBreakdown[`${numPlayers}p`].wins = 0;
+      // TODO-kev: Is this check even required?
+      if (isNaN(user.winsLossesGameSizeBreakdown[gameSizeKey].wins)) {
+        user.winsLossesGameSizeBreakdown[gameSizeKey].wins = 0;
       }
 
-      if (isNaN(user.winsLossesGameSizeBreakdown[`${numPlayers}p`].losses)) {
-        user.winsLossesGameSizeBreakdown[`${numPlayers}p`].losses = 0;
+      if (isNaN(user.winsLossesGameSizeBreakdown[gameSizeKey].losses)) {
+        user.winsLossesGameSizeBreakdown[gameSizeKey].losses = 0;
       }
     }
 
     if (win) {
       user.totalWins += 1;
-      if (alliance === Alliance.Resistance) {
-        user.totalResWins += 1;
-      }
-
-      user.roleStats[`${numPlayers}p`][lowercaseRole].wins += 1;
-      user.winsLossesGameSizeBreakdown[`${numPlayers}p`].wins += 1;
+      user.roleStats[gameSizeKey][lowercaseRole].wins += 1;
+      user.winsLossesGameSizeBreakdown[gameSizeKey].wins += 1;
     } else {
       user.totalLosses += 1;
-      if (alliance === Alliance.Resistance) {
-        user.totalResLosses += 1;
-      }
+      user.roleStats[gameSizeKey][lowercaseRole].losses += 1;
+      user.winsLossesGameSizeBreakdown[gameSizeKey].losses += 1;
+    }
 
-      user.roleStats[`${numPlayers}p`][lowercaseRole].losses += 1;
-      user.winsLossesGameSizeBreakdown[`${numPlayers}p`].losses += 1;
+    if (alliance === Alliance.Resistance) {
+      win ? user.totalResWins++ : user.totalResLosses++;
     }
 
     user.markModified('roleStats');
