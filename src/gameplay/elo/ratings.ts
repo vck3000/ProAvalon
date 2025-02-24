@@ -138,7 +138,6 @@ export function calculateNewProvisionalRating(
     (playerInGame) => playerInGame.user.ratingBracket === 'unranked',
   ).length;
 
-  // TODO-kev: Cannot use this yet since playerRatings are already updated by the time it reaches here
   const playerRatings =
     numProvisionalPlayers > 1
       ? playersInGameInfo.map((player) => player.user.playerRating)
@@ -202,7 +201,8 @@ export function calculateNewProvisionalRating(
   if (!(winningTeam === targetPlayer.alliance) && newRating < R_old - 100) {
     newRating = R_old - 100;
   }
-  return newRating;
+
+  return Math.max(0, newRating);
 }
 
 export async function calculateAndUpdateNewRatings(
@@ -231,12 +231,6 @@ export async function calculateAndUpdateNewRatings(
   const indResChange = resChange / numResPlayers;
   const indSpyChange = spyChange / numSpyPlayers;
 
-  const roundedResChange = Math.round(indResChange * 10) / 10;
-  const roundedSpyChange = Math.round(indSpyChange * 10) / 10;
-
-  console.log(`Res change: ${roundedResChange}`);
-  console.log(`Spy change: ${roundedSpyChange}`);
-
   const result: PlayerPostGameRatingInfo[] = [];
 
   for (const playerInGame of playersInGameInfo) {
@@ -251,8 +245,6 @@ export async function calculateAndUpdateNewRatings(
         0,
       );
 
-      await dbAdapter.user.updateRating(playerInGame.user.id, newRating);
-
       result.push({
         user: playerInGame.user,
         newRating,
@@ -265,7 +257,6 @@ export async function calculateAndUpdateNewRatings(
         playerInGame,
         playersInGameInfo,
       );
-      await dbAdapter.user.updateRating(playerInGame.user.id, newRating);
 
       result.push({
         user: playerInGame.user,
@@ -274,6 +265,10 @@ export async function calculateAndUpdateNewRatings(
         role: playerInGame.role,
       });
     }
+  }
+
+  for (const playerInfo of result) {
+    await dbAdapter.user.updateRating(playerInfo.user.id, playerInfo.newRating);
   }
 
   // TODO-kev: Remove
