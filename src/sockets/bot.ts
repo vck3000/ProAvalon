@@ -5,6 +5,7 @@ import { RoomPlayer } from '../gameplay/gameEngine/types';
 import { Role } from '../gameplay/gameEngine/roles/types';
 
 interface BotAPI {
+  name: string;
   urlBase: string | undefined;
   authorizationKey: string | undefined;
 }
@@ -15,11 +16,7 @@ interface Capability {
   cards: string[];
 }
 
-export const enabledBots: {
-  name: string;
-  urlBase: string | undefined;
-  authorizationKey: string | undefined;
-}[] = [];
+export const enabledBots: BotAPI[] = [];
 enabledBots.push({
   name: 'SimpleBot',
   urlBase: undefined,
