@@ -11,15 +11,3 @@ export type SocketUser = Socket & {
     user: typeof User & UserDocument & SocketUserAdditions & IUser;
   };
 };
-
-export interface ApiResponse<T> {
-  data: T;
-  status: number;
-  message: string;
-}
-
-export interface ApiErrorResponse {
-  response: ApiResponse<any>;
-  status: number;
-}
-

@@ -1,5 +1,4 @@
-import axios from 'axios';
-import { ApiErrorResponse, ApiResponse } from './types';
+import axios, { AxiosResponse, AxiosError } from 'axios';
 import Game from '../gameplay/gameEngine/game';
 import { Phase } from '../gameplay/gameEngine/phases/types';
 import { RoomPlayer } from '../gameplay/gameEngine/types';
@@ -180,7 +179,7 @@ export class APIBotSocket {
   handleReadyNotReady(game: Game, callback: Function) {
     // Check if the API supports this game type. If yes, ready up.
     makeBotAPIRequest(this.botAPI, 'GET', '/v0/info', {}, 4000)
-      .then((response: ApiResponse<{ capabilities: any }>) => {
+      .then((response: AxiosResponse<{ capabilities: any }>) => {
         if (response.status !== 200) {
           callback(false, 'Bot returned an invalid response.');
           return;
@@ -194,7 +193,7 @@ export class APIBotSocket {
           callback(true);
         }
       })
-      .catch((error: ApiErrorResponse) => {
+      .catch((error: AxiosError) => {
         if (error.response) {
           callback(false, 'The bot crashed during request.');
         } else {
@@ -228,7 +227,7 @@ export class APIBotSocket {
     };
 
     makeBotAPIRequest(this.botAPI, 'POST', '/v0/session', apiData, 3000)
-      .then((response: ApiResponse<{ sessionID: string }>) => {
+      .then((response: AxiosResponse<{ sessionID: string }>) => {
         if (response.status !== 200 || !response.data.sessionID) {
           callback(false, 'Bot returned an invalid response.');
           return;
@@ -237,7 +236,7 @@ export class APIBotSocket {
         thisSocket.sessionID = response.data.sessionID;
         callback(true);
       })
-      .catch((error: ApiErrorResponse) => {
+      .catch((error: AxiosError) => {
         if (error.response) {
           callback(false, 'The bot crashed during request.');
         } else {
@@ -268,7 +267,7 @@ export class APIBotSocket {
     };
 
     makeBotAPIRequest(this.botAPI, 'POST', '/v0/session/act', apiData, 20000)
-      .then((response: ApiResponse<{ buttonPressed: string, selectedPlayers: string[] }>) => {
+      .then((response: AxiosResponse<{ buttonPressed: string, selectedPlayers: string[] }>) => {
         if (response.status !== 200) {
           callback(false, 'Bot returned an invalid response.');
           return;
@@ -276,7 +275,7 @@ export class APIBotSocket {
 
         callback(response.data);
       })
-      .catch((error: ApiErrorResponse) => {
+      .catch((error: AxiosError) => {
         if (error.response) {
           callback(false, 'The bot crashed during request.');
           // console.log(error.response);
