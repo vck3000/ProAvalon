@@ -4,9 +4,15 @@ import { Phase } from '../gameplay/gameEngine/phases/types';
 import { RoomPlayer } from '../gameplay/gameEngine/types';
 import { Role } from '../gameplay/gameEngine/roles/types';
 
-export interface BotAPI {
+interface BotAPI {
   urlBase: string | undefined;
   authorizationKey: string | undefined;
+}
+
+interface Capability {
+  numPlayers: number[];
+  roles: string[];
+  cards: string[];
 }
 
 export const enabledBots: {
@@ -131,9 +137,9 @@ export function makeBotAPIRequest(botAPI: BotAPI, method: Method, endpoint: stri
   });
 }
 
-function checkBotCapabilities(game: Game, capabilities: any) {
+function checkBotCapabilities(game: Game, capabilities: Capability[]) {
   // Check if any single capability matches.
-  return capabilities.some((capability: {numPlayers: number[], roles: string[], cards: string[]}) => {
+  return capabilities.some((capability: Capability) => {
     const numPlayers = game.socketsOfPlayers.length;
     if (capability.numPlayers.indexOf(numPlayers) === -1) {
       return false;
