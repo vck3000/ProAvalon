@@ -1,4 +1,4 @@
-import axios, { AxiosResponse, AxiosError } from 'axios';
+import axios, { AxiosResponse, AxiosError, Method } from 'axios';
 import Game from '../gameplay/gameEngine/game';
 import { Phase } from '../gameplay/gameEngine/phases/types';
 import { RoomPlayer } from '../gameplay/gameEngine/types';
@@ -118,7 +118,7 @@ export class SimpleBotSocket {
   }
 }
 
-export function makeBotAPIRequest(botAPI: BotAPI, method: string, endpoint: string, data: any, timeout: number) {
+export function makeBotAPIRequest(botAPI: BotAPI, method: Method, endpoint: string, data: any, timeout: number) {
   return axios.request({
     method,
     url: botAPI.urlBase + endpoint,
