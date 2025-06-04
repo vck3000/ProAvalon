@@ -1598,6 +1598,7 @@ function startGame(data) {
   const timeouts = {
     default: processTimeout(timeoutsStr.default),
     assassination: processTimeout(timeoutsStr.assassination),
+    critMission: processTimeout(timeoutsStr.critMission),
   };
 
   if (
