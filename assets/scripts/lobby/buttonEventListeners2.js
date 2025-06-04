@@ -219,12 +219,8 @@ $('#createNewRoomButton').on('click', (data) => {
   $('.disableVoteHistory')[0].checked = sendObj.disableVoteHistory;
   $($('.rankedSelect')[0]).val(sendObj.ranked);
 
-  if (inRoom === false) {
-    socket.emit('newRoom', sendObj);
-
-    resetAllGameData();
-    inRoom = true;
-  }
+  socket.emit('newRoom', sendObj);
+  resetAllGameData();
 
   $('#newRoomModal').modal('hide');
 });

@@ -112,8 +112,6 @@ let gameData;
 let roomId;
 let gameStarted = false;
 
-let inRoom = false;
-
 let isSpectator = false;
 
 // window resize, repaint the users
@@ -1482,7 +1480,6 @@ function resetAllGameData() {
   seeData = undefined;
   gameData = undefined;
   gameStarted = false;
-  inRoom = false;
   // note do not reset our own username.
   isSpectator = false;
 
