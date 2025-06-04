@@ -1609,6 +1609,22 @@ function checkMessageForCommands(message, chatBox) {
       }
     }
 
+    if (percivalCommands) {
+      for (var key in percivalCommands) {
+        if (percivalCommands.hasOwnProperty(key)) {
+          // console.log(key + " -> " + commands[key]);
+          if (messageCommand === percivalCommands[key].command) {
+            // console.log("percivals");
+            // console.log("Command: " + commands[key].command + " called.");
+            commandCalled = percivalCommands[key].command;
+            validCommandFound = true;
+
+            break;
+          }
+        }
+      }
+    }
+
     if (TOCommands) {
       for (var key in TOCommands) {
         if (TOCommands.hasOwnProperty(key)) {

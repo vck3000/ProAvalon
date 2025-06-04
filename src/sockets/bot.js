@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Phase } from '../gameplay/phases/types';
+import { Phase } from '../gameplay/gameEngine/phases/types';
 
 export const enabledBots = [];
 enabledBots.push({

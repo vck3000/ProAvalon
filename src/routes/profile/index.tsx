@@ -24,7 +24,7 @@ import { PatreonAgent } from '../../clients/patreon/patreonAgent';
 import { PatreonController } from '../../clients/patreon/patreonController';
 import { createNotification } from '../../myFunctions/createNotification';
 import { getAndUpdatePatreonRewardTierForUser } from '../../rewards/getRewards';
-import userAdapter from '../../databaseAdapters/user';
+import dbAdapter from '../../databaseAdapters';
 import { getAvatarLibrarySizeForUser } from '../../rewards/getRewards';
 import { avatarSubmissionsMetric } from '../../metrics/miscellaneousMetrics';
 
@@ -96,7 +96,7 @@ router.get('/mod/customavatar', isModMiddleware, async (req, res) => {
   const updatedAvatarRequests: Promise<UpdatedAvatarRequest[]> =
     await Promise.all(
       customAvatarRequests.map(async (avatarReq) => {
-        const user = await userAdapter.getUser(avatarReq.forUsername);
+        const user = await dbAdapter.user.getUser(avatarReq.forUsername);
         const librarySize = await getAvatarLibrarySizeForUser(
           user.usernameLower,
         );
@@ -253,12 +253,12 @@ router.post('/mod/deleteuseravatar', isModMiddleware, async (req, res) => {
     throw e;
   }
 
-  await userAdapter.removeAvatar(targetUsername, toBeDeletedAvatarSet);
+  await dbAdapter.user.removeAvatar(targetUsername, toBeDeletedAvatarSet);
 
   await ModLog.create({
     type: 'avatarDelete',
     modWhoMade: {
-      id: modWhoProcessed._id,
+      id: modWhoProcessed.id,
       username: modWhoProcessed.username,
       usernameLower: modWhoProcessed.usernameLower,
     },
@@ -291,7 +291,7 @@ router.post(
     }
 
     const avatarReq = await avatarRequest.findById(req.body.avatarreqid);
-    const userRequestingAvatar = await userAdapter.getUser(
+    const userRequestingAvatar = await dbAdapter.user.getUser(
       avatarReq.forUsername.toLowerCase(),
     );
 
@@ -321,7 +321,7 @@ router.post(
         userRequestingAvatar.usernameLower,
       );
 
-      await userAdapter.setAvatarAndUpdateLibrary(
+      await dbAdapter.user.setAvatarAndUpdateLibrary(
         userRequestingAvatar.usernameLower,
         approvedAvatarLinks,
         librarySize,
@@ -329,7 +329,7 @@ router.post(
 
       let str = `Your avatar request was approved by ${modWhoProcessed.username}! Their comment was: "${modComment}"`;
       createNotification(
-        userRequestingAvatar._id,
+        userRequestingAvatar.id,
         str,
         '#',
         modWhoProcessed.username,
@@ -342,7 +342,7 @@ router.post(
 
       let str = `Your avatar request was rejected by ${modWhoProcessed.username}. Their comment was: "${modComment}"`;
       createNotification(
-        userRequestingAvatar._id,
+        userRequestingAvatar.id,
         str,
         '#',
         modWhoProcessed.username,
@@ -353,7 +353,7 @@ router.post(
     ModLog.create({
       type: 'avatar',
       modWhoMade: {
-        id: modWhoProcessed._id,
+        id: modWhoProcessed.id,
         username: modWhoProcessed.username,
         usernameLower: modWhoProcessed.usernameLower,
       },

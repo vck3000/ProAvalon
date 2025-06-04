@@ -70,15 +70,15 @@ router.get(
     if (!found.whoLikedId) found.whoLikedId = [];
 
     // person has already liked it, so unlike it and remove their name
-    if (found.whoLikedId.includes(req.user._id)) {
-      const i = found.whoLikedId.indexOf(req.user._id);
+    if (found.whoLikedId.includes(req.user.id)) {
+      const i = found.whoLikedId.indexOf(req.user.id);
       // remove their id
       found.whoLikedId.splice(i, 1);
       found.likes -= 1;
       res.status(200).send('unliked');
     } else {
       // add a like
-      found.whoLikedId.push(req.user._id);
+      found.whoLikedId.push(req.user.id);
       found.likes += 1;
       res.status(200).send('liked');
 

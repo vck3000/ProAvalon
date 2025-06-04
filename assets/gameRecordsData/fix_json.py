@@ -14,4 +14,4 @@ print('complete cleaning!')
 # pprint(json_data)
 
 with open('gameRecordsDataAnon.json', 'w') as f:
-    f.write(str(json_data))
+    f.write(json.dumps(json_data))

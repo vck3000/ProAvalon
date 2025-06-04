@@ -1,8 +1,8 @@
 import { Command } from '../types';
 import { modOrTOString } from '../../../modsadmins/modOrTO';
 import { getIndexFromUsername, rooms } from '../../sockets';
-import { Alliance } from '../../../gameplay/types';
-import { Phase } from '../../../gameplay/phases/types';
+import { Alliance } from '../../../gameplay/gameEngine/types';
+import { Phase } from '../../../gameplay/gameEngine/phases/types';
 
 export const mforcemove: Command = {
   command: 'mforcemove',

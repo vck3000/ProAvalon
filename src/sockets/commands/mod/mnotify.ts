@@ -27,7 +27,7 @@ export const mnotify: Command = {
             classStr: 'server-text',
           });
         } else if (foundUser) {
-          const userIdTarget = foundUser._id;
+          const userIdTarget = foundUser.id;
           const stringToSay = str;
           const link = '#';
 
@@ -43,7 +43,7 @@ export const mnotify: Command = {
             },
             data: {
               targetUser: {
-                id: foundUser._id,
+                id: foundUser.id,
                 username: foundUser.username,
                 usernameLower: foundUser.usernameLower,
               },

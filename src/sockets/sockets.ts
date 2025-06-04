@@ -2,7 +2,7 @@
 import { Server as SocketServer, Socket } from 'socket.io';
 import { SocketUser } from './types';
 
-import GameWrapper from '../gameplay/gameWrapper';
+import GameWrapper from '../gameplay/gameEngine/gameWrapper';
 
 import savedGameObj from '../models/savedGame';
 import { getAllRewardsForUser } from '../rewards/getRewards';
@@ -13,34 +13,36 @@ import JSON from 'circular-json';
 
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
+import { isPercival } from '../modsadmins/percivals';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import {
   GAME_MODE_NAMES,
   GameMode,
   isGameMode,
   strToGameMode,
-} from '../gameplay/gameModes';
+} from '../gameplay/gameEngine/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
 
 import { adminCommands } from './commands/admin';
 import { modCommands } from './commands/mod';
+import { percivalCommands } from './commands/percival';
 import { userCommandsImported } from './commands/user';
 import { mtogglepause } from './commands/mod/mtogglepause';
 import { mrevealallroles } from './commands/mod/mrevealallroles';
 
 import * as util from 'util';
-import { RoomCreationType } from '../gameplay/roomTypes';
+import { RoomCreationType } from '../gameplay/gameEngine/roomTypes';
 import { CreateRoomFilter } from './filters/createRoomFilter';
-import Game, { GameConfig } from '../gameplay/game';
-import { RoomConfig } from '../gameplay/room';
+import Game, { GameConfig } from '../gameplay/gameEngine/game';
+import { RoomConfig } from '../gameplay/gameEngine/room';
 import { MatchmakingQueue, QueueEntry } from './matchmakingQueue';
 import { ReadyPrompt, ReadyPromptReplyFromClient } from './readyPrompt';
 import { JoinQueueFilter } from './filters/joinQueueFilter';
-import { Role } from '../gameplay/roles/types';
-import { Phase } from '../gameplay/phases/types';
-import { Card } from '../gameplay/cards/types';
+import { Role } from '../gameplay/gameEngine/roles/types';
+import { Phase } from '../gameplay/gameEngine/phases/types';
+import { Card } from '../gameplay/gameEngine/cards/types';
 import { TOCommandsImported } from './commands/tournamentOrganisers';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
@@ -599,15 +601,7 @@ export const server = function (io: SocketServer): void {
       // send the user the list of commands
       socket.emit('commands', userCommands);
 
-      // initialise not mod and not admin
-      socket.isAdminSocket = false;
-      socket.isModSocket = false;
-      socket.isTOSocket = false;
-
       if (isAdmin(socket.request.user.username)) {
-        // promote to admin socket
-        socket.isAdminSocket = true;
-
         // TODO this shouldn't be sent out as separate commands. Merge these.
 
         // send the user the list of commands
@@ -615,9 +609,6 @@ export const server = function (io: SocketServer): void {
       }
 
       if (isMod(socket.request.user.username)) {
-        // promote to mod socket
-        socket.isModSocket = true;
-
         // send the user the list of commands
         socket.emit('modCommands', modCommands);
 
@@ -668,9 +659,12 @@ export const server = function (io: SocketServer): void {
           });
       }
 
-      if (isTO(socket.request.user.username)) {
-        socket.isTOSocket = true;
+      if (isPercival(socket.request.user.username)) {
+        // send the user the list of commands
+        socket.emit('percivalCommands', percivalCommands);
+      }
 
+      if (isTO(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('TOCommands', TOCommands);
       }
@@ -782,6 +776,8 @@ const applyApplicableRewards = function (socket) {
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
     socket.request.badge = 'M';
+  } else if (isPercival(socket.request.user.username)) {
+    socket.request.badge = 'P';
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
@@ -1172,6 +1168,11 @@ function messageCommand(data) {
     adminCommands[data.command].run(data.args, this, ioGlobal);
   } else if (modCommands[data.command] && isMod(this.request.user.username)) {
     modCommands[data.command].run(data.args, this, ioGlobal);
+  } else if (
+    percivalCommands[data.command] &&
+    isPercival(this.request.user.username)
+  ) {
+    dataToSend = percivalCommands[data.command].run(data.args, this, ioGlobal);
   } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
     dataToSend = TOCommands[data.command].run(data.args, this, ioGlobal);
   } else if (userCommands[data.command]) {

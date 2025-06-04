@@ -185,7 +185,7 @@ function addToAllChat(data) {
         }
 
         // if they've muted this player, then just dont show anything. reset str to nothing.
-        if (isPlayerMuted(data[i].username) === true) {
+        if (data[i].username && isPlayerMuted(data[i].username.toLowerCase()) === true) {
           str = '';
         }
 
@@ -454,11 +454,11 @@ function addToRoomChat(data) {
 }
 
 function isPlayerMuted(username) {
-  if (mutedPlayers.indexOf(username) !== -1) {
-    return true;
+  if (!username) {
+    return false;
   }
 
-  return false;
+  return mutedPlayers.indexOf(username.toLowerCase()) !== -1;
 }
 
 // Remove the new message yellow background colour when
@@ -570,6 +570,9 @@ function generateBadgeString(badge) {
     }
     else if (badge === 'M') {
       title = 'Moderator';
+    }
+    else if (badge === 'P') {
+      title = 'Percy';
     }
     else if (badge === 'D') {
       title = 'Developer';

@@ -19,6 +19,9 @@ import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
 import { MongoClient } from 'mongodb';
 import { SESSIONS_COLLECTION_NAME } from '../constants';
+import { isMod } from '../modsadmins/mods';
+import { isPercival } from '../modsadmins/percivals';
+import { sendToDiscordMods } from '../clients/discord';
 
 const router = new Router();
 
@@ -41,7 +44,20 @@ const requiredFields = [
   'descriptionByMod',
 ];
 
-router.post('/ban', isModMiddleware, async (req, res) => {
+router.post('/ban', async (req, res) => {
+  if (!isMod(req.user.username) && !isPercival(req.user.username)) {
+    res.status(401);
+    res.send(`You are not a moderator or percival.`);
+    return;
+  }
+
+  const userIsMod = isMod(req.user.username);
+  const userIsPercy = isPercival(req.user.username);
+
+  if ((userIsMod ^ userIsPercy) !== 1) {
+    throw Error('Expected requesting user to either be a mod or a Percy.');
+  }
+
   try {
     // Catch errors so that it's not shown to users.
     // Multiple checks:
@@ -115,6 +131,11 @@ router.post('/ban', isModMiddleware, async (req, res) => {
       ipsToBan = banUser.IPAddresses;
     }
 
+    // Safety mechanism. Don't allow percies to do the full IP ban.
+    if (userIsPercy) {
+      ipsToBan = banUser.lastIPAddress;
+    }
+
     // Get duration for ban:
     const now = new Date();
     const whenMade = new Date();
@@ -143,6 +164,18 @@ router.post('/ban', isModMiddleware, async (req, res) => {
         return;
     }
 
+    // Percies can only ban up to 24 hrs. No greater.
+    if (userIsPercy) {
+      const cutoff = new Date();
+      cutoff.setDate(cutoff.getDate() + 1);
+
+      if (whenRelease > cutoff) {
+        res.status(400);
+        res.send(`Percival roles cannot ban for more than 24 hours.`);
+        return;
+      }
+    }
+
     // Create the data object
     const banData = {
       ipBan:
@@ -153,13 +186,13 @@ router.post('/ban', isModMiddleware, async (req, res) => {
       singleIPBan: req.body['SingleIPBanCheckbox'] === 'on' ? true : false,
       userBan: req.body['userBanCheckbox'] === 'on' ? true : false,
       bannedPlayer: {
-        id: banUser._id,
+        id: banUser.id,
         username: banUser.username,
         usernameLower: banUser.usernameLower,
       },
       bannedIPs: ipsToBan,
       modWhoBanned: {
-        id: modUser._id,
+        id: modUser.id,
         username: modUser.username,
         usernameLower: modUser.usernameLower,
       },
@@ -177,13 +210,24 @@ router.post('/ban', isModMiddleware, async (req, res) => {
     await ModLog.create({
       type: 'ban',
       modWhoMade: {
-        id: modUser._id,
+        id: modUser.id,
         username: modUser.username,
         usernameLower: modUser.usernameLower,
       },
       data: banData,
       dateCreated: new Date(),
     });
+
+    sendToDiscordMods(
+      `${userIsMod ? 'Moderator' : 'Percival'} "${
+        req.user.usernameLower
+      }" banned "${banUser.usernameLower}" for \
+${req.body['duration']} ${req.body['duration_units']} for reason "${
+        req.body.reason
+      }" with description \
+"${req.body['descriptionByMod']}".`,
+      false,
+    );
 
     // Delete all the sessions associated with this username
     const dbResult = await MongoClient.connect(process.env.DATABASEURL);
@@ -317,10 +361,10 @@ router.post('/report', async (req, res) => {
     reason: req.body.reason,
     reportedPlayer: {
       username: reportedUser.username.toLowerCase(),
-      id: reportedUser._id,
+      id: reportedUser.id,
     },
     playerWhoReported: {
-      id: userWhoReported._id,
+      id: userWhoReported.id,
       username: userWhoReported.username.toLowerCase(),
     },
     description: req.body.desc,
