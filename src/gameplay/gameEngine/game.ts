@@ -27,6 +27,8 @@ import shuffleArray from '../../util/shuffleArray';
 import { Anonymizer } from './anonymizer';
 import { sendReplyToCommand } from '../../sockets/sockets';
 import { gamesPlayedMetric } from '../../metrics/gameMetrics';
+import { calculateAndUpdateNewRatings, PlayerInGameInfo } from '../elo/ratings';
+import dbAdapter from '../../databaseAdapters';
 
 export const WAITING = 'Waiting';
 export const MIN_PLAYERS = 5;
@@ -1227,7 +1229,7 @@ class Game extends Room {
     return WAITING;
   }
 
-  finishGame(toBeWinner: Alliance) {
+  async finishGame(toBeWinner: Alliance) {
     const timeStarted = new Date(this.startGameTime);
     const timeFinished = new Date();
     const gameDuration = new Date(timeFinished - timeStarted);
@@ -1457,259 +1459,63 @@ class Game extends Room {
       });
 
     if (botUsernames.length === 0) {
-      // Check if the game contains any provisional players.
-      let provisionalGame = false;
-      if (
-        this.playersInGame.filter(
-          (soc) => soc.request.user.ratingBracket === 'unranked',
-        ).length > 0
-      ) {
-        provisionalGame = true;
-      }
-
-      // calculate team 1v1 elo adjustment
-      const teamResChange = this.calculateResistanceRatingChange(
-        this.winner,
-        provisionalGame,
+      const playersInGameInfo: PlayerInGameInfo[] = this.playersInGame.map(
+        (soc) => ({
+          user: soc.request.user,
+          alliance: soc.alliance,
+          role: soc.role,
+        }),
       );
-      const teamSpyChange = -teamResChange;
 
-      // individual changes per player, to one decimal place.
-      const indResChange =
-        Math.round((teamResChange / this.resistanceUsernames.length) * 10) / 10;
-      const indSpyChange =
-        Math.round((teamSpyChange / this.spyUsernames.length) * 10) / 10;
+      // TODO-kev: This looks dodgey. Relook at it if should throw error
+      // winning team should always be defined
+      if (this.winner !== Alliance.Resistance && this.winner !== Alliance.Spy) {
+        this.sendText(
+          'Error in elo calculation, no winning team specified.',
+          'server-text',
+        );
+      }
 
       // if we're in a ranked game show the elo adjustments
       if (this.ranked) {
-        // Get the old player ratings (with usernames) for use in provisional calculations.
-        const oldPlayersInfo = this.playersInGame.map((soc) => {
-          const data = {};
-          data.username = soc.request.user.username;
-          data.rating = soc.request.user.playerRating;
-          return data;
-        });
-
-        // Broadcast elo adjustments in chat first, if broadcasted in the updating process, its slow
+        const playerPostGameRatingInfos = await calculateAndUpdateNewRatings(
+          playersInGameInfo,
+          this.winner,
+        );
         this.sendText('Rating Adjustments:', 'server-text');
-        this.playersInGame.forEach((player) => {
-          const rating = player.request.user.playerRating;
-          // If player is provisional, different adjustment.
-          if (player.request.user.ratingBracket === 'unranked') {
-            // Ensure this value is changed in time for the callbacks, requires a refresh to get the actual db value.
-            player.request.user.totalRankedGamesPlayed += 1;
 
-            // If there are multiple provisional players, use all ratings, otherwise just the other players' ratings.
-            if (
-              this.playersInGame.filter(
-                (soc) => soc.request.user.ratingBracket === 'unranked',
-              ).length > 1
-            ) {
-              const playerRatings = oldPlayersInfo.map((data) => data.rating);
-              player.request.user.playerRating =
-                this.calculateNewProvisionalRating(
-                  this.winner,
-                  player,
-                  playerRatings,
-                );
-            } else {
-              const otherPlayerRatings = oldPlayersInfo
-                .filter(
-                  (data) => !(data.username === player.request.user.username),
-                )
-                .map((data) => data.rating);
-              player.request.user.playerRating =
-                this.calculateNewProvisionalRating(
-                  this.winner,
-                  player,
-                  otherPlayerRatings,
-                );
-            }
-            const difference =
-              Math.round((player.request.user.playerRating - rating) * 10) / 10;
-            this.sendText(
-              `${player.request.user.username}: ${Math.floor(
-                rating,
-              )} -> ${Math.floor(player.request.user.playerRating)} (${
-                difference > 0 ? '+' + difference : difference
-              })`,
-              'server-text',
-            );
-          } else {
-            if (player.alliance === Alliance.Resistance) {
-              this.sendText(
-                `${player.request.user.username}: ${Math.floor(
-                  rating,
-                )} -> ${Math.floor(rating + indResChange)} (${
-                  indResChange > 0 ? '+' + indResChange : indResChange
-                })`,
-                'server-text',
-              );
-              player.request.user.playerRating += indResChange;
-            } else if (player.alliance === Alliance.Spy) {
-              this.sendText(
-                `${player.request.user.username}: ${Math.floor(
-                  rating,
-                )} -> ${Math.floor(rating + indSpyChange)} (${
-                  indSpyChange > 0 ? '+' + indSpyChange : indSpyChange
-                })`,
-                'server-text',
-              );
-              player.request.user.playerRating += indSpyChange;
-            }
-          }
-        });
+        for (const playerPostGameRatingInfo of playerPostGameRatingInfos) {
+          const diff =
+            Math.round(
+              (playerPostGameRatingInfo.newRating -
+                playerPostGameRatingInfo.user.playerRating) *
+                10,
+            ) / 10;
+
+          this.sendText(
+            `${playerPostGameRatingInfo.user.username}: ${Math.floor(
+              playerPostGameRatingInfo.user.playerRating,
+            )} -> ${Math.floor(playerPostGameRatingInfo.newRating)} (${
+              diff > 0 ? '+' + diff : diff
+            })`,
+            'server-text',
+          );
+        }
       }
 
       if (process.env.NODE_ENV !== 'test') {
-        this.playersInGame.forEach((player) => {
-          User.findById(player.userId)
-            .populate('notifications')
-            .exec((err, foundUser) => {
-              if (err) {
-                console.log(err);
-              } else if (foundUser) {
-                foundUser.totalTimePlayed = new Date(
-                  foundUser.totalTimePlayed.getTime() + gameDuration.getTime(),
-                );
-
-                // update individual player statistics
-                foundUser.totalGamesPlayed += 1;
-
-                if (winnerVar === player.alliance) {
-                  foundUser.totalWins += 1;
-                  if (winnerVar === Alliance.Resistance) {
-                    foundUser.totalResWins += 1;
-                  }
-                } else {
-                  // loss
-                  foundUser.totalLosses += 1;
-                  if (winnerVar === Alliance.Spy) {
-                    foundUser.totalResLosses += 1;
-                  }
-                }
-
-                // if ranked, update player ratings and increase ranked games played
-                if (this.ranked) {
-                  foundUser.totalRankedGamesPlayed += 1;
-
-                  if (foundUser.ratingBracket === 'unranked') {
-                    foundUser.playerRating = player.request.user.playerRating;
-                  } else {
-                    if (player.alliance === Alliance.Resistance) {
-                      foundUser.playerRating += indResChange;
-                    } else if (player.alliance === Alliance.Spy) {
-                      foundUser.playerRating += indSpyChange;
-                    }
-                  }
-                }
-
-                // checks that the var exists
-                if (
-                  !foundUser.winsLossesGameSizeBreakdown[
-                    `${playersInGameVar.length}p`
-                  ]
-                ) {
-                  foundUser.winsLossesGameSizeBreakdown[
-                    `${playersInGameVar.length}p`
-                  ] = {
-                    wins: 0,
-                    losses: 0,
-                  };
-                }
-
-                if (!foundUser.roleStats[`${playersInGameVar.length}p`]) {
-                  foundUser.roleStats[`${playersInGameVar.length}p`] = {};
-                }
-                if (
-                  !foundUser.roleStats[`${playersInGameVar.length}p`][
-                    player.role.toLowerCase()
-                  ]
-                ) {
-                  foundUser.roleStats[`${playersInGameVar.length}p`][
-                    player.role.toLowerCase()
-                  ] = {
-                    wins: 0,
-                    losses: 0,
-                  };
-                }
-
-                if (winnerVar === player.alliance) {
-                  // checks
-                  if (
-                    isNaN(
-                      foundUser.winsLossesGameSizeBreakdown[
-                        `${playersInGameVar.length}p`
-                      ].losses,
-                    )
-                  ) {
-                    foundUser.winsLossesGameSizeBreakdown[
-                      `${playersInGameVar.length}p`
-                    ].wins = 0;
-                  }
-                  if (
-                    isNaN(
-                      foundUser.roleStats[`${playersInGameVar.length}p`][
-                        player.role.toLowerCase()
-                      ].wins,
-                    )
-                  ) {
-                    foundUser.roleStats[`${playersInGameVar.length}p`][
-                      player.role.toLowerCase()
-                    ].wins = 0;
-                  }
-                  // console.log("=NaN?");
-                  // console.log(isNaN(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()].wins));
-
-                  foundUser.winsLossesGameSizeBreakdown[
-                    `${playersInGameVar.length}p`
-                  ].wins += 1;
-                  foundUser.roleStats[`${playersInGameVar.length}p`][
-                    player.role.toLowerCase()
-                  ].wins += 1;
-                } else {
-                  // checks
-                  if (
-                    isNaN(
-                      foundUser.winsLossesGameSizeBreakdown[
-                        `${playersInGameVar.length}p`
-                      ].losses,
-                    )
-                  ) {
-                    foundUser.winsLossesGameSizeBreakdown[
-                      `${playersInGameVar.length}p`
-                    ].losses = 0;
-                  }
-                  if (
-                    isNaN(
-                      foundUser.roleStats[`${playersInGameVar.length}p`][
-                        player.role.toLowerCase()
-                      ].losses,
-                    )
-                  ) {
-                    foundUser.roleStats[`${playersInGameVar.length}p`][
-                      player.role.toLowerCase()
-                    ].losses = 0;
-                  }
-
-                  foundUser.winsLossesGameSizeBreakdown[
-                    `${playersInGameVar.length}p`
-                  ].losses += 1;
-                  foundUser.roleStats[`${playersInGameVar.length}p`][
-                    player.role.toLowerCase()
-                  ].losses += 1;
-                }
-                // console.log("Rolestat for player");
-                // console.log(foundUser.roleStats[playersInGameVar.length + "p"][player.role.toLowerCase()]);
-
-                foundUser.markModified('winsLossesGameSizeBreakdown');
-                foundUser.markModified('roleStats');
-
-                foundUser.save();
-                // console.log("SAVE SAVE");
-              }
-            });
-        });
+        // TODO-kev: Might need to still update the socket directly?
+        for (const playerInGameInfo of playersInGameInfo) {
+          await dbAdapter.user.processGame(
+            playerInGameInfo.user.id,
+            gameDuration,
+            playerInGameInfo.alliance,
+            playerInGameInfo.role,
+            playersInGameInfo.length,
+            playerInGameInfo.alliance === this.winner,
+            this.ranked,
+          );
+        }
       }
     }
   }
@@ -2124,161 +1930,6 @@ class Game extends Room {
         'server-text',
       );
     }
-  }
-
-  /*
-  ELO RATING CALCULATION:
-
-  Usual formula: R_new = R_old + k(Actual - Expected)
-
-  1. Use average team rating and pit together in a 1v1 format.
-  2. Adjust ratings for Res and Spy winrates (constant adjustment based on site winrates, maybe for that player size).
-  2. Using k-value k=38, calculate adjustment amount = k(Actual - Expected)
-      a. Actual = 1 for win, 0 for loss
-      b. Expected = 1/(1 + 10^-(R_old - R_opp)/400)
-  3. Multiplicative adjustment based on player size.
-  4. If provisional players are in the game, adjust the elo changes based on how close they are to being experienced.
-  5. Divide equally between players on each team and adjust ratings. (Done in the finishGame function)
-  */
-  calculateResistanceRatingChange(winningTeam, provisionalGame) {
-    // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
-    const playerSizeEloChanges = [62, 56, 71, 116, 18, 80];
-    // k value parameter for calculation
-    const k = 42;
-    // Calculate ratings for each team by averaging elo of players
-    const resTeamEloRatings = this.playersInGame
-      .filter((soc) => soc.alliance === Alliance.Resistance)
-      .map((soc) => soc.request.user.playerRating);
-    const spyTeamEloRatings = this.playersInGame
-      .filter((soc) => soc.alliance === Alliance.Spy)
-      .map((soc) => soc.request.user.playerRating);
-
-    let total = 0;
-    for (let i = 0; i < resTeamEloRatings.length; i++) {
-      total += resTeamEloRatings[i];
-    }
-    let resElo = total / resTeamEloRatings.length;
-
-    total = 0;
-    for (let i = 0; i < spyTeamEloRatings.length; i++) {
-      total += spyTeamEloRatings[i];
-    }
-    let spyElo = total / spyTeamEloRatings.length;
-
-    // Adjust ratings for sitewide winrates. Using hardcoded based on current.
-    spyElo += playerSizeEloChanges[this.playersInGame.length - 5];
-
-    console.log('Resistance Team Elo: ' + resElo);
-    console.log('Spy Team Elo: ' + spyElo);
-
-    // Calculate elo change, adjusting for player size, difference is 1- or just -
-    let eloChange = 0;
-    if (winningTeam === Alliance.Resistance) {
-      eloChange =
-        k *
-        (1 - 1 / (1 + Math.pow(10, -(resElo - spyElo) / 500))) *
-        (this.playersInGame.length / 5); //smoothed from 400 to 500 division
-    } else if (winningTeam === Alliance.Spy) {
-      eloChange =
-        k *
-        (-1 / (1 + Math.pow(10, -(resElo - spyElo) / 500))) *
-        (this.playersInGame.length / 5); //smoothed from 400 to 500 division
-    } else {
-      // winning team should always be defined
-      this.sendText(
-        'Error in elo calculation, no winning team specified.',
-        'server-text',
-      );
-      return;
-    }
-
-    // If the game is provisional, apply a multiplicative reduction in elo change based on how experienced the players are.
-    if (provisionalGame) {
-      const provisionalPlayers = this.playersInGame.filter(
-        (soc) => soc.request.user.ratingBracket === 'unranked',
-      );
-      let totalProvisionalGames = 0;
-      for (let i = 0; i < provisionalPlayers.length; i++) {
-        totalProvisionalGames +=
-          provisionalPlayers[i].request.user.totalRankedGamesPlayed;
-      }
-      eloChange =
-        ((totalProvisionalGames +
-          (this.playersInGame.length - provisionalPlayers.length) *
-            this.provisionalGamesRequired) /
-          (this.provisionalGamesRequired * this.playersInGame.length)) *
-        eloChange;
-    }
-    return eloChange;
-  }
-
-  /*
-  PROVISIONAL ELO RATING CALCULATION:
-
-  If there is only one provisional player in the game:
-  Formula: R_new = (R_old*N_old + sum(otherPlayerRatings)/numOtherPlayers + 200*TeamAdjustment*Result)/(N_old+1)
-      where N_old = Number of games played
-            Result = 1 for win, 0 for loss
-
-  If there is more than one provisional player in the game:
-  Formula: R_new = (R_old*N_old + sum(allPlayerRatings)/numPlayers + 200*TeamAdjustment*Result)/(N_old+1)
-      where N_old = Number of games played
-            Result = 1 for win, 0 for loss
-
-  This rating style takes into account all the ratings of the players in the games that you play with to determine your starting point.
-  For the first few games it will result in wild rating changes, but will level out towards the end of the provisional section.
-  Could possibly lead to some people abusing their early rating by only playing with strong players and getting lucky, but should level out in the end.
-  */
-  calculateNewProvisionalRating(winningTeam, playerSocket, playerRatings) {
-    // Constant changes in elo due to unbalanced winrate, winrate changes translated to elo points.
-    const playerSizeWinrates = [0.57, 0.565, 0.58, 0.63, 0.52, 0.59];
-    let Result = playerSocket.alliance === winningTeam ? 1 : -1;
-
-    // Calculate new rating
-    const R_old = playerSocket.request.user.playerRating;
-    const N_old = playerSocket.request.user.totalRankedGamesPlayed;
-    const ratingsSum = playerRatings.reduce((sum, a) => sum + a, 0);
-
-    // Prototype team adjustment is hardcoded, players are rewarded more for winning and penalised less for losing as res.
-    // Also all changes are scaled with relation to team size to prevent deflation in provisional games.
-    let teamAdj = 0;
-    const resReduction =
-      this.spyUsernames.length / this.resistanceUsernames.length;
-    const sizeWinrate = playerSizeWinrates[this.playersInGame.length - 5];
-    if (playerSocket.alliance === Alliance.Resistance) {
-      if (winningTeam === playerSocket.alliance) {
-        teamAdj = (sizeWinrate / (1 - sizeWinrate)) * resReduction;
-      } else {
-        teamAdj = resReduction;
-      }
-    } else {
-      if (winningTeam === playerSocket.alliance) {
-        teamAdj = 1;
-      } else {
-        teamAdj = sizeWinrate / (1 - sizeWinrate);
-      }
-    }
-
-    let newRating =
-      (R_old * N_old +
-        ratingsSum / playerRatings.length +
-        200 * teamAdj * Result) /
-      (N_old + 1);
-
-    // Prevent losing rating on win and gaining rating on loss in fringe scenarios with weird players.
-    if (
-      (winningTeam === playerSocket.alliance && newRating < R_old) ||
-      (!(winningTeam === playerSocket.alliance) && newRating > R_old)
-    ) {
-      newRating = R_old;
-    }
-    if (winningTeam === playerSocket.alliance && newRating > R_old + 100) {
-      newRating = R_old + 100;
-    }
-    if (!(winningTeam === playerSocket.alliance) && newRating < R_old - 100) {
-      newRating = R_old - 100;
-    }
-    return newRating;
   }
 }
 
