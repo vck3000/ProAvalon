@@ -151,26 +151,7 @@ function addToAllChat(data) {
 
         date = `${hour}:${min}`;
 
-        let filteredMessage = data[i].message
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-
-        filteredMessage = linkifyHtml(filteredMessage, {
-          validate: {
-            url(value) {
-              return /^(http|ftp)s?:\/\/|www/.test(value);
-            },
-          },
-        });
-
-        //adds abbreviation, also checks if option has been enabled
-        let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
-        if (toFilter === 'true') {
-          filteredMessage = addAbbreviations(filteredMessage);
-        }
+        let filteredMessage = formatChatMessage(data[i].message, docCookies.getItem(`optionDisplayEnableAbbreivations`));
 
         let showSeconds = docCookies.getItem(`optionDisplayEnableTimeStampSeconds`);
         const secondsStyle = showSeconds === 'true' ? 'display:inline;' : 'display:none;';
@@ -302,36 +283,13 @@ function addToRoomChat(data) {
         const muteJoinLeave = $('.mutejoinleave')[0].checked;
         // if they dont exist in players in room, if game is started, and if mute spectators
         let thisMessageJoinLeave = false;
-        // console.log(data[i].classStr);
-        // console.log(muteJoinLeave);
 
         if (data[i].classStr === 'server-text-teal' && muteJoinLeave === true) {
           thisMessageJoinLeave = true;
           addClass += ' hidden-spectator-chat';
         }
 
-        // prevent XSS injection
-        let filteredMessage = data[i].message
-          .replace(/&/g, "&amp;")
-          .replace(/</g, "&lt;")
-          .replace(/>/g, "&gt;")
-          .replace(/"/g, "&quot;")
-          .replace(/'/g, "&#039;");
-        // console.log("Filtered message: " + filteredMessage);
-
-        filteredMessage = linkifyHtml(filteredMessage, {
-          validate: {
-            url(value) {
-              return /^(http|ftp)s?:\/\/|www/.test(value);
-            },
-          },
-        });
-
-        //adds abbreviation, also checks if option has been enabled
-        let toFilter = docCookies.getItem(`optionDisplayEnableAbbreivations`)
-        if (toFilter === 'true') {
-          filteredMessage = addAbbreviations(filteredMessage);
-        }
+        let filteredMessage = formatChatMessage(data[i].message, docCookies.getItem(`optionDisplayEnableAbbreivations`));
 
         let str = '';
 
@@ -375,7 +333,7 @@ function addToRoomChat(data) {
           <li class='${addClass}'>
             <span style='${highlightForegroundColorHtml}background-color: ${highlightChatColour}' username='${data[i].username}'>
               <span class='date-text'>[${date}<span class='date-text-sec' style="${secondsStyle}">:${sec}</span>]</span>
-              <span class='username-text'>${data[i].username}${generateBadgeString(data[i].badge)}:</span> 
+              <span class='username-text'>${data[i].username}${generateBadgeString(data[i].badge)}:</span>
               ${message}
             </span>
           </li>`;
