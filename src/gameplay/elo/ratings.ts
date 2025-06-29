@@ -65,10 +65,6 @@ export function calculateResistanceRatingChange(
   const numPlayers = playersInGameInfo.length;
   const spyEloAdjusted = spyEloAvg + playerSizeEloChanges[numPlayers - 5];
 
-  // TODO-kev: Do we need this? Was there before however can remove
-  console.log('Resistance Team Elo: ' + resEloAvg);
-  console.log('Spy Team Elo: ' + spyEloAdjusted);
-
   // Calculate elo change, adjusting for player size, difference is 1- or just -
   let eloChange = 0;
   if (winningTeam === Alliance.Resistance) {
