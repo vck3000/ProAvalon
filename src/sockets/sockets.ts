@@ -15,12 +15,7 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isPercival } from '../modsadmins/percivals';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import {
-  GAME_MODE_NAMES,
-  GameMode,
-  isGameMode,
-  strToGameMode,
-} from '../gameplay/gameEngine/gameModes';
+import { GAME_MODE_NAMES, GameMode, isGameMode, strToGameMode } from '../gameplay/gameEngine/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -47,6 +42,12 @@ import { TOCommandsImported } from './commands/tournamentOrganisers';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
 const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
+
+let createNewRoomAllowed = true;
+export function ToggleCreateNewRoomAllowed()
+{
+  createNewRoomAllowed = !createNewRoomAllowed;
+}
 
 const chatSpamFilter = new ChatSpamFilter();
 const createRoomFilter = new CreateRoomFilter();
@@ -1391,6 +1392,12 @@ function outputSpamMessage(chat, user) {
 }
 
 function newRoom(dataObj) {
+  if (!createNewRoomAllowed)
+  {
+    sendReplyToCommand(this, "Creation of new rooms are temporarily blocked. A server restart is coming. Please wait until after the server restarts.");
+    return;
+  }
+
   if (dataObj && !this.request.user.inRoomId) {
     const username = this.request.user.usernameLower;
 
@@ -1598,6 +1605,7 @@ function startGame(data) {
   const timeouts = {
     default: processTimeout(timeoutsStr.default),
     assassination: processTimeout(timeoutsStr.assassination),
+    critMission: processTimeout(timeoutsStr.critMission),
   };
 
   if (

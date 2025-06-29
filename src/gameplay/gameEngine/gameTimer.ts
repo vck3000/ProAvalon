@@ -11,6 +11,7 @@ export interface Timeouts {
   // All in milliseconds
   default: number;
   assassination: number;
+  critMission: number;
 }
 
 export class GameTimer {
@@ -22,6 +23,7 @@ export class GameTimer {
   private timeoutSettings: Timeouts = {
     default: 0,
     assassination: 0,
+    critMission: 0,
   };
 
   private playersVotedPause: Set<string> = new Set();
@@ -36,6 +38,11 @@ export class GameTimer {
   }
 
   configureTimeouts(timeouts: Timeouts): void {
+    // Set crit mission timer to default if unset.
+    if (timeouts.critMission === 0) {
+      timeouts.critMission = timeouts.default;
+    }
+
     this.timeoutSettings = timeouts;
   }
 
@@ -111,10 +118,15 @@ export class GameTimer {
     // Kinda sad to have direct knowledge of the phase here
     // but not much we can do. We don't want the timeout settings
     // in game.ts
-    let timerDuration =
-      this.game.phase === Phase.Assassination
-        ? this.timeoutSettings.assassination
-        : this.timeoutSettings.default;
+    let timerDuration;
+
+    if (this.game.phase === Phase.Assassination) {
+      timerDuration = this.timeoutSettings.assassination;
+    } else if (this.game.critMission) {
+      timerDuration = this.timeoutSettings.critMission;
+    } else {
+      timerDuration = this.timeoutSettings.default;
+    }
 
     // Timeout not enabled
     if (timerDuration === 0) {

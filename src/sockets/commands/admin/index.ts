@@ -14,6 +14,7 @@ import { asessions } from './asessions';
 import { acreateseason } from './acreateseason';
 import { agetcurrentseason } from './agetcurrentseason';
 import { agetstat, aupdatestat } from './acreatestat';
+import { atogglecreateroom } from './atogglecreateroom';
 
 const debugCommands =
   process.env.ENV === 'local'
@@ -36,5 +37,6 @@ export const adminCommands: Commands = {
   [atestgame.command]: atestgame,
   [asessions.command]: asessions,
   [ausernametoemail.command]: ausernametoemail,
+  [atogglecreateroom.command]: atogglecreateroom,
   ...debugCommands,
 };

@@ -70,7 +70,8 @@ function greenButtonFunction() {
         gameMode: $($('.gameModeSelect')[1]).val(),
         timeouts: {
           default: ((parseInt($('#startGameOptionsDefaultPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsDefaultPhaseTimeoutSec').val())) * 1000).toString(),
-          assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString()
+          critMission: ((parseInt($('#startGameOptionsCritMissionTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsCritMissionTimeoutSec').val())) * 1000).toString(),
+          assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString(),
         },
         anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
       };
@@ -218,12 +219,8 @@ $('#createNewRoomButton').on('click', (data) => {
   $('.disableVoteHistory')[0].checked = sendObj.disableVoteHistory;
   $($('.rankedSelect')[0]).val(sendObj.ranked);
 
-  if (inRoom === false) {
-    socket.emit('newRoom', sendObj);
-
-    resetAllGameData();
-    inRoom = true;
-  }
+  socket.emit('newRoom', sendObj);
+  resetAllGameData();
 
   $('#newRoomModal').modal('hide');
 });
@@ -234,6 +231,14 @@ $('#startGameOptionsDefaultPhaseTimeoutMin').on('change', () => {
 
 $('#startGameOptionsDefaultPhaseTimeoutSec').on('change', () => {
   handleTimeoutInput('#startGameOptionsDefaultPhaseTimeoutSec');
+});
+
+$('#startGameOptionsCritMissionTimeoutMin').on('change', () => {
+  handleTimeoutInput('#startGameOptionsCritMissionTimeoutMin');
+});
+
+$('#startGameOptionsCritMissionTimeoutSec').on('change', () => {
+  handleTimeoutInput('#startGameOptionsCritMissionTimeoutSec');
 });
 
 $('#startGameOptionsAssassinationPhaseTimeoutMin').on('change', () => {
