@@ -2,6 +2,8 @@ import usernamesIndexes from '../../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../types';
 import { Alliance } from '../../types';
 import { SocketUser } from '../../../../sockets/types';
+import { Role } from '../../roles/types';
+
 
 class VotingMission implements IPhase {
   static phase = Phase.VotingMission;
@@ -32,22 +34,39 @@ class VotingMission implements IPhase {
           )
         ] = 'succeed';
         // console.log("received succeed from " + socket.request.user.username);
-      } else if (buttonPressed === 'no') {
-        // If the user is a res, they shouldn't be allowed to fail
-        const index = usernamesIndexes.getIndexFromUsername(
-          this.thisRoom.playersInGame,
-          socket.request.user.username,
-        );
-        if (
-          index !== -1 &&
-          this.thisRoom.playersInGame[index].alliance === Alliance.Resistance
-        ) {
-          socket.emit(
-            'danger-alert',
-            'You are resistance! Surely you want to succeed!',
-          );
-          return;
-        }
+} else if (buttonPressed === 'no') {
+  // Determine the player index
+  const index = usernamesIndexes.getIndexFromUsername(
+    this.thisRoom.playersInGame,
+    socket.request.user.username,
+  );
+
+  // If player is Resistance and NOT Moregano, block failing
+  if (
+    index !== -1 &&
+    this.thisRoom.playersInGame[index].alliance === Alliance.Resistance &&
+    this.thisRoom.playersInGame[index].role !== Role.Moregano
+  ) {
+    socket.emit(
+      'danger-alert',
+      'You are resistance! Surely you want to succeed!',
+    );
+    return;
+  }
+
+  // If player is Moregano and pressed "no", silently record "succeed".
+  const effectiveVote =
+    index !== -1 && this.thisRoom.playersInGame[index].role === Role.Moregano
+      ? 'succeed'
+      : 'fail';
+
+  this.thisRoom.missionVotes[
+    usernamesIndexes.getIndexFromUsername(
+      this.thisRoom.playersInGame,
+      socket.request.user.username,
+    )
+  ] = effectiveVote;
+
 
         this.thisRoom.missionVotes[
           usernamesIndexes.getIndexFromUsername(
