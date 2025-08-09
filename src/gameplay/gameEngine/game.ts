@@ -503,6 +503,17 @@ class Game extends Room {
       }
     }
 
+// After roles are assigned, set displayRole for deceptive roles (Melron/Moregano).
+for (let i = 0; i < this.playersInGame.length; i++) {
+  const p = this.playersInGame[i];
+  if (p.role === Role.Melron) {
+    p.displayRole = Role.Merlin;   // Melron thinks they are Merlin
+  } else if (p.role === Role.Moregano) {
+    p.displayRole = Role.Morgana;  // Moregano thinks they are Morgana
+  }
+}
+
+    
     // Prepare the data for each person to see for the rest of the game.
     // The following data do not change as the game goes on.
     for (let i = 0; i < this.playersInGame.length; i++) {
