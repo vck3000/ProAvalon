@@ -1,6 +1,9 @@
 import { RequestHandler } from 'express';
 
-const VPN_TIMEOUT = 1000 * 60 * 60 * 12; // 12 hours
+const VPN_TIMEOUT = 12 * 60 * 60 * 1000; // 12 hours
+const VPN_LIMITER_VPNAPI = 500;
+const VPN_LIMITER_GETIP = 1000;
+const VPN_LIMITER_RESET_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
 
 let whitelistedUsernames: string[] = [];
 if (process.env.WHITELISTED_VPN_USERNAMES) {
@@ -44,7 +47,7 @@ type IP = string;
 
 const vpnCache: Map<IP, VpnEntry> = new Map();
 
-const isVPN = async (ip: string): Promise<boolean> => {
+const isVPN = async (ip: string, totalDailyCalls: number): Promise<boolean> => {
   if (vpnCache.has(ip)) {
     // Clear the cache entry if it's timed out.
     if (vpnCache.get(ip).isTimedOut(new Date())) {
@@ -60,16 +63,24 @@ const isVPN = async (ip: string): Promise<boolean> => {
   console.log(`Checking VPN status of ip: ${ip}`);
   console.log(`VPN Cache size: ${vpnCache.size}`);
 
-  // Must pass both vpn checks
-  const VpnCheck1 = await isVpnCheck1(ip);
+  let VpnCheck1;
+  let VpnCheck2;
 
-  // TODO-kev: Temporarily commenting out until a limiter is added in
-  // const VpnCheck2 = await isVpnCheck2(ip);
-  // console.log(
-  //   `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=${VpnCheck2}`,
-  // );
+  if (totalDailyCalls < VPN_LIMITER_VPNAPI) {
+    VpnCheck1 = await isVpnCheck1(ip);
+  }
+
+  if (totalDailyCalls < VPN_LIMITER_GETIP) {
+    VpnCheck2 = await isVpnCheck2(ip);
+  }
+
+  const msg = 'Max daily calls reached';
+
   console.log(
     `VPN Detection Result: vpnapi.io=${VpnCheck1} check.getipintel.net=temporarily disabled`,
+    `VPN Detection Result: vpnapi.io="${
+      VpnCheck1 ? VpnCheck1 : msg
+    }" check.getipintel.net="${VpnCheck2 ? VpnCheck2 : msg}"`,
   );
 
   // const result = VpnCheck1 || VpnCheck2;
@@ -115,6 +126,13 @@ const isVpnCheck2 = async (ip: string): Promise<boolean> => {
   return result;
 };
 
+let disallowVPNsCallCount = 0;
+
+// Reset disallowVPNsCallCount every 24 hours
+setInterval(() => {
+  disallowVPNsCallCount = 0;
+}, VPN_LIMITER_RESET_INTERVAL);
+
 export const disallowVPNs: RequestHandler = (req, res, next) => {
   if (process.env.ENV === 'local') {
     next();
@@ -126,7 +144,9 @@ export const disallowVPNs: RequestHandler = (req, res, next) => {
     return;
   }
 
-  isVPN(req.ip)
+  disallowVPNsCallCount++;
+
+  isVPN(req.ip, disallowVPNsCallCount)
     .then((vpn) => {
       if (vpn) {
         console.log(`Blocked ${req.body.username} on ip ${req.ip}`);
