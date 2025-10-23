@@ -26,8 +26,10 @@ class Assassin implements IRole {
 
   // Assassin sees all spies except oberon
   see(): See {
+	const roleTags: Record<string, string> = {};
+	
     if (this.room.gameStarted === true) {
-      const array = [];
+      const spies = [];
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
         if (this.room.playersInGame[i].alliance === Alliance.Spy) {
@@ -35,14 +37,18 @@ class Assassin implements IRole {
             // don't add oberon
           } else {
             // add the spy
-            array.push(
+            spies.push(
               this.room.anonymizer.anon(this.room.playersInGame[i].username),
             );
+			if (this.room.playersInGame[i].role == Role.Hitberon) {
+			  roleTags[
+                this.room.anonymizer.anon(this.room.playersInGame[i].username)
+              ] = 'Hitberon';
+			}
           }
         }
       }
-
-      return { spies: array, roleTags: {} };
+      return { spies: spies, roleTags: {} };
     }
   }
 
