@@ -1,4 +1,4 @@
-import { Alliance } from '../../types';
+import { Alliance, See } from '../../types';
 import { IRole, Role } from '../types';
 import Game from '../../game';
 
@@ -20,23 +20,31 @@ class Spy implements IRole {
   }
 
   // Spy sees all spies except oberon
-  see() {
-    const spies = [];
+  see(): See {
+  const roleTags: Record<string, string> = {};
+  
+    if (this.room.gameStarted === true) {
+      const spies = [];
 
-    for (let i = 0; i < this.room.playersInGame.length; i++) {
-      if (this.room.playersInGame[i].alliance === Alliance.Spy) {
-        if (this.room.playersInGame[i].role === Role.Oberon) {
-          // don't add oberon
-        } else {
-          // add the spy
-          spies.push(
-            this.room.anonymizer.anon(this.room.playersInGame[i].username),
-          );
+      for (let i = 0; i < this.room.playersInGame.length; i++) {
+        if (this.room.playersInGame[i].alliance === Alliance.Spy) {
+          if (this.room.playersInGame[i].role === Role.Oberon) {
+            // don't add oberon
+          } else {
+            // add the spy
+            spies.push(
+              this.room.anonymizer.anon(this.room.playersInGame[i].username),
+            );
+            if (this.room.playersInGame[i].role == Role.Hitberon) {
+              roleTags[
+                this.room.anonymizer.anon(this.room.playersInGame[i].username)
+              ] = 'Hitberon';
+            }
+          }
         }
       }
+      return { spies, roleTags };
     }
-
-    return { spies, roleTags: {} };
   }
 
   checkSpecialMove() {}
