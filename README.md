@@ -45,7 +45,7 @@ $ yarn
 
 ### Running
 
-1. Start the database and MinIO client with: `docker-compose up`. Ensure Docker is running.
+1. Start the database and MinIO client with: `docker compose up`. Ensure Docker is running.
 2. Start the server with: `yarn dev`.
 
 ### Setting up MinIO
@@ -66,8 +66,8 @@ $ yarn
 ### Stopping
 
 1. Stop the server with `Ctrl+C`.
-2. Stop the docker-compose stack with `Ctrl+C`.
-3. Remove the containers from the docker-compose stack with `docker-compose down`.
+2. Stop the docker compose stack with `Ctrl+C`.
+3. Remove the containers from the docker compose stack with `docker compose down`.
 
 ### Misc
 
