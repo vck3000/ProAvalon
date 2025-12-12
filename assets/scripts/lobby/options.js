@@ -1193,6 +1193,31 @@ var userOptions = {
       );
     },
   },
+
+  //---------------------------------------------
+  // Gameplay
+  //---------------------------------------------
+
+  optionGameplayPreventMisclicks: {
+    defaultValue: 'false',
+    onLoad() {
+      if (docCookies.getItem('optionGameplayPreventMisclicks') === 'true') {
+        updatePreventMisclicks(true);
+        $('#optionGameplayPreventMisclicks')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#optionGameplayPreventMisclicks')[0].addEventListener('click', () => {
+        const { checked } = $('#optionGameplayPreventMisclicks')[0];
+        updatePreventMisclicks(checked);
+        docCookies.setItem(
+          'optionGameplayPreventMisclicks',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
 };
 
 // run through each userOption load and initialiseEventListener

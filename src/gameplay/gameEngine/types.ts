@@ -71,6 +71,7 @@ export interface IUser {
   expiredPatreonNotification?: boolean;
   modAction?: Types.ObjectId;
   mutedPlayers?: string[];
+  preventMisclicks?: boolean;
   IPAddresses?: string[];
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
