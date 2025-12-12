@@ -19,6 +19,7 @@ import { mrevealallroles } from './mrevealallroles';
 import { mforcemove } from './mforcemove';
 import { mpushavatartolibrary } from './mpushavatartolibrary';
 import { msetavatar } from './msetavatar';
+import { mresettournamentaccounts } from './mresettournamentaccounts';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -30,6 +31,7 @@ export const modCommands: Commands = {
   [mnotify.command]: mnotify,
   [mtoggleregistration.command]: mtoggleregistration,
   [mtempenableregistration.command]: mtempenableregistration,
+  [mresettournamentaccounts.command]: mresettournamentaccounts,
   [mwhisper.command]: mwhisper,
   [msetavatar.command]: msetavatar,
   [mremoveavatar.command]: mremoveavatar,
