@@ -301,6 +301,14 @@
 								</tr>
 
 								<tr>
+									<td id="gameplayOptionsButton">
+										<span class="optionCategoriesText">
+											Gameplay
+										</span>
+									</td>
+								</tr>
+
+								<tr>
 									<td id="resetOptionsButton">
 										<span class="optionCategoriesText">
 											Reset
@@ -450,6 +458,37 @@
 
 
 
+							</div>
+						</div>
+
+
+
+						<div id="gameplayOptionsMenu" class="hidden rightMenu">
+							<h4><u>Gameplay: </u></h4>
+							<div>
+								<label><input type="checkbox" name="optionGameplayPreventMisclicks" id="optionGameplayPreventMisclicks"> Prevent misclicks</label>
+							</div>
+							<div>
+								<ul>
+									<li>Triggers confirmation for common misclicks
+										<ul>
+											<li>Catches hammer rejects</li>
+											<li>Catches on-team rejects for the following missions:
+												<ul>
+													<li>5 player games: mission 1 and 3</li>
+													<li>6-10 player games: mission 1 and 2</li>
+												</ul>
+											</li>
+											<li>Catches off-team approves for the following missions:
+												<ul>
+													<li>5 player games: mission 1, 2, 3, 4, 5</li>
+													<li>6 player games: mission 1, 2, 3, 5</li>
+													<li>7-10 player games: mission 1, 2, 5</li>
+												</ul>
+											</li>
+										</ul>
+									</li>
+								</ul>
 							</div>
 						</div>
 
@@ -697,6 +736,7 @@ function hideAllNotifs(){
 	var optionsList = [
 		"display",
 		"notifications",
+		"gameplay",
 		"reset"
 	]
 

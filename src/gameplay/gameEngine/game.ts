@@ -113,6 +113,7 @@ class Game extends Room {
   voidGameTracker: VoidGameTracker;
 
   playersYetToVote: string[] = [];
+  playersYetToConfirmVote: string[] = [];
 
   proposedTeam: string[] = [];
 

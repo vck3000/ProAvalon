@@ -1711,6 +1711,10 @@ function updateTwoTabs(checked) {
   }
 }
 
+function updatePreventMisclicks(checked) {
+  socket.emit('updatePreventMisclicks', checked);
+}
+
 function unescapeHtml(unsafe) {
   return unsafe
     .replace(/&amp;/g, '&')

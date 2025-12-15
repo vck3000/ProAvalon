@@ -140,6 +140,8 @@ const UserSchema = new mongoose.Schema<IUser>({
 
   mutedPlayers: [String],
 
+  preventMisclicks: Boolean,
+
   IPAddresses: [String],
   lastIPAddress: String,
 

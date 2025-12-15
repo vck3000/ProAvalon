@@ -30,6 +30,10 @@ class VotingTeam implements IPhase {
 
     // If they haven't voted yet
     if (i !== -1) {
+      if (this.preventMisclick(socket, buttonPressed)) {
+        return;
+      }
+
       if (buttonPressed === 'yes') {
         this.thisRoom.votes[
           usernamesIndexes.getIndexFromUsername(
@@ -200,6 +204,16 @@ class VotingTeam implements IPhase {
     str = str.slice(0, str.length - 2);
     str += '.';
 
+    // Move the green and red buttons if misclick prevention is triggered
+    if (
+      indexOfPlayer !== undefined &&
+      this.thisRoom.playersYetToConfirmVote.indexOf(
+        this.thisRoom.playersInGame[indexOfPlayer].username,
+      ) !== -1
+    ) {
+      str += '\nConfirm';
+    }
+
     return str;
   }
 
@@ -258,6 +272,83 @@ class VotingTeam implements IPhase {
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     return [];
+  }
+
+  misclickConfig: Record<
+    number, {
+      missionsToCatchOnrejs: number[],
+      missionsToCatchOffapps: number[]
+    }
+  > = {
+    5: {
+      missionsToCatchOnrejs: [1, 3],
+      missionsToCatchOffapps: [1, 2, 3, 4, 5]
+    },
+    6: {
+      missionsToCatchOnrejs: [1, 2],
+      missionsToCatchOffapps: [1, 2, 3, 5]
+    },
+    7: {
+      missionsToCatchOnrejs: [1, 2],
+      missionsToCatchOffapps: [1, 2, 5]
+    },
+    8: {
+      missionsToCatchOnrejs: [1, 2],
+      missionsToCatchOffapps: [1, 2, 5]
+    },
+    9: {
+      missionsToCatchOnrejs: [1, 2],
+      missionsToCatchOffapps: [1, 2, 5]
+    },
+    10: {
+      missionsToCatchOnrejs: [1, 2],
+      missionsToCatchOffapps: [1, 2, 5]
+    },
+  }
+
+  preventMisclick(socket: SocketUser, buttonPressed: string): boolean {
+    const i = this.thisRoom.playersYetToConfirmVote.indexOf(
+      socket.request.user.username
+    );
+    if (i !== -1) {
+      this.thisRoom.playersYetToConfirmVote.splice(i, 1);
+      return false;
+    }
+
+    if(!socket.request.user.preventMisclicks) {
+      return false;
+    }
+
+    const isUserOnTeam = this.thisRoom.proposedTeam.includes(
+      socket.request.user.username
+    );
+    const {
+      missionsToCatchOnrejs,
+      missionsToCatchOffapps
+    } = this.misclickConfig[this.thisRoom.playersInGame.length];
+
+    let buttonToCatch = '';
+    if (this.thisRoom.pickNum === 5) {
+      buttonToCatch = 'no';
+    } else if (
+      isUserOnTeam &&
+      missionsToCatchOnrejs.includes(this.thisRoom.missionNum)
+    ) {
+      buttonToCatch = 'no';
+    } else if (
+      !isUserOnTeam &&
+      missionsToCatchOffapps.includes(this.thisRoom.missionNum)
+    ) {
+      buttonToCatch = 'yes';
+    }
+    if (buttonPressed === buttonToCatch) {
+      this.thisRoom.playersYetToConfirmVote.push(
+        socket.request.user.username,
+      );
+      return true;
+    }
+
+    return false;
   }
 }
 

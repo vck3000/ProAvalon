@@ -579,6 +579,7 @@ export const server = function (io: SocketServer): void {
     socket.on('update-room-disableVoteHistory', updateRoomDisableVoteHistory);
     socket.on('gameMove', gameMove);
     socket.on('setClaim', setClaim);
+    socket.on('updatePreventMisclicks', (data) => socket.request.user.preventMisclicks = data);
 
     // Assign the socket their rating bracket
     socket = assignRatingBracket(socket);
