@@ -2,16 +2,16 @@ import shuffleArray from '../../util/shuffleArray';
 import { IRecoverable, RecoverableComponent } from './types';
 
 const ANON_NAMES = [
+  'Charizard',
   'Bulbasaur',
-  'Charmander',
-  'Squirtle',
-  'Treecko',
-  'Torchic',
-  'Mudkip',
-  'Turtwig',
-  'Chimchar',
-  'Piplup',
-  'MewTwo',
+  'Gengar',
+  'Umbreon',
+  'Eevee',
+  'Flygon',
+  'Metagross',
+  'Swampert',
+  'Arcanine',
+  'Lucario',
 ];
 
 export class Anonymizer implements IRecoverable {
