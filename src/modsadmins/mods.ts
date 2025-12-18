@@ -4,7 +4,6 @@ export const modsArray = [
   'kage',
   'besjbo',
   'maximovic96',
-  'ingenue',
   'goofy', // jams
   'sadnixon',
   'fossa',

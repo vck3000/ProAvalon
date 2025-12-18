@@ -1,6 +1,12 @@
 // all in lower case
 // TO = Tournament Organizer
 export const TOsArray: string[] = [
+  'ingenue',
+  'glorious',
+  'manuavalon',
+  'feelsriddle',
+  'eevee',
+  'bellzzzz'
 ];
 
 export function isTO(username: string): boolean {

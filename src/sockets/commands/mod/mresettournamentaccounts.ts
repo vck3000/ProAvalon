@@ -24,9 +24,9 @@ async function resetAccount(username: string) : Promise<string>
   return password;
 }
 
-export const aresettournamentaccounts: Command = {
-  command: 'aresettournamentaccounts',
-  help: '/aresettournamentaccounts: Deletes and recreates tournament accounts: coach1, coach2, ..., coach10.',
+export const mresettournamentaccounts: Command = {
+  command: 'mresettournamentaccounts',
+  help: '/mresettournamentaccounts: Deletes and recreates tournament accounts: coach1, coach2, ..., coach10.',
   run: async (args: string[], socket: SocketUser) => {
     const deletedMsgs = [];
     const createdMsgs = [];
