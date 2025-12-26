@@ -1821,8 +1821,9 @@ function matchFound(usernames: string[]): void {
       const room = rooms[nextRoomId];
 
       room.configureTimeouts({
-        default: 3 * 60 * 1000,
-        assassination: 15 * 60 * 1000,
+        default: 1.5 * 60 * 1000,
+        critMission: 3 * 60 * 1000,
+        assassination: 11 * 60 * 1000,
       });
 
       for (const username of approvedUsernames) {
