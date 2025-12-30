@@ -129,7 +129,7 @@ export class GameTimer {
     }
 
     // Timeout not enabled
-    if (timerDuration === 0) {
+    if (!timerDuration) {
       return;
     }
 
