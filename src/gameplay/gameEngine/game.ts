@@ -510,6 +510,7 @@ for (let i = 0; i < this.playersInGame.length; i++) {
     p.displayRole = Role.Merlin;   // Melron thinks they are Merlin
   } else if (p.role === Role.Moregano) {
     p.displayRole = Role.Morgana;  // Moregano thinks they are Morgana
+    (p as any).displayAlliance = Alliance.Spy;
   }
 }
 
@@ -1046,17 +1047,22 @@ for (let i = 0; i < this.playersInGame.length; i++) {
       // socket.io
       for (let i = 0; i < playerRoles.length; i++) {
         // Player specific data
-        data[i] = {
-          alliance: playerRoles[i].alliance,
-          role: playerRoles[i].role,
-          see: this.specialRoles[playerRoles[i].role].see(),
-          username: this.anonymizer.anon(playerRoles[i].username),
-        };
+const effectiveAlliance =
+  (playerRoles[i] as any).displayAlliance !== undefined
+    ? (playerRoles[i] as any).displayAlliance
+    : playerRoles[i].alliance;
 
-        // Some roles such as Galahad require modifying display role.
-        if (playerRoles[i].displayRole !== undefined) {
-          data[i].role = playerRoles[i].displayRole;
-        }
+const effectiveRole =
+  playerRoles[i].displayRole !== undefined
+    ? playerRoles[i].displayRole
+    : playerRoles[i].role;
+
+data[i] = {
+  alliance: effectiveAlliance,
+  role: effectiveRole,
+  see: this.specialRoles[playerRoles[i].role].see(),
+  username: this.anonymizer.anon(playerRoles[i].username),
+};
 
         // add on these common variables:
         data[i].buttons = this.getClientButtonSettings(i);

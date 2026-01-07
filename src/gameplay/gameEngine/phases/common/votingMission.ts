@@ -67,13 +67,6 @@ class VotingMission implements IPhase {
     )
   ] = effectiveVote;
 
-
-        this.thisRoom.missionVotes[
-          usernamesIndexes.getIndexFromUsername(
-            this.thisRoom.playersInGame,
-            socket.request.user.username,
-          )
-        ] = 'fail';
         // console.log("received fail from " + socket.request.user.username);
       } else {
         console.log(
@@ -204,10 +197,15 @@ class VotingMission implements IPhase {
       };
     }
     // User has not voted yet
-    // Resistance can't fail
-    const redHidden =
-      this.thisRoom.playersInGame[indexOfPlayer].alliance ===
-      Alliance.Resistance;
+const player = this.thisRoom.playersInGame[indexOfPlayer];
+const effectiveAlliance =
+  (player as any).displayAlliance !== undefined
+    ? (player as any).displayAlliance
+    : player.alliance;
+
+// Resistance (view) can't fail
+const redHidden = effectiveAlliance === Alliance.Resistance;
+
 
     return {
       green: {
