@@ -25,16 +25,17 @@ class Melron implements IRole {
     this.room = thisRoom;
   }
 
-  see(): See {
-    const spies: string[] = [];
-    if (!this.room.gameStarted) return { spies, roleTags: {} };
+private cachedSpyUsernames?: string[];
 
+see(): See {
+  if (!this.room.gameStarted) return { spies: [], roleTags: {} };
+
+  if (!this.cachedSpyUsernames) {
     // Count real spies and detect Mordred/MordredAssassin (Merlin doesn’t see them)
     let realSpyCount = 0;
     let hasMordred = false;
 
-    for (let i = 0; i < this.room.playersInGame.length; i++) {
-      const p = this.room.playersInGame[i];
+    for (const p of this.room.playersInGame) {
       if (p.alliance === Alliance.Spy) {
         realSpyCount++;
         if (p.role === Role.Mordred || p.role === Role.MordredAssassin) {
@@ -45,23 +46,26 @@ class Melron implements IRole {
 
     const k = Math.max(0, realSpyCount - (hasMordred ? 1 : 0));
 
-    // Build pool of all non-self usernames
     const self = this.getSelfUsername();
     const pool = this.room.playersInGame
       .map((p: any) => p.username)
       .filter((u: string) => u !== self);
 
-    // Shuffle pool (Fisher–Yates) and pick k
+    // Shuffle once and cache picks
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
-    const picks = pool.slice(0, k);
 
-    for (const u of picks) spies.push(this.room.anonymizer.anon(u));
-
-    return { spies, roleTags: {} };
+    this.cachedSpyUsernames = pool.slice(0, k);
   }
+
+  return {
+    spies: this.cachedSpyUsernames.map((u) => this.room.anonymizer.anon(u)),
+    roleTags: {},
+  };
+}
+
 
   private getSelfUsername(): string {
     for (let i = 0; i < this.room.playersInGame.length; i++) {
