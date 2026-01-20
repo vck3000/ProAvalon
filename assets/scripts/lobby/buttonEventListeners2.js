@@ -256,8 +256,8 @@ async function preventMisclick(button) {
   }
 
   const isPlayerOnTeam = gameData.proposedTeam.includes(gameData.username);
-  const missionsToExpectOnapp = [1, 2];
-  const missionsToExpectOffrej = [1, 2, 3, 5];
+  const missionsToCatchOnrej = [1, 2];
+  const missionsToCatchOffapp = [1, 2, 3, 5];
   let isVoteExpected = true;
   let str = '';
   if (gameData.pickNum === 5) {
@@ -265,13 +265,13 @@ async function preventMisclick(button) {
     str = 'Really reject hammer?'
   } else if (
     isPlayerOnTeam &&
-    missionsToExpectOnapp.includes(gameData.missionNum)
+    missionsToCatchOnrej.includes(gameData.missionNum)
   ) {
     isVoteExpected = button === 'yes';
     str = 'You\'re on the team!'
   } else if (
     !isPlayerOnTeam &&
-    missionsToExpectOffrej.includes(gameData.missionNum)
+    missionsToCatchOffapp.includes(gameData.missionNum)
   ) {
     isVoteExpected = button === 'no';
     str = 'You\'re off the team!'
