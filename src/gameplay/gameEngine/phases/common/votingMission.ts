@@ -4,7 +4,6 @@ import { Alliance } from '../../types';
 import { SocketUser } from '../../../../sockets/types';
 import { Role } from '../../roles/types';
 
-
 class VotingMission implements IPhase {
   static phase = Phase.VotingMission;
   phase = Phase.VotingMission;
@@ -34,38 +33,39 @@ class VotingMission implements IPhase {
           )
         ] = 'succeed';
         // console.log("received succeed from " + socket.request.user.username);
-} else if (buttonPressed === 'no') {
-  // Determine the player index
-  const index = usernamesIndexes.getIndexFromUsername(
-    this.thisRoom.playersInGame,
-    socket.request.user.username,
-  );
+      } else if (buttonPressed === 'no') {
+        // Determine the player index
+        const index = usernamesIndexes.getIndexFromUsername(
+          this.thisRoom.playersInGame,
+          socket.request.user.username,
+        );
 
-  // If player is Resistance and NOT Moregano, block failing
-  if (
-    index !== -1 &&
-    this.thisRoom.playersInGame[index].alliance === Alliance.Resistance &&
-    this.thisRoom.playersInGame[index].role !== Role.Moregano
-  ) {
-    socket.emit(
-      'danger-alert',
-      'You are resistance! Surely you want to succeed!',
-    );
-    return;
-  }
+        // If player is Resistance and NOT Moregano, block failing
+        if (
+          index !== -1 &&
+          this.thisRoom.playersInGame[index].alliance === Alliance.Resistance &&
+          this.thisRoom.playersInGame[index].role !== Role.Moregano
+        ) {
+          socket.emit(
+            'danger-alert',
+            'You are resistance! Surely you want to succeed!',
+          );
+          return;
+        }
 
-  // If player is Moregano and pressed "no", silently record "succeed".
-  const effectiveVote =
-    index !== -1 && this.thisRoom.playersInGame[index].role === Role.Moregano
-      ? 'succeed'
-      : 'fail';
+        // If player is Moregano and pressed "no", silently record "succeed".
+        const effectiveVote =
+          index !== -1 &&
+          this.thisRoom.playersInGame[index].role === Role.Moregano
+            ? 'succeed'
+            : 'fail';
 
-  this.thisRoom.missionVotes[
-    usernamesIndexes.getIndexFromUsername(
-      this.thisRoom.playersInGame,
-      socket.request.user.username,
-    )
-  ] = effectiveVote;
+        this.thisRoom.missionVotes[
+          usernamesIndexes.getIndexFromUsername(
+            this.thisRoom.playersInGame,
+            socket.request.user.username,
+          )
+        ] = effectiveVote;
 
         // console.log("received fail from " + socket.request.user.username);
       } else {
@@ -197,15 +197,14 @@ class VotingMission implements IPhase {
       };
     }
     // User has not voted yet
-const player = this.thisRoom.playersInGame[indexOfPlayer];
-const effectiveAlliance =
-  (player as any).displayAlliance !== undefined
-    ? (player as any).displayAlliance
-    : player.alliance;
+    const player = this.thisRoom.playersInGame[indexOfPlayer];
+    const effectiveAlliance =
+      (player as any).displayAlliance !== undefined
+        ? (player as any).displayAlliance
+        : player.alliance;
 
-// Resistance (view) can't fail
-const redHidden = effectiveAlliance === Alliance.Resistance;
-
+    // Resistance (view) can't fail
+    const redHidden = effectiveAlliance === Alliance.Resistance;
 
     return {
       green: {
