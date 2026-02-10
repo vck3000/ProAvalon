@@ -1,83 +1,69 @@
-function redButtonFunction() {
-  console.log('red');
-  // if the button isn't disabled
-  if (
-    document.querySelector('#red-button').classList.contains('disabled') ===
-    false
-  ) {
-    if (isSpectator === true) {
-    } else if (gameStarted === false) {
-      // if we are spectating
-      if (document.querySelector('#red-button').innerText === 'Spectate') {
-        socket.emit('standUpFromGame');
-        // remove claim status when a player sits down
-        // then stands up
-        socket.emit('setClaim', false);
+async function redButtonFunction() {
+  if (document.querySelector('#red-button').classList.contains('disabled') === true) {
+    return;
+  }
 
-        enableDisableButtons();
-      }
-      // we are the host, open kick menu
-      else {
-        // host kicking
-        // Set the kick modal content
-        let str = '<h4>Select the players you want to kick.</h4>';
-
-        str += '<div class="btn-group-vertical" data-toggle="buttons">';
-
-        for (let i = 0; i < roomPlayersData.length; i++) {
-          if (ownUsername !== roomPlayersData[i].username) {
-            str += '<label class="btn btn-mine">';
-
-            str += `<input name="${roomPlayersData[i].username}" id="${roomPlayersData[i].username}" type="checkbox" autocomplete="off">${roomPlayersData[i].username}`;
-
-            str += '</label>';
-            str += '<br>';
-          } else {
-            str += '<label class="btn btn-mine" style="display: none;">';
-
-            str += `<input name="${roomPlayersData[i].username}" id="${roomPlayersData[i].username}" type="checkbox" autocomplete="off">${roomPlayersData[i].username}`;
-
-            str += '</label>';
-            str += '<br>';
-          }
+  if (isSpectator === true) {
+  } else if (gameStarted === false) {
+    // non-host player standing up
+    if (document.querySelector('#red-button').innerText === 'Spectate') {
+      socket.emit('standUpFromGame');
+      socket.emit('setClaim', false);
+      enableDisableButtons();
+    }
+    // host opening kick menu
+    else {
+      let str = '<h4>Select the players you want to kick.</h4>';
+      str += '<div class="btn-group-vertical" data-toggle="buttons">';
+      for (let i = 0; i < roomPlayersData.length; i++) {
+        if (ownUsername !== roomPlayersData[i].username) {
+          str += '<label class="btn btn-mine">';
+          str += `<input name="${roomPlayersData[i].username}" id="${roomPlayersData[i].username}" type="checkbox" autocomplete="off">${roomPlayersData[i].username}`;
+          str += '</label>';
+          str += '<br>';
+        } else {
+          str += '<label class="btn btn-mine" style="display: none;">';
+          str += `<input name="${roomPlayersData[i].username}" id="${roomPlayersData[i].username}" type="checkbox" autocomplete="off">${roomPlayersData[i].username}`;
+          str += '</label>';
+          str += '<br>';
         }
-
-        str += '</div>';
-
-        $('#kickModalContent')[0].innerHTML = str;
       }
-    } else if (
+      str += '</div>';
+      $('#kickModalContent')[0].innerHTML = str;
+    }
+  } else if (await confirmUserClick('no')) {
+    if (
       gameData.phase === 'VotingTeam' ||
       gameData.phase === 'VotingMission'
     ) {
       socket.emit('gameMove', ['no', []]);
     }
-    $('#mainRoomBox div').removeClass('highlight-avatar');
   }
+
+  $('#mainRoomBox div').removeClass('highlight-avatar');
 }
 
-function greenButtonFunction() {
-  // if button isn't disabled:
-  if (
-    document.querySelector('#green-button').classList.contains('disabled') ===
-    false
-  ) {
-    if (isSpectator === true) {
-      socket.emit('join-game', roomId);
-    } else if (gameStarted === false) {
-      const startGameData = {
-        options: getOptions(),
-        gameMode: $($('.gameModeSelect')[1]).val(),
-        timeouts: {
-          default: ((parseInt($('#startGameOptionsDefaultPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsDefaultPhaseTimeoutSec').val())) * 1000).toString(),
-          critMission: ((parseInt($('#startGameOptionsCritMissionTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsCritMissionTimeoutSec').val())) * 1000).toString(),
-          assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString(),
-        },
-        anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
-      };
+async function greenButtonFunction() {
+  if (document.querySelector('#green-button').classList.contains('disabled') === true) {
+    return;
+  }
 
-      socket.emit('startGame', startGameData);
-    } else if (
+  if (isSpectator === true) {
+    socket.emit('join-game', roomId);
+  } else if (gameStarted === false) {
+    const startGameData = {
+      options: getOptions(),
+      gameMode: $($('.gameModeSelect')[1]).val(),
+      timeouts: {
+        default: ((parseInt($('#startGameOptionsDefaultPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsDefaultPhaseTimeoutSec').val())) * 1000).toString(),
+        critMission: ((parseInt($('#startGameOptionsCritMissionTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsCritMissionTimeoutSec').val())) * 1000).toString(),
+        assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString(),
+      },
+      anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
+    };
+    socket.emit('startGame', startGameData);
+  } else if (await confirmUserClick('yes')) {
+    if (
       gameData.phase === 'VotingTeam' ||
       gameData.phase === 'VotingMission'
     ) {
@@ -85,9 +71,9 @@ function greenButtonFunction() {
     } else {
       socket.emit('gameMove', ['yes', getHighlightedAvatars()]);
     }
-
-    $('#mainRoomBox div').removeClass('highlight-avatar');
   }
+
+  $('#mainRoomBox div').removeClass('highlight-avatar');
 }
 
 //= =====================================
@@ -258,4 +244,74 @@ function handleTimeoutInput(inputId) {
   } else if (val > 60) {
     input.value = 60;
   }
+}
+
+// Triggers swal on unexpected move if misclick prevention is enabled
+async function confirmUserClick(button) {
+  if ($('#option_gameplay_prevent_misclicks')[0].checked === false) {
+    return true;
+  }
+
+  timeout = 10;  // seconds
+
+  // avoids check if there isn't enough time to be active for full timeout
+  const gameTimer = $('.gameTimer')[0].innerText;
+  if (gameTimer !== '--:--') {
+    const mins = parseInt(gameTimer.slice(0, 2), 10);
+    const secs = parseInt(gameTimer.slice(-2), 10);
+    if (mins === 0 && secs <= timeout) {
+      return true;
+    }
+  }
+
+  let str = '';
+  if (gameData.phase === 'VotingTeam') {
+    const isPlayerOnTeam = gameData.proposedTeam.includes(gameData.username);
+    // catch hammerrej
+    if (
+      gameData.pickNum === 5
+    ) {
+      if (
+        $('#option_gameplay_prevent_hammerrej')[0].checked === true &&
+        button === 'no'
+      ) {
+        str = 'Really reject hammer?'
+      } else {
+        return true;
+      }
+    // catch onrej
+    } else if (
+      $('#option_gameplay_prevent_onrej_m' + gameData.missionNum)[0].checked === true &&
+      isPlayerOnTeam &&
+      button === 'no'
+    ) {
+      str = 'You\'re on the team!'
+    // catch offapp
+    } else if (
+      $('#option_gameplay_prevent_offapp_m' + gameData.missionNum)[0].checked === true &&
+      !isPlayerOnTeam &&
+      button === 'yes'
+    ) {
+      str = 'You\'re off the team!'
+    } else {
+      return true;
+    }
+  } else {
+    return true;
+  }
+
+  const input = await swal({
+    title: str,
+    type: 'warning',
+    showCancelButton: true,
+    reverseButtons: true,
+    confirmButtonText: button === 'yes' ? 'Approve' : 'Reject',
+    confirmButtonColor: button === 'yes' ? '#5cb85c' : '#d9534f',
+    timer: timeout*1000,
+  });
+  if (input.value === true) {
+    return true;
+  }
+
+  return false;
 }

@@ -301,6 +301,14 @@
 								</tr>
 
 								<tr>
+									<td id="gameplayOptionsButton">
+										<span class="optionCategoriesText">
+											Gameplay
+										</span>
+									</td>
+								</tr>
+
+								<tr>
 									<td id="resetOptionsButton">
 										<span class="optionCategoriesText">
 											Reset
@@ -450,6 +458,41 @@
 
 
 
+							</div>
+						</div>
+
+						<div id="gameplayOptionsMenu" class="hidden rightMenu">
+							<h4><u>Gameplay: </u></h4>
+
+							<div class="subBox">
+								<div>
+									<label><input type="checkbox" name="option_gameplay_prevent_misclicks" id="option_gameplay_prevent_misclicks"> <u>Prevent misclicks </u></label>
+								</div>
+								<div id="suboptions_gameplay_prevent_misclicks">
+									<div>
+										<label><input type="checkbox" name="option_gameplay_prevent_hammerrej" id="option_gameplay_prevent_hammerrej"> Catch hammer rejects </label>
+									</div>
+									<div>
+										<label>Catch on-rejects for missions: </label>
+									</div>
+									<div style="display: flex; gap: 20px;">
+										<label>1<br><input type="checkbox" name="option_gameplay_prevent_onrej_m1" id="option_gameplay_prevent_onrej_m1"></label>
+										<label>2<br><input type="checkbox" name="option_gameplay_prevent_onrej_m2" id="option_gameplay_prevent_onrej_m2"></label>
+										<label>3<br><input type="checkbox" name="option_gameplay_prevent_onrej_m3" id="option_gameplay_prevent_onrej_m3"></label>
+										<label>4<br><input type="checkbox" name="option_gameplay_prevent_onrej_m4" id="option_gameplay_prevent_onrej_m4"></label>
+										<label>5<br><input type="checkbox" name="option_gameplay_prevent_onrej_m5" id="option_gameplay_prevent_onrej_m5"></label>
+									</div>
+									<div>
+										<label>Catch off-approves for missions: </label>
+									</div>
+									<div style="display: flex; gap: 20px;">
+										<label>1<br><input type="checkbox" name="option_gameplay_prevent_offapp_m1" id="option_gameplay_prevent_offapp_m1"></label>
+										<label>2<br><input type="checkbox" name="option_gameplay_prevent_offapp_m2" id="option_gameplay_prevent_offapp_m2"></label>
+										<label>3<br><input type="checkbox" name="option_gameplay_prevent_offapp_m3" id="option_gameplay_prevent_offapp_m3"></label>
+										<label>4<br><input type="checkbox" name="option_gameplay_prevent_offapp_m4" id="option_gameplay_prevent_offapp_m4"></label>
+										<label>5<br><input type="checkbox" name="option_gameplay_prevent_offapp_m5" id="option_gameplay_prevent_offapp_m5"></label>
+									</div>
+								</div>
 							</div>
 						</div>
 
@@ -623,6 +666,9 @@ $(document).ready(function(){
 				}
 		}
 	});
+
+	setPreventMisclicksSuboptions();
+	$("#option_gameplay_prevent_misclicks").on("click", setPreventMisclicksSuboptions);
 });
 
 function hideFunction(idOfNotification){
@@ -683,6 +729,13 @@ function hideAllNotifs(){
 }
 
 
+function setPreventMisclicksSuboptions() {
+	if($("#option_gameplay_prevent_misclicks")[0].checked === true) {
+		$("#suboptions_gameplay_prevent_misclicks").show();
+	} else {
+		$("#suboptions_gameplay_prevent_misclicks").hide();
+	}
+}
 
 
 
@@ -697,6 +750,7 @@ function hideAllNotifs(){
 	var optionsList = [
 		"display",
 		"notifications",
+		"gameplay",
 		"reset"
 	]
 
