@@ -1,6 +1,7 @@
 import { Alliance, See } from '../../types';
 import { IRole, Role } from '../types';
 import Game from '../../game';
+import shuffleArray from '../../../../util/shuffleArray';
 
 /**
  * Melron (Resistance) — believes they are Merlin.
@@ -26,37 +27,29 @@ class Melron implements IRole {
     this.room = thisRoom;
   }
 
-  private SpiesThatMelronSees: string[] = [];
+  private SpiesThatMelronSees?: string[];
 
   see(): See {
     if (!this.room.gameStarted) return { spies: [], roleTags: {} };
 
     if (!this.SpiesThatMelronSees) {
-      // Count real spies and detect Mordred/MordredAssassin (Merlin doesn’t see them)
-      let realSpyCount = 0;
-      let hasMordred = false;
+      let visibleSpyCount = 0;
 
       for (const p of this.room.playersInGame) {
         if (p.alliance === Alliance.Spy) {
-          realSpyCount++;
-          if (p.role === Role.Mordred || p.role === Role.MordredAssassin) {
-            hasMordred = true;
-          }
+          if (p.role === Role.Mordred || p.role === Role.MordredAssassin)
+            continue;
+          visibleSpyCount++;
         }
       }
 
-      const k = Math.max(0, realSpyCount - (hasMordred ? 1 : 0));
+      const k = Math.max(0, visibleSpyCount);
 
-      const self = this.getSelfUsername();
       const pool = this.room.playersInGame
-        .map((p: any) => p.username)
-        .filter((u: string) => u !== self);
+        .filter((p: any) => p.role !== Role.Melron)
+        .map((p: any) => p.username);
 
-      // Shuffle once and cache picks
-      for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-      }
+      shuffleArray(pool);
 
       this.SpiesThatMelronSees = pool.slice(0, k);
     }
@@ -67,17 +60,10 @@ class Melron implements IRole {
     };
   }
 
-  private getSelfUsername(): string {
-    for (let i = 0; i < this.room.playersInGame.length; i++) {
-      if (this.room.playersInGame[i].role === Role.Melron) {
-        return this.room.playersInGame[i].username;
-      }
-    }
-    return '';
-  }
-
   checkSpecialMove(): void {}
-  getPublicGameData(): any {}
+  getPublicGameData() {
+    return { SpiesMelronSaw: this.SpiesThatMelronSees ?? [] }; // real usernames
+  }
 }
 
 export default Melron;

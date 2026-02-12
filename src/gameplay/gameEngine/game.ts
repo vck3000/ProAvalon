@@ -510,13 +510,12 @@ class Game extends Room {
     }
 
     // After roles are assigned, set displayRole for deceptive roles (Melron/Moregano).
-    for (let i = 0; i < this.playersInGame.length; i++) {
-      const p = this.playersInGame[i];
-      if (p.role === Role.Melron) {
-        p.displayRole = Role.Merlin; // Melron thinks they are Merlin
-      } else if (p.role === Role.Moregano) {
-        p.displayRole = Role.Morgana; // Moregano thinks they are Morgana
-        (p as any).displayAlliance = Alliance.Spy;
+    for (const player of this.playersInGame) {
+      if (player.role === Role.Melron) {
+        player.displayRole = Role.Merlin;
+      } else if (player.role === Role.Moregano) {
+        player.displayRole = Role.Morgana;
+        player.displayAlliance = Alliance.Spy;
       }
     }
 
@@ -529,7 +528,7 @@ class Game extends Room {
     }
 
     // set game start parameters
-    // get a random starting team leader
+    // get a random starting team leaderge
     this.teamLeader = getRandomInt(0, this.playersInGame.length);
     this.hammer =
       (this.teamLeader - 5 + 1 + this.playersInGame.length) %
@@ -1052,10 +1051,9 @@ class Game extends Room {
       // socket.io
       for (let i = 0; i < playerRoles.length; i++) {
         // Player specific data
-        const effectiveAlliance =
-          (playerRoles[i] as any).displayAlliance !== undefined
-            ? (playerRoles[i] as any).displayAlliance
-            : playerRoles[i].alliance;
+        const effectiveAlliance = playerRoles[i].displayAlliance
+          ? playerRoles[i].displayAlliance
+          : playerRoles[i].alliance;
 
         const effectiveRole =
           playerRoles[i].displayRole !== undefined
@@ -1291,6 +1289,9 @@ class Game extends Room {
     } else if (this.winner === Alliance.Resistance) {
       this.sendText('The resistance wins!', 'gameplay-text-blue');
     }
+
+    // Now announce Melron / Moregano illusions
+    this.announceIllusionsIfAny();
 
     // Post results of Merlin guesses
     if (this.resRoles.indexOf(Role.Merlin) !== -1) {
@@ -2059,6 +2060,32 @@ class Game extends Room {
 
     // To update the timer data on clients side
     this.distributeGameData();
+  }
+
+  private announceIllusionsIfAny() {
+    // Melron
+    const melronRole = this.specialRoles[Role.Melron];
+    if (melronRole?.getPublicGameData) {
+      const pub = melronRole.getPublicGameData();
+      if (pub?.SpiesMelronSaw?.length) {
+        this.sendText(
+          `Melron saw as spies: ${pub.SpiesMelronSaw.join(', ')}`,
+          'gameplay-text-blue',
+        );
+      }
+    }
+
+    // Moregano
+    const moreganoRole = this.specialRoles[Role.Moregano];
+    if (moreganoRole?.getPublicGameData) {
+      const pub = moreganoRole.getPublicGameData();
+      if (pub?.SpiesMoreganoSaw?.length) {
+        this.sendText(
+          `Moregano saw as spies: ${pub.SpiesMoreganoSaw.join(', ')}`,
+          'gameplay-text-red',
+        );
+      }
+    }
   }
 
   private usernameIsPlayer(username: string) {

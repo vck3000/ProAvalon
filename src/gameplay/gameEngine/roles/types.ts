@@ -19,7 +19,6 @@ export enum Role {
   MordredAssassin = 'MordredAssassin',
   Hitberon = 'Hitberon',
 
-    // ADD THESE TWO
   Melron = 'Melron',
   Moregano = 'Moregano',
 }

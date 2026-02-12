@@ -36,7 +36,7 @@ export const avalonRoles: Record<string, Class<IRole>> = {
   [MordredAssassin.role]: MordredAssassin,
   [Hitberon.role]: Hitberon,
 
-    [Melron.role]: Melron,
+  [Melron.role]: Melron,
   [Moregano.role]: Moregano,
 
 };
