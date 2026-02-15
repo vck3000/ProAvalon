@@ -528,7 +528,7 @@ class Game extends Room {
     }
 
     // set game start parameters
-    // get a random starting team leaderge
+    // get a random starting team leader
     this.teamLeader = getRandomInt(0, this.playersInGame.length);
     this.hammer =
       (this.teamLeader - 5 + 1 + this.playersInGame.length) %
@@ -1055,10 +1055,9 @@ class Game extends Room {
           ? playerRoles[i].displayAlliance
           : playerRoles[i].alliance;
 
-        const effectiveRole =
-          playerRoles[i].displayRole !== undefined
-            ? playerRoles[i].displayRole
-            : playerRoles[i].role;
+        const effectiveRole = playerRoles[i].displayRole
+          ? playerRoles[i].displayRole
+          : playerRoles[i].role;
 
         data[i] = {
           alliance: effectiveAlliance,
@@ -2065,11 +2064,11 @@ class Game extends Room {
   private announceIllusionsIfAny() {
     // Melron
     const melronRole = this.specialRoles[Role.Melron];
-    if (melronRole?.getPublicGameData) {
+    if (melronRole) {
       const pub = melronRole.getPublicGameData();
-      if (pub?.SpiesMelronSaw?.length) {
+      {
         this.sendText(
-          `Melron saw as spies: ${pub.SpiesMelronSaw.join(', ')}`,
+          `Melron saw as spies: ${pub.spiesMelronSaw.join(', ')}`,
           'gameplay-text-blue',
         );
       }
@@ -2077,11 +2076,11 @@ class Game extends Room {
 
     // Moregano
     const moreganoRole = this.specialRoles[Role.Moregano];
-    if (moreganoRole?.getPublicGameData) {
+    if (moreganoRole) {
       const pub = moreganoRole.getPublicGameData();
-      if (pub?.SpiesMoreganoSaw?.length) {
+      {
         this.sendText(
-          `Moregano saw as spies: ${pub.SpiesMoreganoSaw.join(', ')}`,
+          `Moregano saw as spies: ${pub.spiesMoreganoSaw.join(', ')}`,
           'gameplay-text-red',
         );
       }

@@ -13,17 +13,16 @@ describe('VotingMission Moregano', () => {
       role: Role.Moregano,
     };
 
-const thisRoom: any = {
-  playersYetToVote: [moreganoUsername, 'otherUser'],
-  playersInGame: [moreganoPlayer],
-  missionVotes: {},
-  numFailsHistory: [],
-  missionHistory: [],
-  calcMissionVotes: jest.fn(() => 'succeeded'),
-  sendText: jest.fn(),
-  changePhase: jest.fn(),
-};
-
+    const thisRoom: any = {
+      playersYetToVote: [moreganoUsername, 'otherUser'],
+      playersInGame: [moreganoPlayer],
+      missionVotes: {},
+      numFailsHistory: [],
+      missionHistory: [],
+      calcMissionVotes: jest.fn(() => 'succeeded'),
+      sendText: jest.fn(),
+      changePhase: jest.fn(),
+    };
 
     const phase = new VotingMission(thisRoom);
 
@@ -34,8 +33,8 @@ const thisRoom: any = {
 
     phase.gameMove(socket, 'no', []);
 
-expect(thisRoom.playersYetToVote).toHaveLength(1);
-expect(thisRoom.calcMissionVotes).not.toHaveBeenCalled();
-expect(Object.values(thisRoom.missionVotes)).toContain('succeed');
+    expect(thisRoom.playersYetToVote).toHaveLength(1);
+    expect(thisRoom.calcMissionVotes).not.toHaveBeenCalled();
+    expect(Object.values(thisRoom.missionVotes)).toContain('succeed');
   });
 });

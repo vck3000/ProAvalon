@@ -27,54 +27,66 @@ class Moregano implements IRole {
     this.room = thisRoom;
   }
 
-  private SpiesThatMoreganoSees?: string[]; // includes self username as first element
+  private spiesThatMoreganoSees?: string[]; // includes self username as first element
 
   see(): See {
     if (!this.room.gameStarted) return { spies: [], roleTags: {} };
 
-    if (!this.SpiesThatMoreganoSees) {
-      let visibleSpyCount = 0;
-
-      for (const p of this.room.playersInGame) {
-        if (p.alliance === Alliance.Spy) {
-          if (p.role === Role.Oberon) continue;
-          visibleSpyCount++;
-        }
-      }
-
-      const k = Math.max(1, visibleSpyCount);
-      const othersNeeded = k - 1;
-
-      const pool = this.room.playersInGame
-        .filter((p: any) => p.role !== Role.Moregano)
-        .map((p: any) => p.username);
-
-      shuffleArray(pool);
-
-      const selfPlayer = this.room.playersInGame.find(
-        (p: any) => p.role === Role.Moregano,
-      );
-      if (!selfPlayer) return { spies: [], roleTags: {} };
-
-      const selfUsername = selfPlayer.username;
-
-      const picks = pool.slice(0, Math.max(0, othersNeeded));
-
-      // Cache REAL usernames (self first)
-      this.SpiesThatMoreganoSees = [selfUsername, ...picks];
+    if (!this.spiesThatMoreganoSees) {
+      this.initialiseMoreganoView();
     }
 
     return {
-      spies: this.SpiesThatMoreganoSees.map((u) =>
+      spies: this.spiesThatMoreganoSees.map((u) =>
         this.room.anonymizer.anon(u),
       ),
       roleTags: {},
     };
   }
 
+  private initialiseMoreganoView(): void {
+    let visibleSpyCount = 0;
+
+    for (const p of this.room.playersInGame) {
+      if (p.alliance === Alliance.Spy) {
+        if (p.role === Role.Oberon) {
+          continue;
+        }
+
+        visibleSpyCount++;
+      }
+    }
+
+    const k = visibleSpyCount;
+    const othersNeeded = k - 1;
+
+    const pool = this.room.playersInGame
+      .filter((p: any) => p.role !== Role.Moregano)
+      .map((p: any) => p.username);
+
+    shuffleArray(pool);
+
+    const selfPlayer = this.room.playersInGame.find(
+      (p: any) => p.role === Role.Moregano,
+    );
+
+    if (!selfPlayer) {
+      throw new Error(
+        'Invariant violated: Moregano role instantiated but player not found',
+      );
+    }
+
+    const selfUsername = selfPlayer.username;
+
+    const picks = pool.slice(0, othersNeeded);
+
+    // Cache REAL usernames (self first)
+    this.spiesThatMoreganoSees = [selfUsername, ...picks];
+  }
+
   checkSpecialMove(): void {}
   getPublicGameData() {
-    return { SpiesMoreganoSaw: this.SpiesThatMoreganoSees ?? [] }; // real usernames
+    return { spiesMoreganoSaw: this.spiesThatMoreganoSees ?? [] }; // real usernames
   }
 }
 

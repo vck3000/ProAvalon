@@ -199,8 +199,8 @@ class VotingMission implements IPhase {
     // User has not voted yet
     const player = this.thisRoom.playersInGame[indexOfPlayer];
     const effectiveAlliance =
-      (player as any).displayAlliance !== undefined
-        ? (player as any).displayAlliance
+      player.displayAlliance !== undefined
+        ? player.displayAlliance
         : player.alliance;
 
     // Resistance (view) can't fail

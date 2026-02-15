@@ -38,7 +38,6 @@ export const avalonRoles: Record<string, Class<IRole>> = {
 
   [Melron.role]: Melron,
   [Moregano.role]: Moregano,
-
 };
 
 export const rolesThatCantGuessMerlin = [

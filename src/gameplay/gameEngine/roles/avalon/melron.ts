@@ -27,42 +27,52 @@ class Melron implements IRole {
     this.room = thisRoom;
   }
 
-  private SpiesThatMelronSees?: string[];
+  private spiesThatMelronSees?: string[];
 
   see(): See {
-    if (!this.room.gameStarted) return { spies: [], roleTags: {} };
+    if (!this.room.gameStarted) {
+      return { spies: [], roleTags: {} };
+    }
 
-    if (!this.SpiesThatMelronSees) {
-      let visibleSpyCount = 0;
-
-      for (const p of this.room.playersInGame) {
-        if (p.alliance === Alliance.Spy) {
-          if (p.role === Role.Mordred || p.role === Role.MordredAssassin)
-            continue;
-          visibleSpyCount++;
-        }
-      }
-
-      const k = Math.max(0, visibleSpyCount);
-
-      const pool = this.room.playersInGame
-        .filter((p: any) => p.role !== Role.Melron)
-        .map((p: any) => p.username);
-
-      shuffleArray(pool);
-
-      this.SpiesThatMelronSees = pool.slice(0, k);
+    if (!this.spiesThatMelronSees) {
+      this.initialiseMelronView();
     }
 
     return {
-      spies: this.SpiesThatMelronSees.map((u) => this.room.anonymizer.anon(u)),
+      spies: this.spiesThatMelronSees.map((u) => this.room.anonymizer.anon(u)),
       roleTags: {},
     };
   }
 
+  private initialiseMelronView(): void {
+    let visibleSpyCount = 0;
+
+    for (const p of this.room.playersInGame) {
+      if (p.alliance !== Alliance.Spy) {
+        continue;
+      }
+
+      if (p.role === Role.Mordred || p.role === Role.MordredAssassin) {
+        continue;
+      }
+
+      visibleSpyCount++;
+    }
+
+    const k = visibleSpyCount;
+
+    const pool = this.room.playersInGame
+      .filter((p: any) => p.role !== Role.Melron)
+      .map((p: any) => p.username);
+
+    shuffleArray(pool);
+
+    this.spiesThatMelronSees = pool.slice(0, k);
+  }
+
   checkSpecialMove(): void {}
   getPublicGameData() {
-    return { SpiesMelronSaw: this.SpiesThatMelronSees ?? [] }; // real usernames
+    return { spiesMelronSaw: this.spiesThatMelronSees ?? [] }; // real usernames
   }
 }
 
