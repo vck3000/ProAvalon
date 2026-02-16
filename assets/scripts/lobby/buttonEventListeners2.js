@@ -248,20 +248,8 @@ function handleTimeoutInput(inputId) {
 
 // Triggers swal on unexpected move if misclick prevention is enabled
 async function confirmUserClick(button) {
-  if ($('#option_gameplay_prevent_misclicks')[0].checked === false) {
+  if ($('#option_gameplay_prevent_misclicks')[0].checked !== true) {
     return true;
-  }
-
-  timeout = 10;  // seconds
-
-  // avoids check if there isn't enough time to be active for full timeout
-  const gameTimer = $('.gameTimer')[0].innerText;
-  if (gameTimer !== '--:--') {
-    const mins = parseInt(gameTimer.slice(0, 2), 10);
-    const secs = parseInt(gameTimer.slice(-2), 10);
-    if (mins === 0 && secs <= timeout) {
-      return true;
-    }
   }
 
   let str = '';
@@ -276,8 +264,6 @@ async function confirmUserClick(button) {
         button === 'no'
       ) {
         str = 'Really reject hammer?'
-      } else {
-        return true;
       }
     // catch onrej
     } else if (
@@ -293,13 +279,16 @@ async function confirmUserClick(button) {
       button === 'yes'
     ) {
       str = 'You\'re off the team!'
-    } else {
-      return true;
     }
-  } else {
+  }
+  if (str === '') {
     return true;
   }
 
+  let timeout = 0;
+  if (gameData.dateTimerExpires) {
+    timeout = new Date(gameData.dateTimerExpires).getTime() - Date.now();
+  }
   const input = await swal({
     title: str,
     type: 'warning',
@@ -307,11 +296,7 @@ async function confirmUserClick(button) {
     reverseButtons: true,
     confirmButtonText: button === 'yes' ? 'Approve' : 'Reject',
     confirmButtonColor: button === 'yes' ? '#5cb85c' : '#d9534f',
-    timer: timeout*1000,
+    timer: timeout
   });
-  if (input.value === true) {
-    return true;
-  }
-
-  return false;
+  return Boolean(input.value);
 }
