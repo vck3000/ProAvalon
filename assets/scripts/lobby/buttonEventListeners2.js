@@ -3,8 +3,7 @@ async function redButtonFunction() {
     return;
   }
 
-  if (isSpectator === true) {
-  } else if (gameStarted === false) {
+  if (gameStarted === false) {
     // non-host player standing up
     if (document.querySelector('#red-button').innerText === 'Spectate') {
       socket.emit('standUpFromGame');
@@ -255,10 +254,9 @@ async function confirmUserClick(button) {
   let str = '';
   if (gameData.phase === 'VotingTeam') {
     const isPlayerOnTeam = gameData.proposedTeam.includes(gameData.username);
+
     // catch hammerrej
-    if (
-      gameData.pickNum === 5
-    ) {
+    if (gameData.pickNum === 5) {
       if (
         $('#option_gameplay_prevent_hammerrej')[0].checked === true &&
         button === 'no'
@@ -271,16 +269,17 @@ async function confirmUserClick(button) {
       isPlayerOnTeam &&
       button === 'no'
     ) {
-      str = 'You\'re on the team!'
+      str = "You're on the team!"
     // catch offapp
     } else if (
       $('#option_gameplay_prevent_offapp_m' + gameData.missionNum)[0].checked === true &&
       !isPlayerOnTeam &&
       button === 'yes'
     ) {
-      str = 'You\'re off the team!'
+      str = "You're off the team!"
     }
   }
+
   if (str === '') {
     return true;
   }
@@ -289,6 +288,7 @@ async function confirmUserClick(button) {
   if (gameData.dateTimerExpires) {
     timeout = new Date(gameData.dateTimerExpires).getTime() - Date.now();
   }
+
   const input = await swal({
     title: str,
     type: 'warning',
@@ -298,5 +298,6 @@ async function confirmUserClick(button) {
     confirmButtonColor: button === 'yes' ? '#5cb85c' : '#d9534f',
     timer: timeout
   });
+
   return Boolean(input.value);
 }
