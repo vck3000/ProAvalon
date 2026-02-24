@@ -71,6 +71,7 @@ class Melron implements IRole {
   }
 
   checkSpecialMove(): void {}
+
   getPublicGameData() {
     return { spiesMelronSaw: this.spiesThatMelronSees ?? [] }; // real usernames
   }

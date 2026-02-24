@@ -2065,25 +2065,21 @@ class Game extends Room {
     // Melron
     const melronRole = this.specialRoles[Role.Melron];
     if (melronRole) {
-      const pub = melronRole.getPublicGameData();
-      {
-        this.sendText(
-          `Melron saw as spies: ${pub.spiesMelronSaw.join(', ')}`,
-          'gameplay-text-blue',
-        );
-      }
+      const data = melronRole.getPublicGameData();
+      this.sendText(
+        `Melron saw as spies: ${data.spiesMelronSaw.join(', ')}`,
+        'gameplay-text-blue',
+      );
     }
 
     // Moregano
     const moreganoRole = this.specialRoles[Role.Moregano];
     if (moreganoRole) {
-      const pub = moreganoRole.getPublicGameData();
-      {
-        this.sendText(
-          `Moregano saw as spies: ${pub.spiesMoreganoSaw.join(', ')}`,
-          'gameplay-text-red',
-        );
-      }
+      const data = moreganoRole.getPublicGameData();
+      this.sendText(
+        `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
+        'gameplay-text-red',
+      );
     }
   }
 

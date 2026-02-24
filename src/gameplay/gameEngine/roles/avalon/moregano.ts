@@ -30,7 +30,9 @@ class Moregano implements IRole {
   private spiesThatMoreganoSees?: string[]; // includes self username as first element
 
   see(): See {
-    if (!this.room.gameStarted) return { spies: [], roleTags: {} };
+    if (!this.room.gameStarted) {
+      return { spies: [], roleTags: {} };
+    }
 
     if (!this.spiesThatMoreganoSees) {
       this.initialiseMoreganoView();
@@ -57,8 +59,7 @@ class Moregano implements IRole {
       }
     }
 
-    const k = visibleSpyCount;
-    const othersNeeded = k - 1;
+    const othersNeeded = visibleSpyCount - 1;
 
     const pool = this.room.playersInGame
       .filter((p: any) => p.role !== Role.Moregano)
@@ -85,6 +86,7 @@ class Moregano implements IRole {
   }
 
   checkSpecialMove(): void {}
+
   getPublicGameData() {
     return { spiesMoreganoSaw: this.spiesThatMoreganoSees ?? [] }; // real usernames
   }
