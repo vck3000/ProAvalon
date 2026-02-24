@@ -42,6 +42,9 @@ const gameRecordSchema = new mongoose.Schema({
   voteHistory: Object,
   disableVoteHistory: Boolean,
   playerRoles: Object,
+
+  melronSpiesSeen: [String],
+  moreganoSpiesSeen: [String],
 });
 
 gameRecordSchema.index({ timeGameFinished: 1 });

@@ -13,7 +13,13 @@ import { modOrTOString } from '../../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
-import { Alliance, IRecoverable, RecoverableComponent, RecoverEntry, RoomPlayer } from './types';
+import {
+  Alliance,
+  IRecoverable,
+  RecoverableComponent,
+  RecoverEntry,
+  RoomPlayer,
+} from './types';
 import { GameTimer, Timeouts } from './gameTimer';
 import { VoidGameTracker } from './voidGameTracker';
 import { SocketUser } from '../../sockets/types';
@@ -500,6 +506,16 @@ class Game extends Room {
       if (this.playersInGame[i].role === undefined) {
         this.playersInGame[i].role = this.playersInGame[i].alliance;
         // console.log("Overwrite role as alliance for player: " + this.playersInGame[i].username);
+      }
+    }
+
+    // After roles are assigned, set displayRole for deceptive roles (Melron/Moregano).
+    for (const player of this.playersInGame) {
+      if (player.role === Role.Melron) {
+        player.displayRole = Role.Merlin;
+      } else if (player.role === Role.Moregano) {
+        player.displayRole = Role.Morgana;
+        player.displayAlliance = Alliance.Spy;
       }
     }
 
@@ -1035,17 +1051,20 @@ class Game extends Room {
       // socket.io
       for (let i = 0; i < playerRoles.length; i++) {
         // Player specific data
+        const effectiveAlliance = playerRoles[i].displayAlliance
+          ? playerRoles[i].displayAlliance
+          : playerRoles[i].alliance;
+
+        const effectiveRole = playerRoles[i].displayRole
+          ? playerRoles[i].displayRole
+          : playerRoles[i].role;
+
         data[i] = {
-          alliance: playerRoles[i].alliance,
-          role: playerRoles[i].role,
+          alliance: effectiveAlliance,
+          role: effectiveRole,
           see: this.specialRoles[playerRoles[i].role].see(),
           username: this.anonymizer.anon(playerRoles[i].username),
         };
-
-        // Some roles such as Galahad require modifying display role.
-        if (playerRoles[i].displayRole !== undefined) {
-          data[i].role = playerRoles[i].displayRole;
-        }
 
         // add on these common variables:
         data[i].buttons = this.getClientButtonSettings(i);
@@ -1270,6 +1289,9 @@ class Game extends Room {
       this.sendText('The resistance wins!', 'gameplay-text-blue');
     }
 
+    // Now announce Melron / Moregano illusions
+    this.announceIllusionsIfAny();
+
     // Post results of Merlin guesses
     if (this.resRoles.indexOf(Role.Merlin) !== -1) {
       const guessesByTarget = reverseMapFromMap(this.merlinguesses);
@@ -1365,6 +1387,18 @@ class Game extends Room {
       botUsernames = [];
     }
 
+    let melronSpiesSeen: string[] = [];
+    const melronRole = this.specialRoles[Role.Melron];
+    if (melronRole) {
+      melronSpiesSeen = melronRole.getPublicGameData().spiesMelronSaw;
+    }
+
+    let moreganoSpiesSeen: string[] = [];
+    const moreganoRole = this.specialRoles[Role.Moregano];
+    if (moreganoRole) {
+      moreganoSpiesSeen = moreganoRole.getPublicGameData().spiesMoreganoSaw;
+    }
+
     // This data is for future records only
     const objectToStore = {
       timeGameStarted: this.startGameTime,
@@ -1407,6 +1441,9 @@ class Game extends Room {
 
       whoAssassinShot: this.whoAssassinShot,
       whoAssassinShot2: this.whoAssassinShot2,
+
+      melronSpiesSeen,
+      moreganoSpiesSeen,
     };
 
     GameRecord.create(objectToStore, (err) => {
@@ -2037,6 +2074,33 @@ class Game extends Room {
 
     // To update the timer data on clients side
     this.distributeGameData();
+  }
+
+  private announceIllusionsIfAny() {
+    // Melron
+    const melronRole = this.specialRoles[Role.Melron];
+    if (melronRole) {
+      const data = melronRole.getPublicGameData();
+      if (data.spiesMelronSaw) {
+        this.sendText(
+          `Melron saw as spies: ${data.spiesMelronSaw.join(', ')}`,
+          'gameplay-text-blue',
+        );
+      }
+    }
+
+    // Moregano
+    const moreganoRole = this.specialRoles[Role.Moregano];
+    if (moreganoRole) {
+      const data = moreganoRole.getPublicGameData();
+      if (data.spiesMoreganoSaw)
+      {
+        this.sendText(
+          `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
+          'gameplay-text-red',
+        );
+      }
+    }
   }
 
   private usernameIsPlayer(username: string) {
