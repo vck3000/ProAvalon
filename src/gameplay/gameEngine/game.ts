@@ -1387,6 +1387,18 @@ class Game extends Room {
       botUsernames = [];
     }
 
+    let melronSpiesSeen: string[] = [];
+    const melronRole = this.specialRoles[Role.Melron];
+    if (melronRole) {
+      melronSpiesSeen = melronRole.getPublicGameData().spiesMelronSaw;
+    }
+
+    let moreganoSpiesSeen: string[] = [];
+    const moreganoRole = this.specialRoles[Role.Moregano];
+    if (moreganoRole) {
+      moreganoSpiesSeen = moreganoRole.getPublicGameData().spiesMoreganoSaw;
+    }
+
     // This data is for future records only
     const objectToStore = {
       timeGameStarted: this.startGameTime,
@@ -1429,6 +1441,9 @@ class Game extends Room {
 
       whoAssassinShot: this.whoAssassinShot,
       whoAssassinShot2: this.whoAssassinShot2,
+
+      melronSpiesSeen,
+      moreganoSpiesSeen,
     };
 
     GameRecord.create(objectToStore, (err) => {
@@ -2066,20 +2081,25 @@ class Game extends Room {
     const melronRole = this.specialRoles[Role.Melron];
     if (melronRole) {
       const data = melronRole.getPublicGameData();
-      this.sendText(
-        `Melron saw as spies: ${data.spiesMelronSaw.join(', ')}`,
-        'gameplay-text-blue',
-      );
+      if (data.spiesMelronSaw) {
+        this.sendText(
+          `Melron saw as spies: ${data.spiesMelronSaw.join(', ')}`,
+          'gameplay-text-blue',
+        );
+      }
     }
 
     // Moregano
     const moreganoRole = this.specialRoles[Role.Moregano];
     if (moreganoRole) {
       const data = moreganoRole.getPublicGameData();
-      this.sendText(
-        `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
-        'gameplay-text-red',
-      );
+      if (data.spiesMoreganoSaw)
+      {
+        this.sendText(
+          `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
+          'gameplay-text-red',
+        );
+      }
     }
   }
 
