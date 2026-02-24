@@ -1193,6 +1193,238 @@ var userOptions = {
       );
     },
   },
+
+  //---------------------------------------------
+  // Gameplay
+  //---------------------------------------------
+
+  option_gameplay_prevent_misclicks: {
+    defaultValue: 'false',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_misclicks') === 'true') {
+        $('#option_gameplay_prevent_misclicks')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_misclicks')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_misclicks')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_misclicks',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_hammerrej: {
+    defaultValue: 'true',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_hammerrej') === 'true') {
+        $('#option_gameplay_prevent_hammerrej')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_hammerrej')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_hammerrej')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_hammerrej',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_onrej_m1: {
+    defaultValue: 'true',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_onrej_m1') === 'true') {
+        $('#option_gameplay_prevent_onrej_m1')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_onrej_m1')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_onrej_m1')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_onrej_m1',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_onrej_m2: {
+    defaultValue: 'true',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_onrej_m2') === 'true') {
+        $('#option_gameplay_prevent_onrej_m2')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_onrej_m2')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_onrej_m2')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_onrej_m2',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_onrej_m3: {
+    defaultValue: 'false',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_onrej_m3') === 'true') {
+        $('#option_gameplay_prevent_onrej_m3')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_onrej_m3')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_onrej_m3')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_onrej_m3',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_onrej_m4: {
+    defaultValue: 'false',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_onrej_m4') === 'true') {
+        $('#option_gameplay_prevent_onrej_m4')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_onrej_m4')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_onrej_m4')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_onrej_m4',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_onrej_m5: {
+    defaultValue: 'false',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_onrej_m5') === 'true') {
+        $('#option_gameplay_prevent_onrej_m5')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_onrej_m5')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_onrej_m5')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_onrej_m5',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_offapp_m1: {
+    defaultValue: 'true',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_offapp_m1') === 'true') {
+        $('#option_gameplay_prevent_offapp_m1')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_offapp_m1')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_offapp_m1')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_offapp_m1',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_offapp_m2: {
+    defaultValue: 'true',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_offapp_m2') === 'true') {
+        $('#option_gameplay_prevent_offapp_m2')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_offapp_m2')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_offapp_m2')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_offapp_m2',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_offapp_m3: {
+    defaultValue: 'true',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_offapp_m3') === 'true') {
+        $('#option_gameplay_prevent_offapp_m3')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_offapp_m3')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_offapp_m3')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_offapp_m3',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_offapp_m4: {
+    defaultValue: 'false',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_offapp_m4') === 'true') {
+        $('#option_gameplay_prevent_offapp_m4')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_offapp_m4')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_offapp_m4')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_offapp_m4',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
+
+  option_gameplay_prevent_offapp_m5: {
+    defaultValue: 'true',
+    onLoad() {
+      if (docCookies.getItem('option_gameplay_prevent_offapp_m5') === 'true') {
+        $('#option_gameplay_prevent_offapp_m5')[0].checked = true;
+      }
+    },
+    initialiseEventListener() {
+      $('#option_gameplay_prevent_offapp_m5')[0].addEventListener('click', () => {
+        const { checked } = $('#option_gameplay_prevent_offapp_m5')[0];
+        docCookies.setItem(
+          'option_gameplay_prevent_offapp_m5',
+          checked.toString(),
+          Infinity
+        );
+      });
+    },
+  },
 };
 
 // run through each userOption load and initialiseEventListener
