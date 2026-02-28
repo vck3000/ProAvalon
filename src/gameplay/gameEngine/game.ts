@@ -1435,6 +1435,8 @@ class Game extends Room {
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
       disableVoteHistory: this.disableVoteHistory,
+      enableSinadMode: this.enableSinadMode,
+      
       playerRoles: playerRolesVar,
 
       ladyChain,
