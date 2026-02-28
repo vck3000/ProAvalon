@@ -2209,6 +2209,24 @@ class Game extends Room {
       );
     }
   }
+
+  getPlayersWhoWentOnMission(missionNumber: number)
+  {
+    const vh = this.voteHistory;
+    const playersWhoWentOnMission = new Set<string>();
+    //TODO: handle errors such as if mission hasn't happened yet, or invalid missionNumber.
+    for (const player in vh) {
+        if (vh.hasOwnProperty(player)) {
+
+          const lastPick = vh[player][missionNumber-1].length -1
+          const playerVH = vh[player][missionNumber-1][lastPick];
+          if (typeof playerVH === 'string' && playerVH.includes("VHpicked")) {
+            playersWhoWentOnMission.add(player);
+          }
+        }
+      } 
+    return playersWhoWentOnMission;
+  }
   /*
   ELO RATING CALCULATION:
 
@@ -2473,3 +2491,10 @@ let reverseMapFromMap = function (map, f) {
     return acc;
   }, {});
 };
+
+export function isSubsetOf<T>(a: Set<T>, b: Set<T>): boolean {
+    for (let item of a) {
+        if (!b.has(item)) return false;
+    }
+    return true;
+}

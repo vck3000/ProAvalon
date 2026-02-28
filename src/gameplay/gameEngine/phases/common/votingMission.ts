@@ -4,7 +4,7 @@ import { Alliance } from '../../types';
 import { SocketUser } from '../../../../sockets/types';
 import { Role } from '../../roles/types';
 import { GameMode } from '../../gameModes';
-import { MIN_PLAYERS } from '../../game';
+import { MIN_PLAYERS, isSubsetOf } from '../../game';
 
 class VotingMission implements IPhase {
   static phase = Phase.VotingMission;
@@ -304,17 +304,12 @@ class VotingMission implements IPhase {
     if(!this.thisRoom.enableSinadMode)
     {
       return;
+      //extra safety check. not really needed.
     }
     if(this.thisRoom.playersInGame.length !== 6 && this.thisRoom.gameMode !== GameMode.AVALON)
     {
       return; //not tested for other gamemodes. 
     }
-
-    const VH = this.thisRoom.voteHistory; //for brevity
-
-    const setOfPlayersOnM2 = new Set<string>();
-    const setOfPlayersOnM3 = new Set<string>();
-
 
     if( 
       //m1 m2 pass, m3 failed, and we're at m4.1
@@ -326,25 +321,11 @@ class VotingMission implements IPhase {
       this.thisRoom.missionNum === 4 &&
       this.thisRoom.pickNum === 1
     ) { 
-      for (const player in VH) {
-        if (VH.hasOwnProperty(player)) {
-            
-          const playerVH = VH[player];
-          const playerM2 = playerVH[1][playerVH[1].length -1];
-          const playerM3 = playerVH[2][playerVH[2].length -1];
-
-          if (typeof playerM2 === 'string' && playerM2.includes("VHpicked")) {
-            setOfPlayersOnM2.add(player);
-          }
-          if (typeof playerM3 === 'string' && playerM3.includes("VHpicked")) {
-            setOfPlayersOnM3.add(player);
-          }
-        }
-      }
-
-      let isM2ASubsetOfM3: boolean = [...setOfPlayersOnM2].every(player => setOfPlayersOnM3.has(player));
-   
-      if(!isM2ASubsetOfM3) {
+      if(!isSubsetOf(
+       this.thisRoom.getPlayersWhoWentOnMission(2)
+       ,this.thisRoom.getPlayersWhoWentOnMission(3)
+      ))
+      {
         this.thisRoom.NUM_PLAYERS_ON_MISSION[6-MIN_PLAYERS] = [2,3,4,4,3];
         let announcingSinadMode: string = "The mission sizes of Mission 4 and Mission 5 have been swapped!";
         this.thisRoom.sendText(announcingSinadMode,'gameplay-text');
