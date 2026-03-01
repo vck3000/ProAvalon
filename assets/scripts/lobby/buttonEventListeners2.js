@@ -59,6 +59,8 @@ async function greenButtonFunction() {
         assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString(),
       },
       anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
+      enableSinadMode: $('.enableSinadMode')[0].checked,
+
     };
     socket.emit('startGame', startGameData);
   } else if (await confirmUserClick('yes')) {
@@ -194,6 +196,7 @@ $('#createNewRoomButton').on('click', (data) => {
     gameMode: $($('.gameModeSelect')[1]).val(),
     muteSpectators: $('.muteSpectators')[1].checked,
     disableVoteHistory: $('.disableVoteHistory')[1].checked,
+    enableSinadMode: $('.enableSinadMode')[1].checked,
     ranked: $($('.rankedSelect')[1]).val(),
   };
 
@@ -202,6 +205,7 @@ $('#createNewRoomButton').on('click', (data) => {
   $($('.gameModeSelect')[0]).val(sendObj.gameMode);
   $('.muteSpectators')[0].checked = sendObj.muteSpectators;
   $('.disableVoteHistory')[0].checked = sendObj.disableVoteHistory;
+  $('.enableSinadMode')[0].checked = sendObj.enableSinadMode;
   $($('.rankedSelect')[0]).val(sendObj.ranked);
 
   socket.emit('newRoom', sendObj);

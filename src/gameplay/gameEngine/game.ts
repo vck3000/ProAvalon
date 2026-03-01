@@ -50,19 +50,11 @@ const ALLIANCES = [
   Alliance.Spy,
 ];
 
-export const NUM_PLAYERS_ON_MISSION = [
-  [2, 3, 2, 3, 3],
-  [2, 3, 4, 3, 4],
-  [2, 3, 3, 4, 4],
-  [3, 4, 4, 5, 5],
-  [3, 4, 4, 5, 5],
-  [3, 4, 4, 5, 5],
-];
-
 export class GameConfig {
   roomConfig: RoomConfig;
   muteSpectators = false;
   disableVoteHistory = false;
+  enableSinadMode = false;
   roomCreationType: RoomCreationType;
   getTimeFunc: () => Date;
 
@@ -70,12 +62,14 @@ export class GameConfig {
     roomConfig: RoomConfig,
     muteSpectators: boolean,
     disableVoteHistory: boolean,
+    enableSinadMode: boolean,
     roomCreationType: RoomCreationType,
     getTimeFunc: () => Date,
   ) {
     this.roomConfig = roomConfig;
     this.muteSpectators = muteSpectators;
     this.disableVoteHistory = disableVoteHistory;
+    this.enableSinadMode = enableSinadMode;
     this.roomCreationType = roomCreationType;
     this.getTimeFunc = getTimeFunc;
   }
@@ -93,6 +87,15 @@ class Game extends Room {
   missionNum = 0;
   pickNum = 0;
   roomCreationType: RoomCreationType;
+
+  NUM_PLAYERS_ON_MISSION = [
+    [2, 3, 2, 3, 3],
+    [2, 3, 4, 3, 4],
+    [2, 3, 3, 4, 4],
+    [3, 4, 4, 5, 5],
+    [3, 4, 4, 5, 5],
+    [3, 4, 4, 5, 5],
+  ];
 
   // Game misc variables
   winner: Alliance = '';
@@ -133,9 +136,9 @@ class Game extends Room {
     // Expand config
     this.muteSpectators = gameConfig.muteSpectators;
     this.disableVoteHistory = gameConfig.disableVoteHistory;
+    this.enableSinadMode = gameConfig.enableSinadMode;
     this.roomCreationType = gameConfig.roomCreationType;
     this.getTimeFunc = gameConfig.getTimeFunc;
-
     this.phaseBeforePause = '';
     this.playerUsernamesInGame = [];
 
@@ -578,6 +581,9 @@ class Game extends Room {
 
     if (this.disableVoteHistory) {
       this.sendText('The game has vote history disabled.', 'gameplay-text');
+    }
+    if (this.enableSinadMode) {
+      this.sendText('The game has Sinad Mode enabled.', 'gameplay-text');
     }
 
     if (this.anonymousMode) {
@@ -1089,7 +1095,7 @@ class Game extends Room {
         data[i].proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
         data[i].numPlayersOnMission =
-          NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+          this.NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
         data[i].numSelectTargets = this.getClientNumOfTargets(i);
 
         data[i].votes = this.publicVotes;
@@ -1174,7 +1180,7 @@ class Game extends Room {
     data.proposedTeam = this.anonymizer.anonMany(this.proposedTeam);
 
     data.numPlayersOnMission =
-      NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
+      this.NUM_PLAYERS_ON_MISSION[playerRoles.length - MIN_PLAYERS]; // - 5
     data.numSelectTargets = this.getClientNumOfTargets();
 
     data.votes = this.publicVotes;
@@ -1428,6 +1434,8 @@ class Game extends Room {
       numFailsHistory: this.numFailsHistory,
       voteHistory: this.voteHistory,
       disableVoteHistory: this.disableVoteHistory,
+      enableSinadMode: this.enableSinadMode,
+
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -2093,8 +2101,7 @@ class Game extends Room {
     const moreganoRole = this.specialRoles[Role.Moregano];
     if (moreganoRole) {
       const data = moreganoRole.getPublicGameData();
-      if (data.spiesMoreganoSaw)
-      {
+      if (data.spiesMoreganoSaw) {
         this.sendText(
           `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
           'gameplay-text-red',
@@ -2190,6 +2197,34 @@ class Game extends Room {
     }
   }
 
+  updateEnableSinadMode(enableSinadMode: boolean) {
+    if (this.gameStarted === false) {
+      this.enableSinadMode = enableSinadMode;
+
+      this.sendText(
+        `Enable Sinad Mode option set to ${enableSinadMode}.`,
+        'server-text',
+      );
+    }
+  }
+
+  getPlayersWhoWentOnMission(missionNumber: number): Set<string> {
+    const vh = this.voteHistory;
+    const playersWhoWentOnMission = new Set<string>();
+    if (vh[0].length < missionNumber) {
+      return;
+    }
+    for (const player in vh) {
+      const lastPick = vh[player][missionNumber - 1].length - 1;
+      const playerVh = vh[player][missionNumber - 1][lastPick];
+      if (typeof playerVh === 'string' && playerVh.includes('VHpicked')) {
+        playersWhoWentOnMission.add(player);
+      }
+    }
+    return playersWhoWentOnMission;
+    // if mission isn't over, it will return the players on the last pick of the mission round.
+    // TODO: solve the above error.
+  }
   /*
   ELO RATING CALCULATION:
 
@@ -2454,3 +2489,10 @@ let reverseMapFromMap = function (map, f) {
     return acc;
   }, {});
 };
+
+export function isSubsetOf<T>(a: Set<T>, b: Set<T>): boolean {
+  for (let item of a) {
+    if (!b.has(item)) return false;
+  }
+  return true;
+}
