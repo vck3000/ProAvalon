@@ -2210,22 +2210,22 @@ class Game extends Room {
     }
   }
 
-  getPlayersWhoWentOnMission(missionNumber: number)
-  {
+  getPlayersWhoWentOnMission(missionNumber: number): Set<string> {
     const vh = this.voteHistory;
     const playersWhoWentOnMission = new Set<string>();
-    //TODO: handle errors such as if mission hasn't happened yet, or invalid missionNumber.
+    if(vh[0].length < missionNumber) {
+      return;
+    }
     for (const player in vh) {
-        if (vh.hasOwnProperty(player)) {
-
           const lastPick = vh[player][missionNumber-1].length -1
-          const playerVH = vh[player][missionNumber-1][lastPick];
-          if (typeof playerVH === 'string' && playerVH.includes("VHpicked")) {
+          const playerVh = vh[player][missionNumber-1][lastPick];
+          if (typeof playerVh === 'string' && playerVh.includes("VHpicked")) {
             playersWhoWentOnMission.add(player);
-          }
         }
       } 
     return playersWhoWentOnMission;
+    // if mission isn't over, it will return the players on the last pick of the mission round.
+    // TODO: solve the above error.
   }
   /*
   ELO RATING CALCULATION:

@@ -1949,7 +1949,7 @@ function updateRoomDisableVoteHistory(disableVoteHistory) {
   }
 }
 
-function updateRoomEnableSinadMode(enableSinadMode) {
+function updateRoomEnableSinadMode(enableSinadMode: boolean) {
   if (rooms[this.request.user.inRoomId]) {
     rooms[this.request.user.inRoomId].updateEnableSinadMode(
       enableSinadMode,
