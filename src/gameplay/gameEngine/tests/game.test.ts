@@ -274,50 +274,54 @@ describe('Game Engine', () => {
     });
 
     it('6p Sinad game', () => {
-    game.enableSinadMode = true;
-   
-    const spyUsernames = getUsernamesOfAlliance(Alliance.Spy);
-  const resUsernames = getUsernamesOfAlliance(Alliance.Resistance);
+      game.enableSinadMode = true;
 
-  //m1 pass. doesn't matter who's on.
-   playMission(true);
+      const spyUsernames = getUsernamesOfAlliance(Alliance.Spy);
+      const resUsernames = getUsernamesOfAlliance(Alliance.Resistance);
 
-   //m2 pass. who's on team matters here.
-  let leader = getSocketOfNextTeamPicker();
-  let teamM2 = [resUsernames[0],resUsernames[1],resUsernames[2]];
+      //m1 pass. doesn't matter who's on.
+      playMission(true);
 
-  game.gameMove(leader, ['yes', teamM2]);
-  for (const socket of testSockets) {
-    game.gameMove(socket, ['yes', []]);
-  }
-  for (const username of teamM2) {
-    game.gameMove(getSocketOfUsername(username), ['yes', []]);
-  }
+      //m2 pass. who's on team matters here.
+      let leader = getSocketOfNextTeamPicker();
+      let teamM2 = [resUsernames[0], resUsernames[1], resUsernames[2]];
 
-  // m3 fail
-  leader = getSocketOfNextTeamPicker();
+      game.gameMove(leader, ['yes', teamM2]);
+      for (const socket of testSockets) {
+        game.gameMove(socket, ['yes', []]);
+      }
+      for (const username of teamM2) {
+        game.gameMove(getSocketOfUsername(username), ['yes', []]);
+      }
 
-  // choosing specifically a non subset of m2
-  let teamM3 = [resUsernames[0],resUsernames[1],resUsernames[3],spyUsernames[0]];
+      // m3 fail
+      leader = getSocketOfNextTeamPicker();
 
-  game.gameMove(leader, ['yes', teamM3]);
-  for (const socket of testSockets) {
-    game.gameMove(socket, ['yes', []]);
-  }
+      // choosing specifically a non subset of m2
+      let teamM3 = [
+        resUsernames[0],
+        resUsernames[1],
+        resUsernames[3],
+        spyUsernames[0],
+      ];
 
-  for (const username of teamM3) {
-    const socket = getSocketOfUsername(username);
-    const vote = spyUsernames.includes(username) ? 'no' : 'yes';
-    game.gameMove(socket, [vote, []]);
-  }
+      game.gameMove(leader, ['yes', teamM3]);
+      for (const socket of testSockets) {
+        game.gameMove(socket, ['yes', []]);
+      }
 
-  expect(game.missionNum).toEqual(4);
-  expect(game.pickNum).toEqual(1);
+      for (const username of teamM3) {
+        const socket = getSocketOfUsername(username);
+        const vote = spyUsernames.includes(username) ? 'no' : 'yes';
+        game.gameMove(socket, [vote, []]);
+      }
 
-  // m4 is now 4-man and m5 is now 3-man.
-  expect(game.NUM_PLAYERS_ON_MISSION[1])
-    .toEqual([2,3,4,4,3]);
-});
+      expect(game.missionNum).toEqual(4);
+      expect(game.pickNum).toEqual(1);
+
+      // m4 is now 4-man and m5 is now 3-man.
+      expect(game.NUM_PLAYERS_ON_MISSION[1]).toEqual([2, 3, 4, 4, 3]);
+    });
   });
 
   describe('MordredAssassin', () => {

@@ -50,7 +50,6 @@ const ALLIANCES = [
   Alliance.Spy,
 ];
 
-
 export class GameConfig {
   roomConfig: RoomConfig;
   muteSpectators = false;
@@ -89,7 +88,7 @@ class Game extends Room {
   pickNum = 0;
   roomCreationType: RoomCreationType;
 
-  const NUM_PLAYERS_ON_MISSION = [
+  NUM_PLAYERS_ON_MISSION = [
     [2, 3, 2, 3, 3],
     [2, 3, 4, 3, 4],
     [2, 3, 3, 4, 4],
@@ -1436,7 +1435,7 @@ class Game extends Room {
       voteHistory: this.voteHistory,
       disableVoteHistory: this.disableVoteHistory,
       enableSinadMode: this.enableSinadMode,
-      
+
       playerRoles: playerRolesVar,
 
       ladyChain,
@@ -2102,8 +2101,7 @@ class Game extends Room {
     const moreganoRole = this.specialRoles[Role.Moregano];
     if (moreganoRole) {
       const data = moreganoRole.getPublicGameData();
-      if (data.spiesMoreganoSaw)
-      {
+      if (data.spiesMoreganoSaw) {
         this.sendText(
           `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
           'gameplay-text-red',
@@ -2213,16 +2211,16 @@ class Game extends Room {
   getPlayersWhoWentOnMission(missionNumber: number): Set<string> {
     const vh = this.voteHistory;
     const playersWhoWentOnMission = new Set<string>();
-    if(vh[0].length < missionNumber) {
+    if (vh[0].length < missionNumber) {
       return;
     }
     for (const player in vh) {
-          const lastPick = vh[player][missionNumber-1].length -1
-          const playerVh = vh[player][missionNumber-1][lastPick];
-          if (typeof playerVh === 'string' && playerVh.includes("VHpicked")) {
-            playersWhoWentOnMission.add(player);
-        }
-      } 
+      const lastPick = vh[player][missionNumber - 1].length - 1;
+      const playerVh = vh[player][missionNumber - 1][lastPick];
+      if (typeof playerVh === 'string' && playerVh.includes('VHpicked')) {
+        playersWhoWentOnMission.add(player);
+      }
+    }
     return playersWhoWentOnMission;
     // if mission isn't over, it will return the players on the last pick of the mission round.
     // TODO: solve the above error.
@@ -2493,8 +2491,8 @@ let reverseMapFromMap = function (map, f) {
 };
 
 export function isSubsetOf<T>(a: Set<T>, b: Set<T>): boolean {
-    for (let item of a) {
-        if (!b.has(item)) return false;
-    }
-    return true;
+  for (let item of a) {
+    if (!b.has(item)) return false;
+  }
+  return true;
 }
