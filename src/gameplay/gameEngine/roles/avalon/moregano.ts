@@ -2,6 +2,7 @@ import { Alliance, See } from '../../types';
 import { IRole, Role } from '../types';
 import Game from '../../game';
 import shuffleArray from '../../../../util/shuffleArray';
+import { Card } from '../../cards/types';
 
 /**
  * Moregano (Resistance) — believes they are Morgana.
@@ -57,6 +58,10 @@ class Moregano implements IRole {
 
         visibleSpyCount++;
       }
+    }
+    //add one more visible spy if norebo exists
+    if(this.room.specialCards[Card.Norebo].indexOfPlayerHolding != -1){
+      visibleSpyCount++;
     }
 
     const othersNeeded = visibleSpyCount - 1;
