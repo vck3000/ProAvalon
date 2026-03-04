@@ -1291,7 +1291,7 @@ class Game extends Room {
       this.sendText('The resistance wins!', 'gameplay-text-blue');
     }
 
-    // Now announce Melron / Moregano illusions
+    // Now announce Melron / Moregano / Norebo illusions
     this.announceIllusionsIfAny();
 
     // Post results of Merlin guesses
@@ -2103,6 +2103,19 @@ class Game extends Room {
         );
       }
     }
+    
+    //Norebo
+      const noreboIndex = this.specialCards[Card.Norebo].indexOfPlayerHolding;
+      if (noreboIndex!=-1) {
+        const noreboUsername = this.anonymizer.anon(this.playersInGame[noreboIndex].username);
+
+        console.log(noreboUsername);
+        this.sendText(
+          `Norebo was: ${noreboUsername}`,
+          'gameplay-text-blue',
+        );
+      }
+
   }
 
   private usernameIsPlayer(username: string) {
