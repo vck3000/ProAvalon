@@ -112,6 +112,7 @@ class Game extends Room {
   specialRoles: any;
   specialPhases: any;
   specialCards: any;
+  //cardKeysInPlay: any; //making public TODO maybe this line is useless
 
   gameTimer: GameTimer;
   dateTimerExpires: Date;
@@ -519,6 +520,12 @@ class Game extends Room {
       }
     }
 
+    // Initialise all the Cards
+    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
+      this.specialCards[this.cardKeysInPlay[i]].initialise();
+    }
+
+
     // Prepare the data for each person to see for the rest of the game.
     // The following data do not change as the game goes on.
     for (let i = 0; i < this.playersInGame.length; i++) {
@@ -599,11 +606,6 @@ class Game extends Room {
     // seed the starting data into the VH
     for (let i = 0; i < this.playersInGame.length; i++) {
       this.voteHistory[this.playersInGame[i].request.user.username] = [];
-    }
-
-    // Initialise all the Cards
-    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
-      this.specialCards[this.cardKeysInPlay[i]].initialise();
     }
 
     this.distributeGameData();
