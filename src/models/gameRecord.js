@@ -37,6 +37,8 @@ const gameRecordSchema = new mongoose.Schema({
   sireChain: [String],
   sireHistoryUsernames: [String],
 
+  noreboUsername: String,
+
   missionHistory: [String],
   numFailsHistory: [Number],
   voteHistory: Object,

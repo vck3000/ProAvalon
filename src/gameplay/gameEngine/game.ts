@@ -1379,6 +1379,14 @@ class Game extends Room {
         this.specialCards['sire of the sea'].sireHistoryUsernames;
     }
 
+    let noreboUsername;
+    if (this.specialCards && this.specialCards[Card.Norebo]) {
+      const noreboIndex = this.specialCards[Card.Norebo].indexOfPlayerHolding;
+      if(noreboIndex!=-1) {
+        noreboUsername = this.anonymizer.anon(this.playersInGame[noreboIndex].username);
+      }
+    }
+
     // console.log(this.gameMode);
     let botUsernames;
     if (this.botSockets !== undefined) {
@@ -1440,6 +1448,8 @@ class Game extends Room {
 
       sireChain,
       sireHistoryUsernames,
+
+      noreboUsername,
 
       whoAssassinShot: this.whoAssassinShot,
       whoAssassinShot2: this.whoAssassinShot2,
