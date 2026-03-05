@@ -28,8 +28,12 @@ class Moregano implements IRole {
   }
 
   private spiesThatMoreganoSees?: string[]; // includes self username as first element
+  private hitberonThatMoreganoSees?: string; // incase hitberon is in play
+  private hitberonExists: boolean = false;
 
   see(): See {
+  const roleTags: Record<string, string> = {};
+
     if (!this.room.gameStarted) {
       return { spies: [], roleTags: {} };
     }
@@ -38,11 +42,16 @@ class Moregano implements IRole {
       this.initialiseMoreganoView();
     }
 
+    if(this.hitberonExists) {
+      console.log(this.room.anonymizer.anon(this.hitberonThatMoreganoSees));
+      roleTags[this.room.anonymizer.anon(this.hitberonThatMoreganoSees)] = "Hitberon";
+    }
+
     return {
       spies: this.spiesThatMoreganoSees.map((u) =>
         this.room.anonymizer.anon(u),
       ),
-      roleTags: {},
+      roleTags
     };
   }
 
@@ -53,6 +62,10 @@ class Moregano implements IRole {
       if (p.alliance === Alliance.Spy) {
         if (p.role === Role.Oberon) {
           continue;
+        }
+        if(p.role === Role.Hitberon) {
+          this.hitberonExists = true;
+          console.log("hitberon exists!");
         }
 
         visibleSpyCount++;
@@ -80,7 +93,14 @@ class Moregano implements IRole {
     const selfUsername = selfPlayer.username;
 
     const picks = pool.slice(0, othersNeeded);
-
+    
+    if(this.hitberonExists) {
+      this.hitberonThatMoreganoSees = picks[0];
+      console.log(this.hitberonThatMoreganoSees);
+      shuffleArray(picks);
+      //need to shuffle again to protect against
+      // 2nd name in array always being hitberon.
+    }
     // Cache REAL usernames (self first)
     this.spiesThatMoreganoSees = [selfUsername, ...picks];
   }
