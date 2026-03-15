@@ -8,6 +8,7 @@ export enum Phase {
   Finished = 'Finished',
 
   // Extra roles/cards
+  Sniping = 'Sniping',
   Assassination = 'Assassination',
   Lady = 'Lady',
   Ref = 'Ref',
@@ -25,6 +26,7 @@ const gamePhases = [
   Phase.PickingTeam,
   Phase.VotingTeam,
   Phase.VotingMission,
+  Phase.Sniping,
   Phase.Assassination,
   Phase.Lady,
   Phase.Ref,
@@ -68,4 +70,7 @@ export interface IPhase {
   getStatusMessage(indexOfPlayer: number): string;
 
   getProhibitedIndexesToPick(indexOfPlayer: number): number[];
+
+  // If defined, called on timeout instead of the default random-move behaviour.
+  handleTimeout?(): void;
 }

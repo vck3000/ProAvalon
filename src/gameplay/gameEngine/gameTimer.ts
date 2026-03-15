@@ -10,6 +10,7 @@ const ONE_SECOND = 1000;
 export interface Timeouts {
   // All in milliseconds
   default: number;
+  sniping: number;
   assassination: number;
   critMission: number;
 }
@@ -22,6 +23,7 @@ export class GameTimer {
   setTimeoutIds: Set<ReturnType<typeof setTimeout>> = new Set();
   private timeoutSettings: Timeouts = {
     default: 0,
+    sniping: 5 * 60 * 1000, // 5 minutes
     assassination: 0,
     critMission: 0,
   };
@@ -119,8 +121,9 @@ export class GameTimer {
     // but not much we can do. We don't want the timeout settings
     // in game.ts
     let timerDuration;
-
-    if (this.game.phase === Phase.Assassination) {
+    if (this.game.phase === Phase.Sniping) {
+      timerDuration = this.timeoutSettings.sniping;
+    } else if (this.game.phase === Phase.Assassination) {
       timerDuration = this.timeoutSettings.assassination;
     } else if (this.game.critMission) {
       timerDuration = this.timeoutSettings.critMission;
@@ -176,6 +179,13 @@ export class GameTimer {
       this.game.specialPhases.hasOwnProperty(this.game.phase) === true
     ) {
       phaseObject = this.game.specialPhases[this.game.phase];
+    }
+
+    // If the phase defines its own timeout handler, use it instead.
+    if (phaseObject.handleTimeout) {
+      phaseObject.handleTimeout();
+      postGameMoveChecks(this.game);
+      return;
     }
 
     // Iterate over each user to figure out who hasn't acted.

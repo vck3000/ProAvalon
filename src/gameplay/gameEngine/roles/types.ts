@@ -9,6 +9,7 @@ export enum Role {
   Assassin = 'Assassin',
   Percival = 'Percival',
   Morgana = 'Morgana',
+  Sniper = 'Sniper',
 
   Mordred = 'Mordred',
   Oberon = 'Oberon',

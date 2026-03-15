@@ -7,6 +7,7 @@ import VotingMission from './common/votingMission';
 import VotingTeam from './common/votingTeam';
 
 import Assassination from './avalon/assassination';
+import Sniping from './avalon/sniping';
 import Lady from './avalon/lady';
 import Ref from './avalon/ref';
 import Sire from './avalon/sire';
@@ -23,6 +24,7 @@ export const commonPhases = {
 
 export const avalonPhases = {
   [Assassination.phase]: Assassination,
+  [Sniping.phase]: Sniping,
   [Lady.phase]: Lady,
   [Ref.phase]: Ref,
   [Sire.phase]: Sire,
