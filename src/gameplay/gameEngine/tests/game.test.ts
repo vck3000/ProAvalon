@@ -52,7 +52,7 @@ describe('Game Engine', () => {
       false,
       false,
       RoomCreationType.CUSTOM_ROOM,
-      jest.fn(),
+      jest.fn().mockReturnValue(new Date()),
     );
 
     game = new Game(gameConfig);
