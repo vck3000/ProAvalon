@@ -4,6 +4,7 @@ export enum Card {
   LadyOfTheLake = 'Lady of the Lake',
   RefOfTheRain = 'Ref of the Rain',
   SireOfTheSea = 'Sire of the Sea',
+  Sniper = 'Sniper',
 }
 
 export interface ICard {

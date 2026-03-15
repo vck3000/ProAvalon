@@ -397,6 +397,49 @@ describe('Game Engine', () => {
     });
   });
 
+  describe('6P Avalon game with Sniper', () => {
+    beforeEach(() => {
+      startGame(6, [Role.Merlin, Role.Percival, Role.Assassin, Role.Morgana, Role.Sniper]);
+    });
+
+    it('Sniper shoots Assassin', () => {
+      playGameToResWin();
+
+      expect(game.phase).toEqual(Phase.Sniping);
+
+      // Shoot assassin to give res the win
+      const sniperSocket = getSocketOfRole(Role.Sniper);
+      const assassinUsername = getUsernameOfRole(Role.Assassin);
+      game.gameMove(sniperSocket, ['yes', [assassinUsername]]);
+
+      // Game over
+      expect(game.phase).toEqual(Phase.Finished);
+      expect(game.winner).toEqual(Alliance.Resistance);
+    });
+
+    it('Assassin shoots Merlin', () => {
+      playGameToResWin();
+
+      expect(game.phase).toEqual(Phase.Sniping);
+
+      // Did not shoot assassin
+      const sniperSocket = getSocketOfRole(Role.Sniper);
+      const morganaUsername = getUsernameOfRole(Role.Morgana);
+      game.gameMove(sniperSocket, ['yes', [morganaUsername]]);
+
+      expect(game.phase).toEqual(Phase.Assassination);
+
+      // Shoot percival to give res the win
+      const assassinSocket = getSocketOfRole(Role.Assassin);
+      const percyUsername = getUsernameOfRole(Role.Merlin);
+      game.gameMove(assassinSocket, ['yes', [percyUsername]]);
+
+      // Game over
+      expect(game.phase).toEqual(Phase.Finished);
+      expect(game.winner).toEqual(Alliance.Spy);
+    });
+  });
+
   describe('Check Options', () => {
     it('Allows fab 4', () => {
       const checkOptions = Game.checkOptions([

@@ -364,6 +364,14 @@ class Game extends Room {
     success: boolean;
     errMessage: string;
   } {
+    if (!options.includes(Role.Assassin) && options.includes(Role.Sniper)) {
+      return {
+        success: false,
+        errMessage:
+          'Cannot start a game with Sniper but not Assassin.',
+      };
+    }
+
     if (
       options.includes(Role.Assassin) &&
       options.includes(Role.MordredAssassin)
@@ -443,8 +451,15 @@ class Game extends Room {
     this.resRoles = [];
     this.spyRoles = [];
 
-    for (let i = 0; i < options.length; i++) {
-      const op = options[i];
+    // Sort options by priority
+    const sortedOptions = [...options].sort((a, b) => {
+      const aOrder = this.specialRoles[a]?.orderPriorityInOptions ?? 0;
+      const bOrder = this.specialRoles[b]?.orderPriorityInOptions ?? 0;
+      return bOrder - aOrder;
+    });
+
+    for (let i = 0; i < sortedOptions.length; i++) {
+      const op = sortedOptions[i];
       // console.log(op);
       // If a role file exists for this
       if (this.specialRoles.hasOwnProperty(op)) {
@@ -1132,7 +1147,7 @@ class Game extends Room {
           data[i].proposedTeam = this.anonymizer.anonMany(
             this.lastProposedTeam,
           );
-        } else if (this.phase === Phase.Assassination) {
+        } else if (this.phase === Phase.Assassination || this.phase === Phase.Sniping) {
           data[i].proposedTeam = this.anonymizer.anonMany(
             this.lastProposedTeam,
           );
@@ -1791,6 +1806,8 @@ class Game extends Room {
     let foundSomething = false;
 
     for (let i = 0; i < this.roleKeysInPlay.length; i++) {
+      if (this.specialRoles[Role.Sniper]?.shotCorrectly === true) break;
+
       if (!this.specialRoles[this.roleKeysInPlay[i]].checkSpecialMove) {
         continue;
       }
