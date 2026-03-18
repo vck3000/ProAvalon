@@ -709,7 +709,9 @@ const useNewButtonGroup = (gameModeObj) => {
     const betaLabel = roleObj.isBeta ? ' <span class="badge badge-warning badge-beta">beta</span>' : '';
     const active = defaultActiveRoles.includes(name) ? 'active' : '';
 
-    if (roleObj.alliance === 'Spy') {
+    if (skipRoles.includes(name)) {
+      // do nothing
+    } else if (roleObj.alliance === 'Spy') {
       spyStr += `<label class='btn btn-mine btn-mine-role btn-danger ${active}' data-name='${name}' data-trigger='hover' data-html='true' data-placement='right' title='${name}' data-content='${roleObj.description.replace(/'/g, '&#39;')}'>`;
       spyStr += `<input style='display: none;' name='${name.toLowerCase()}' id='${name.toLowerCase()}' type='checkbox' autocomplete='off' checked> ${name}${betaLabel}`;
       spyStr += '</label>';
