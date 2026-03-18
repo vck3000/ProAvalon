@@ -1820,6 +1820,8 @@ function matchFound(usernames: string[]): void {
       rooms[nextRoomId] = new GameWrapper(gameConfig, socketCallback);
       const room = rooms[nextRoomId];
 
+      room.configureAnonymousMode(true);
+
       room.configureTimeouts({
         default: 1.5 * 60 * 1000,
         critMission: 3 * 60 * 1000,
