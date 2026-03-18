@@ -1372,7 +1372,7 @@ class Game extends Room {
     let sireChain;
     let sireHistoryUsernames;
     if (this.specialCards && this.specialCards[Card.SireOfTheSea]) {
-      sireChain = this.specialCards[Card.SireOfFFTheSea].sireChain;
+      sireChain = this.specialCards[Card.SireOfTheSea].sireChain;
       sireHistoryUsernames =
         this.specialCards[Card.SireOfTheSea].sireHistoryUsernames;
     }
