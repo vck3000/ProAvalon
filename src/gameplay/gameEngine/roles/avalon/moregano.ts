@@ -30,10 +30,19 @@ class Moregano implements IRole {
   private spiesThatMoreganoSees?: string[]; // includes self username as first element
 
   see(): See {
+          const roleTags: Record<string, string> = {};
+
     if (!this.room.gameStarted) {
       return { spies: [], roleTags: {} };
     }
 
+    for (let i = 0; i < this.room.playersInGame.length; i++) {
+        if(this.room.playersInGame[i].role === this.role) {
+       roleTags[
+          this.room.anonymizer.anon(this.room.playersInGame[i].username)
+        ] = "Morgana?";
+      }
+    }
     if (!this.spiesThatMoreganoSees) {
       this.initialiseMoreganoView();
     }
@@ -42,7 +51,7 @@ class Moregano implements IRole {
       spies: this.spiesThatMoreganoSees.map((u) =>
         this.room.anonymizer.anon(u),
       ),
-      roleTags: {},
+      roleTags
     };
   }
 

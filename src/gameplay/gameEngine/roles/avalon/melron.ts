@@ -30,18 +30,27 @@ class Melron implements IRole {
   private spiesThatMelronSees?: string[];
 
   see(): See {
+      const roleTags: Record<string, string> = {};
     if (!this.room.gameStarted) {
       return { spies: [], roleTags: {} };
     }
 
+    for (let i = 0; i < this.room.playersInGame.length; i++) {
+        if(this.room.playersInGame[i].role === this.role) {
+       roleTags[
+          this.room.anonymizer.anon(this.room.playersInGame[i].username)
+        ] = "Merlin?";
+      }
+    }
     if (!this.spiesThatMelronSees) {
       this.initialiseMelronView();
     }
 
     return {
       spies: this.spiesThatMelronSees.map((u) => this.room.anonymizer.anon(u)),
-      roleTags: {},
+      roleTags
     };
+
   }
 
   private initialiseMelronView(): void {
