@@ -1,5 +1,6 @@
-import { IUser } from '../../gameplay/gameEngine/types';
+import { Alliance, IUser } from '../../gameplay/gameEngine/types';
 import { S3AvatarSet } from '../../clients/s3/S3Agent';
+import { Role } from '../../gameplay/gameEngine/roles/types';
 
 export default interface IUserDbAdapter {
   getUser(username: string): Promise<IUser>;
@@ -17,4 +18,14 @@ export default interface IUserDbAdapter {
     librarySize: number,
   ): Promise<void>;
   removeAvatar(username: string, avatarSet: S3AvatarSet): Promise<void>;
+  updateRating(userId: string, newRating: number): Promise<void>;
+  processGame(
+    userId: string,
+    timePlayed: Date,
+    alliance: Alliance,
+    role: Role,
+    numPlayers: number,
+    win: boolean,
+    ranked: boolean,
+  ): Promise<void>;
 }
