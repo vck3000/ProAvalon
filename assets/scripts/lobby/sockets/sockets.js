@@ -730,9 +730,9 @@ const useNewButtonGroup = (gameModeObj) => {
   });
 
   // Set it in
-  $('#spyLabel')[0].innerHTML = 'Spies';
-  $('#resLabel')[0].innerHTML = 'Resistance';
-  $('#cardLabel')[0].innerHTML = 'Cards';
+  $('#spyLabel')[0].innerHTML = 'Spies:';
+  $('#resLabel')[0].innerHTML = 'Resistance:';
+  $('#cardLabel')[0].innerHTML = 'Cards:';
   $('#spyRolesButtonGroup')[0].innerHTML = spyStr;
   $('#resRolesButtonGroup')[0].innerHTML = resStr;
   $('#cardsButtonGroup')[0].innerHTML = cardStr;

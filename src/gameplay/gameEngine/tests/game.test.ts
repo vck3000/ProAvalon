@@ -407,7 +407,7 @@ describe('Game Engine', () => {
       ]);
     });
 
-    it('Galahad sees Merlin and Assassin tagged as Merlin/Assassin?', () => {
+    it('sees Merlin and Assassin tagged as Merlin/Assassin?', () => {
       const galahad = game.specialRoles[Role.Galahad];
       const { roleTags } = galahad.see();
 
@@ -418,7 +418,7 @@ describe('Game Engine', () => {
       expect(roleTags[assassinUsername]).toEqual('Merlin/Assassin?');
     });
 
-    it('Galahad does not see spies other than Assassin', () => {
+    it('does not see spies other than Assassin', () => {
       const galahad = game.specialRoles[Role.Galahad];
       const { roleTags } = galahad.see();
 
@@ -427,13 +427,13 @@ describe('Game Engine', () => {
       expect(roleTags[morganaUsername]).toBeUndefined();
     });
 
-    it('Galahad does not see other resistance members', () => {
+    it('does not see other resistance members', () => {
       const galahad = game.specialRoles[Role.Galahad];
       const { roleTags } = galahad.see();
 
-      const percivalUsername = getUsernameOfRole(Role.Percival);
+      const resistanceUsername = getUsernameOfRole(Role.Resistance);
 
-      expect(roleTags[percivalUsername]).toBeUndefined();
+      expect(roleTags[resistanceUsername]).toBeUndefined();
     });
   });
 
