@@ -397,6 +397,46 @@ describe('Game Engine', () => {
     });
   });
 
+  describe('Galahad', () => {
+    beforeEach(() => {
+      startGame(6, [
+        Role.Merlin,
+        Role.Assassin,
+        Role.Morgana,
+        Role.Galahad,
+      ]);
+    });
+
+    it('sees Merlin and Assassin tagged as Merlin/Assassin?', () => {
+      const galahad = game.specialRoles[Role.Galahad];
+      const { roleTags } = galahad.see();
+
+      const merlinUsername = getUsernameOfRole(Role.Merlin);
+      const assassinUsername = getUsernameOfRole(Role.Assassin);
+
+      expect(roleTags[merlinUsername]).toEqual('Merlin/Assassin?');
+      expect(roleTags[assassinUsername]).toEqual('Merlin/Assassin?');
+    });
+
+    it('does not see spies other than Assassin', () => {
+      const galahad = game.specialRoles[Role.Galahad];
+      const { roleTags } = galahad.see();
+
+      const morganaUsername = getUsernameOfRole(Role.Morgana);
+
+      expect(roleTags[morganaUsername]).toBeUndefined();
+    });
+
+    it('does not see other resistance members', () => {
+      const galahad = game.specialRoles[Role.Galahad];
+      const { roleTags } = galahad.see();
+
+      const resistanceUsername = getUsernameOfRole(Role.Resistance);
+
+      expect(roleTags[resistanceUsername]).toBeUndefined();
+    });
+  });
+
   describe('Check Options', () => {
     it('Allows fab 4', () => {
       const checkOptions = Game.checkOptions([
