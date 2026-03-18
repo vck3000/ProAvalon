@@ -698,9 +698,58 @@ socket.on('gameModes', (GAME_MODE_NAMES) => {
 const defaultActiveRoles = ['Merlin', 'Assassin', 'Percival', 'Morgana'];
 const skipRoles = ['Resistance', 'Spy'];
 
-socket.on('update-game-modes-in-room', (gameModeObj) => {
-  let str = '';
+const useNewButtonGroup = (gameModeObj) => {
+  let spyStr = '';
+  let resStr = '';
+  let cardStr = '';
 
+  // Roles
+  gameModeObj.rolesArray.forEach((roleObj) => {
+    const name = roleObj.role;
+    const betaLabel = roleObj.isBeta ? ' <span class="badge badge-warning badge-beta">beta</span>' : '';
+    const active = defaultActiveRoles.includes(name) ? 'active' : '';
+
+    if (roleObj.alliance === 'Spy') {
+      spyStr += `<label class='btn btn-mine btn-mine-role btn-danger ${active}' data-name='${name}' data-trigger='hover' data-html='true' data-placement='right' title='${name}' data-content='${roleObj.description.replace(/'/g, '&#39;')}'>`;
+      spyStr += `<input style='display: none;' name='${name.toLowerCase()}' id='${name.toLowerCase()}' type='checkbox' autocomplete='off' checked> ${name}${betaLabel}`;
+      spyStr += '</label>';
+    } else {
+      resStr += `<label class='btn btn-mine btn-mine-role btn-success ${active}' data-name='${name}' data-trigger='hover' data-html='true' data-placement='right' title='${name}' data-content='${roleObj.description.replace(/'/g, '&#39;')}'>`;
+      resStr += `<input style='display: none;' name='${name.toLowerCase()}' id='${name.toLowerCase()}' type='checkbox' autocomplete='off' checked> ${name}${betaLabel}`;
+      resStr += '</label>';
+    }
+  });
+
+  // Cards
+  gameModeObj.cardsArray.forEach((cardObj) => {
+    const name = cardObj.card;
+    const betaLabel = cardObj.isBeta ? ' <span class="badge badge-info badge-beta">beta</span>' : '';
+    cardStr += `<label class='btn btn-mine btn-mine-role btn-info' data-name='${name}' data-trigger='hover' data-html='true' data-placement='right' title='${name}' data-content='${cardObj.description.replace(/'/g, '&#39;')}'>`;
+    cardStr += `<input style='display: none;' name='${name.toLowerCase()}' id='${name.toLowerCase()}' type='checkbox' autocomplete='off' checked> ${name}${betaLabel}`;
+    cardStr += '</label>';
+  });
+
+  // Set it in
+  $('#spyLabel')[0].innerHTML = 'Spies';
+  $('#resLabel')[0].innerHTML = 'Resistance';
+  $('#cardLabel')[0].innerHTML = 'Cards';
+  $('#spyRolesButtonGroup')[0].innerHTML = spyStr;
+  $('#resRolesButtonGroup')[0].innerHTML = resStr;
+  $('#cardsButtonGroup')[0].innerHTML = cardStr;
+  $('#spyRolesButtonGroup [data-trigger="hover"]').popover();
+  $('#resRolesButtonGroup [data-trigger="hover"]').popover();
+  $('#cardsButtonGroup [data-trigger="hover"]').popover();
+}
+
+socket.on('update-game-modes-in-room', (gameModeObj) => {
+  // New button group
+  if (gameModeObj.rolesArray && gameModeObj.cardsArray) {
+    return useNewButtonGroup(gameModeObj);
+  }
+
+  // Old button group
+  let str = '';
+  let infoIconString = '';
   let count = 0;
 
   // Roles

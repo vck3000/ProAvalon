@@ -102,6 +102,77 @@
   background: black;
 }
 
+.dark .btn-mine-role.btn-danger.active {
+  background-color: #b63b3b !important;
+}
+
+.dark .btn-mine-role.btn-success.active {
+  background-color: #5ac06c !important;
+}
+
+.dark .btn-mine-role.btn-info.active {
+  background-color: #1f6a8e !important;
+}
+
+.dark .btn-mine {
+  color: white;
+  border: 1px solid #666;
+  background: #444;
+}
+
+.dark .btn-mine:hover,
+.dark .btn-mine:focus {
+  background: #666;
+  border-color: #888;
+}
+
+.dark .btn-mine-role.btn-danger,
+.dark .btn-mine-role.btn-success,
+.dark .btn-mine-role.btn-info {
+  color: white;
+  background-color: #444 !important;
+  border-color: #666 !important;
+}
+
+.dark .btn-mine-role.btn-danger:hover,
+.dark .btn-mine-role.btn-danger:focus {
+  background-color: #d38383 !important;
+  border-color: rgb(179, 118, 118) !important;
+}
+
+.dark .btn-mine-role.btn-success:hover,
+.dark .btn-mine-role.btn-success:focus {
+  background-color: #86c091 !important;
+  border-color: rgb(135, 208, 140) !important;
+}
+
+.dark .btn-mine-role.btn-info:hover,
+.dark .btn-mine-role.btn-info:focus {
+  background-color: #1f6a8e !important;
+  border-color: #39a !important;
+}
+
+.dark .popover {
+  background-color: #2a2a2a;
+  color: #ddd;
+  border-color: #ccc;
+}
+
+.dark .popover-title {
+  background-color: #333;
+  color: #eee;
+  border-bottom-color: #ccc;
+}
+
+.dark .popover.right > .arrow::after {
+  border-right-color: #2a2a2a;
+}
+
+.dark .popover.right > .arrow {
+  border-right-color: #ccc;
+}
+
+
 .dark .modal-content {
   background-color: #333;
 }
