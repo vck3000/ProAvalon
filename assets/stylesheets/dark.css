@@ -103,11 +103,11 @@
 }
 
 .dark .btn-mine-role.btn-danger.active {
-  background-color: #b63b3b !important;
+  background-color: #923a3a !important;
 }
 
 .dark .btn-mine-role.btn-success.active {
-  background-color: #5ac06c !important;
+  background-color: #2e6437 !important;
 }
 
 .dark .btn-mine-role.btn-info.active {
@@ -122,34 +122,34 @@
 
 .dark .btn-mine:hover,
 .dark .btn-mine:focus {
-  background: #666;
-  border-color: #888;
+  background: #333;
+  border-color: white;
 }
 
 .dark .btn-mine-role.btn-danger,
 .dark .btn-mine-role.btn-success,
 .dark .btn-mine-role.btn-info {
-  color: white;
-  background-color: #444 !important;
-  border-color: #666 !important;
+  color: #9e9e9e;
+  background-color: #373737 !important;
+  border-color: black !important;
 }
 
 .dark .btn-mine-role.btn-danger:hover,
 .dark .btn-mine-role.btn-danger:focus {
-  background-color: #d38383 !important;
+  background-color: #a54f4f !important;
   border-color: rgb(179, 118, 118) !important;
 }
 
 .dark .btn-mine-role.btn-success:hover,
 .dark .btn-mine-role.btn-success:focus {
-  background-color: #86c091 !important;
+  background-color: #51885a !important;
   border-color: rgb(135, 208, 140) !important;
 }
 
 .dark .btn-mine-role.btn-info:hover,
 .dark .btn-mine-role.btn-info:focus {
-  background-color: #1f6a8e !important;
-  border-color: #39a !important;
+  background-color: rgb(95, 150, 177) !important;
+  border-color: rgb(118, 184, 196) !important;
 }
 
 .dark .popover {
