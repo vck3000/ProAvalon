@@ -112,6 +112,7 @@ class Game extends Room {
   specialRoles: any;
   specialPhases: any;
   specialCards: any;
+  //cardKeysInPlay: any; //making public TODO maybe this line is useless
 
   gameTimer: GameTimer;
   dateTimerExpires: Date;
@@ -519,6 +520,12 @@ class Game extends Room {
       }
     }
 
+    // Initialise all the Cards
+    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
+      this.specialCards[this.cardKeysInPlay[i]].initialise();
+    }
+
+
     // Prepare the data for each person to see for the rest of the game.
     // The following data do not change as the game goes on.
     for (let i = 0; i < this.playersInGame.length; i++) {
@@ -599,11 +606,6 @@ class Game extends Room {
     // seed the starting data into the VH
     for (let i = 0; i < this.playersInGame.length; i++) {
       this.voteHistory[this.playersInGame[i].request.user.username] = [];
-    }
-
-    // Initialise all the Cards
-    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
-      this.specialCards[this.cardKeysInPlay[i]].initialise();
     }
 
     this.distributeGameData();
@@ -1289,7 +1291,7 @@ class Game extends Room {
       this.sendText('The resistance wins!', 'gameplay-text-blue');
     }
 
-    // Now announce Melron / Moregano illusions
+    // Now announce Melron / Moregano / Norebo illusions
     this.announceIllusionsIfAny();
 
     // Post results of Merlin guesses
@@ -1377,6 +1379,14 @@ class Game extends Room {
         this.specialCards[Card.SireOfTheSea].sireHistoryUsernames;
     }
 
+    let noreboUsername;
+    if (this.specialCards && this.specialCards[Card.Norebo]) {
+      const noreboIndex = this.specialCards[Card.Norebo].indexOfPlayerHolding;
+      if(noreboIndex!=-1) {
+        noreboUsername = this.anonymizer.anon(this.playersInGame[noreboIndex].username);
+      }
+    }
+
     // console.log(this.gameMode);
     let botUsernames;
     if (this.botSockets !== undefined) {
@@ -1438,6 +1448,8 @@ class Game extends Room {
 
       sireChain,
       sireHistoryUsernames,
+
+      noreboUsername,
 
       whoAssassinShot: this.whoAssassinShot,
       whoAssassinShot2: this.whoAssassinShot2,
@@ -2101,6 +2113,19 @@ class Game extends Room {
         );
       }
     }
+    
+    //Norebo
+      const noreboIndex = this.specialCards[Card.Norebo].indexOfPlayerHolding;
+      if (noreboIndex!=-1) {
+        const noreboUsername = this.anonymizer.anon(this.playersInGame[noreboIndex].username);
+
+        console.log(noreboUsername);
+        this.sendText(
+          `Norebo was: ${noreboUsername}`,
+          'gameplay-text-blue',
+        );
+      }
+
   }
 
   private usernameIsPlayer(username: string) {
