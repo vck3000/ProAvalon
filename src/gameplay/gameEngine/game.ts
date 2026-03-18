@@ -1363,18 +1363,18 @@ class Game extends Room {
 
     let refChain;
     let refHistoryUsernames;
-    if (this.specialCards && this.specialCards['ref of the rain']) {
-      refChain = this.specialCards['ref of the rain'].refChain;
+    if (this.specialCards && this.specialCards[Card.RefOfTheRain]) {
+      refChain = this.specialCards[Card.RefOfTheRain].refChain;
       refHistoryUsernames =
-        this.specialCards['ref of the rain'].refHistoryUsernames;
+        this.specialCards[Card.RefOfTheRain].refHistoryUsernames;
     }
 
     let sireChain;
     let sireHistoryUsernames;
-    if (this.specialCards && this.specialCards['sire of the sea']) {
-      sireChain = this.specialCards['sire of the sea'].sireChain;
+    if (this.specialCards && this.specialCards[Card.SireOfTheSea]) {
+      sireChain = this.specialCards[Card.SireOfFFTheSea].sireChain;
       sireHistoryUsernames =
-        this.specialCards['sire of the sea'].sireHistoryUsernames;
+        this.specialCards[Card.SireOfTheSea].sireHistoryUsernames;
     }
 
     // console.log(this.gameMode);
