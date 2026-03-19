@@ -83,14 +83,15 @@ class Sire {
         return;
       }
 
-      // grab the carder's alliance
+      // grab the carder's alliance (Troublemaker lies and appears as Spy)
       let alliance;
       for (var i = 0; i < this.thisRoom.playersInGame.length; i++) {
         if (
           this.thisRoom.playersInGame[i].username ===
           socket.request.user.username
         ) {
-          alliance = this.thisRoom.playersInGame[i].alliance;
+          const holderPlayer = this.thisRoom.playersInGame[i];
+          alliance = holderPlayer.cardedAlliance ?? holderPlayer.alliance;
         }
       }
 

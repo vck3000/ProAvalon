@@ -21,6 +21,10 @@ export enum Role {
 
   Melron = 'Melron',
   Moregano = 'Moregano',
+
+  Lunatic = 'Lunatic',
+
+  Troublemaker = 'Troublemaker',
 }
 
 export interface IRole {

@@ -397,6 +397,55 @@ describe('Game Engine', () => {
     });
   });
 
+  describe('Lunatic', () => {
+    beforeEach(() => {
+      startGame(5, [Role.Lunatic]);
+    });
+
+    it('sees other spies', () => {
+      const lunatic = game.specialRoles[Role.Lunatic];
+      const { spies } = lunatic.see();
+
+      const spyUsername = getUsernamesOfAlliance(Alliance.Spy).find(
+        (u) => u !== getUsernameOfRole(Role.Lunatic),
+      );
+
+      expect(spies).toContain(getUsernameOfRole(Role.Lunatic));
+      expect(spies).toContain(spyUsername);
+    });
+
+    it('does not see resistance members', () => {
+      const lunatic = game.specialRoles[Role.Lunatic];
+      const { spies } = lunatic.see();
+
+      const resUsername = getUsernamesOfAlliance(Alliance.Resistance)[0];
+      expect(spies).not.toContain(resUsername);
+    });
+
+    it('mission fails when Lunatic presses succeed', () => {
+      const lunaticUsername = getUsernameOfRole(Role.Lunatic);
+      const resUsername = getUsernamesOfAlliance(Alliance.Resistance)[0];
+      const teamUsernames = [lunaticUsername, resUsername];
+
+      // Pick team containing Lunatic
+      game.gameMove(getSocketOfNextTeamPicker(), ['yes', teamUsernames]);
+      expect(game.phase).toEqual(Phase.VotingTeam);
+
+      // Everyone approves the team
+      for (const socket of testSockets) {
+        game.gameMove(socket, ['yes', []]);
+      }
+      expect(game.phase).toEqual(Phase.VotingMission);
+
+      // Both players press succeed — Lunatic's is silently converted to fail
+      for (const username of teamUsernames) {
+        game.gameMove(getSocketOfUsername(username), ['yes', []]);
+      }
+
+      expect(game.missionHistory[0]).toEqual('failed');
+    });
+  })
+
   describe('Check Options', () => {
     it('Allows fab 4', () => {
       const checkOptions = Game.checkOptions([
