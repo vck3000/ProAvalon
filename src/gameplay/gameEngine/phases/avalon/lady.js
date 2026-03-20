@@ -84,8 +84,9 @@ class Lady {
         return;
       }
 
-      // grab the target's alliance
-      const { alliance } = this.thisRoom.playersInGame[targetIndex];
+      // grab the target's alliance (Troublemaker lies and appears as Spy)
+      const targetPlayer = this.thisRoom.playersInGame[targetIndex];
+      const alliance = targetPlayer.cardedAlliance ?? targetPlayer.alliance;
 
       // emit to the lady holder the person's alliance
       socket.emit(
