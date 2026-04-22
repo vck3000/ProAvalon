@@ -8,6 +8,7 @@ import {
 import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
+import { isPercival } from '../modsadmins/percivals';
 import { isDev } from '../modsadmins/developers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/gameEngine/types';
@@ -30,6 +31,10 @@ export async function getAndUpdatePatreonRewardTierForUser(
   await updateUsersAvatarLibrary(usernameLower, patreonTier);
 
   return patreonTier;
+}
+
+export function isWinner(username: string): boolean {
+  return true;
 }
 
 async function getPatreonRewardTierForUser(
@@ -61,14 +66,15 @@ async function getPatreonRewardTierForUser(
 }
 
 export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
+  console.log("getting the rewards");
   const rewardsSatisfied: RewardType[] = [];
-  const patreonReward = await getAndUpdatePatreonRewardTierForUser(
-    user.username.toLowerCase(),
-  );
+  //const patreonReward = await getAndUpdatePatreonRewardTierForUser(
+  //  user.username.toLowerCase(),
+  //);
 
-  if (patreonReward) {
-    rewardsSatisfied.push(patreonReward);
-  }
+  //if (patreonReward) {
+  //  rewardsSatisfied.push(patreonReward);
+  //}
 
   for (const key in AllRewardsExceptPatreon) {
     const hasReward = await userHasReward(user, key as RewardType);
@@ -76,7 +82,7 @@ export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
       rewardsSatisfied.push(key as RewardType);
     }
   }
-
+  console.log(rewardsSatisfied);
   return rewardsSatisfied;
 }
 
@@ -99,6 +105,14 @@ export async function userHasReward(
   }
 
   if (reward.devReq && !isDev(user.usernameLower)) {
+    return false;
+  }
+
+  if (reward.percivalReq && !isPercival(user.usernameLower)) {
+    return false;
+  }
+
+  if (reward.winnerReq && !isWinner(user.usernameLower)) {
     return false;
   }
 

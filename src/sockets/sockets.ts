@@ -15,7 +15,12 @@ import { isAdmin } from '../modsadmins/admins';
 import { isMod } from '../modsadmins/mods';
 import { isPercival } from '../modsadmins/percivals';
 import { isTO } from '../modsadmins/tournamentOrganizers';
-import { GAME_MODE_NAMES, GameMode, isGameMode, strToGameMode } from '../gameplay/gameEngine/gameModes';
+import {
+  GAME_MODE_NAMES,
+  GameMode,
+  isGameMode,
+  strToGameMode,
+} from '../gameplay/gameEngine/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -44,8 +49,7 @@ import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
 
 let createNewRoomAllowed = true;
-export function ToggleCreateNewRoomAllowed()
-{
+export function ToggleCreateNewRoomAllowed() {
   createNewRoomAllowed = !createNewRoomAllowed;
 }
 
@@ -726,7 +730,9 @@ export const server = function (io: SocketServer): void {
       });
     }, 1000);
 
+    console.log('hello i am here');
     socket.rewards = await getAllRewardsForUser(socket.request.user);
+    console.log(socket.rewards);
     socket = applyApplicableRewards(socket);
 
     if (
@@ -770,6 +776,7 @@ export function socketCallback(action, room) {
 }
 
 const applyApplicableRewards = function (socket) {
+  console.log('hi');
   // Admin badge
   if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
     socket.request.badge = 'A';
@@ -777,12 +784,14 @@ const applyApplicableRewards = function (socket) {
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
     socket.request.badge = 'M';
-  } else if (isPercival(socket.request.user.username)) {
+  } else if (socket.rewards.includes(REWARDS.PERCIVAL_BADGE)) {
     socket.request.badge = 'P';
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
     socket.request.badge = 'T';
+  } else if (socket.rewards.includes(REWARDS.WINNER_BADGE)) {
+    socket.request.badge = '🥇';
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
@@ -1392,9 +1401,11 @@ function outputSpamMessage(chat, user) {
 }
 
 function newRoom(dataObj) {
-  if (!createNewRoomAllowed)
-  {
-    sendReplyToCommand(this, "Creation of new rooms are temporarily blocked. A server restart is coming. Please wait until after the server restarts.");
+  if (!createNewRoomAllowed) {
+    sendReplyToCommand(
+      this,
+      'Creation of new rooms are temporarily blocked. A server restart is coming. Please wait until after the server restarts.',
+    );
     return;
   }
 
