@@ -19,6 +19,10 @@ import {
   rolesToAlliances,
   spyRoles,
 } from '../gameplay/gameEngine/roles/roles';
+import { refreshMods } from '../modsadmins/mods';
+import { refreshPercivals } from '../modsadmins/percivals';
+import { refreshTOs } from '../modsadmins/tournamentOrganizers';
+import { refreshWinners } from '../rewards/getRewards'
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
 import uuid from 'uuid';
 import { captchaMiddleware } from '../util/captcha';
@@ -1017,3 +1021,8 @@ function escapeText(str) {
     .replace(/"/g, '&quot;')
     .replace(/(?:\r\n|\r|\n)/g, ' <br>');
 }
+
+refreshMods();
+refreshPercivals();
+refreshTOs();
+refreshWinners();

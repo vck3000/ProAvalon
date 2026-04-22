@@ -10,6 +10,7 @@ import { isMod } from '../modsadmins/mods';
 import { isTO } from '../modsadmins/tournamentOrganizers';
 import { isPercival } from '../modsadmins/percivals';
 import { isDev } from '../modsadmins/developers';
+import ModOrg from '../models/modOrg';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/gameEngine/types';
 import { PatreonController } from '../clients/patreon/patreonController';
@@ -33,8 +34,33 @@ export async function getAndUpdatePatreonRewardTierForUser(
   return patreonTier;
 }
 
+//export function isWinner(username: string): boolean {
+//  return true;
+//}
+
+export const winnerSet = new Set<string>();
+
+export async function refreshWinners() {
+  try {
+    const mods = await ModOrg.find(
+      { role: 'winner' },
+      { usernameLower: 1, _id: 0 }
+    ).lean();
+
+    winnerSet.clear();
+
+    for (const mod of mods) {
+      winnerSet.add(mod.usernameLower);
+    }
+
+    console.log(`[WINNER CACHE] Loaded ${winnerSet.size} winners`);
+  } catch (err) {
+    console.log("Failed to refresh winner cache:", err);
+  }
+}
+
 export function isWinner(username: string): boolean {
-  return true;
+  return winnerSet.has(username.toLowerCase());
 }
 
 async function getPatreonRewardTierForUser(
