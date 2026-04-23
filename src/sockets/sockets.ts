@@ -674,9 +674,7 @@ export const server = function (io: SocketServer): void {
       });
     }, 1000);
 
-    console.log('hello i am here');
-    socket.rewards = await getAllRewardsForUser(socket.request.user);
-    console.log(socket.rewards);
+    socket.rewards = await getAllRewardsForUser(socket.request.user)
     socket = applyApplicableRewards(socket);
 
     if (
@@ -720,7 +718,6 @@ export function socketCallback(action, room) {
 }
 
 const applyApplicableRewards = function (socket) {
-  console.log('hi');
   // Admin badge
   if (socket.rewards.includes(REWARDS.ADMIN_BADGE)) {
     socket.request.badge = 'A';
