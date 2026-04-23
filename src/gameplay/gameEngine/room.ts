@@ -12,6 +12,7 @@ import { Phase } from './phases/types';
 import { millisToStr } from '../../util/time';
 import { RoomPlayer } from './types';
 import { isMod } from '../../modsadmins/mods';
+import { isTO } from '../../modsadmins/tournamentOrganizers';
 import { isAdmin } from '../../modsadmins/admins';
 
 export class RoomConfig {
@@ -114,10 +115,11 @@ class Room {
       `${socket.request.user.username} has joined room ${this.roomId}`,
     );
 
-    // check if the player is a moderator or an admin, if so bypass
+    // check if the player is a moderator or TO or admin, if so bypass
     if (
       !(
         isMod(socket.request.user.username) ||
+        isTO(socket.request.user.username) ||
         isAdmin(socket.request.user.username)
       )
     ) {

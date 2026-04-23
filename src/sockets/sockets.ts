@@ -43,7 +43,7 @@ import { JoinQueueFilter } from './filters/joinQueueFilter';
 import { Role } from '../gameplay/gameEngine/roles/types';
 import { Phase } from '../gameplay/gameEngine/phases/types';
 import { Card } from '../gameplay/gameEngine/cards/types';
-import { TOCommandsImported } from './commands/tournamentOrganisers';
+import { TOCommands } from './commands/tournamentOrganisers';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
 const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
@@ -213,61 +213,6 @@ if (process.env.NODE_ENV !== 'test') {
     }
   }, 1000);
 }
-
-export const TOCommandsOLD = {
-  t: {
-    command: 't',
-    help: '/t: displays /thelp',
-    run(args: string[], senderSocket) {
-      return TOCommands.thelp.run(args, senderSocket);
-    },
-  },
-  thelp: {
-    command: 'thelp',
-    help: '/thelp: show commands.',
-    run(args: string[], senderSocket) {
-      // do stuff
-      const dataToSend = [];
-      let i = 0;
-      i++;
-
-      for (const key in TOCommands) {
-        if (TOCommands.hasOwnProperty(key)) {
-          dataToSend[i] = {
-            message: TOCommands[key].help,
-            classStr: 'server-text',
-          };
-          i++;
-        }
-      }
-      senderSocket.emit('messageCommandReturnStr', dataToSend);
-    },
-  },
-
-  tforcemove: {
-    command: 'tforcemove',
-    help: "/tforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
-    run: modCommands.mforcemove.run,
-  },
-
-  trevealallroles: {
-    command: 'trevealallroles',
-    help: '/trevealallroles : Reveals the roles of all players in the current room.',
-    run: mrevealallroles.run,
-  },
-
-  ttogglepause: {
-    command: 'ttogglepause',
-    help: '/ttogglepause: Pauses or unpauses the current room.',
-    run: mtogglepause.run,
-  },
-
-  twhisper: {
-    command: 'twhisper',
-    help: '/twhisper <player name> <text to send>: Sends a whisper to a player.',
-    run: modCommands.mwhisper.run,
-  },
-};
 
 export const userCommandsOLD = {
   buzz: {
@@ -536,7 +481,6 @@ export const userCommandsOLD = {
 };
 
 export const userCommands = { ...userCommandsImported, ...userCommandsOLD };
-export const TOCommands = { ...TOCommandsOLD, ...TOCommandsImported };
 
 function removeAllUserSockets(username: string) {
   for (const socket of allSockets) {
@@ -790,8 +734,9 @@ const applyApplicableRewards = function (socket) {
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
     socket.request.badge = 'T';
+  // Winner badge
   } else if (socket.rewards.includes(REWARDS.WINNER_BADGE)) {
-    socket.request.badge = '🥇';
+    socket.request.badge = '🏆';
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {

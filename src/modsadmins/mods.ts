@@ -1,14 +1,4 @@
 import ModOrg from '../models/modOrg';
-// all in lower case
-export const modsArray = [
-  'pronub',
-  'kage',
-  'besjbo',
-  'maximovic96',
-  'goofy', // jams
-  'sadnixon',
-  'fossa',
-];
 
 export const modSet = new Set<string>();
 
@@ -38,7 +28,3 @@ export function isMod(username: string): boolean {
 export function getModArray() {
   return Array.from(modSet);
 }
-
-//export function isMod(username: string): boolean {
-//  return modsArray.includes(username.toLowerCase());
-//}

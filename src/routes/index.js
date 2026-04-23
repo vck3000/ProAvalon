@@ -1027,9 +1027,9 @@ refreshMods();
 refreshPercivals();
 refreshTOs();
 refreshWinners();
-//setInterval(() => {
-//  refreshMods();
-//  refreshPercivals();
-//  refreshTOs();
-//  refreshWinners();
-//}, 60 * 60 * 1000);
+setInterval(() => {
+  refreshMods();
+  refreshPercivals();
+  refreshTOs();
+  refreshWinners();
+}, 60 * 60 * 1000);

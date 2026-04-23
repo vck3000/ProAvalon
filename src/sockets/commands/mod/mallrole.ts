@@ -34,12 +34,12 @@ export const mallrole: Command = {
         } else if (foundList.length > 0) {
           const roleUsernames = foundList.map(doc => doc.username);
           senderSocket.emit('messageCommandReturnStr', {
-            message: `Current members of the ${targetRole} role:\n${roleUsernames.join(', ')}.`,
+            message: `Current members of the ${targetRole.toUpperCase()} role:\n${roleUsernames.join(', ')}.`,
             classStr: 'server-text',
           });
         } else {
           senderSocket.emit('messageCommandReturnStr', {
-            message: `Found no users in the ${targetRole} role.`,
+            message: `Found no users in the ${targetRole.toUpperCase()} role.`,
             classStr: 'server-text',
           });
         }

@@ -15,7 +15,7 @@ export const taward: Command = {
       return;
     }
 
-    for (const arg of args) {
+    for (const arg of args.slice(1)) {
       if (isWinner(arg.toLowerCase())) {
         senderSocket.emit('messageCommandReturnStr', {
           message: 'This user already has a Tournament Winner Badge.',

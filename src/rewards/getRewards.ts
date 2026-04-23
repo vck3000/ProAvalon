@@ -34,10 +34,6 @@ export async function getAndUpdatePatreonRewardTierForUser(
   return patreonTier;
 }
 
-//export function isWinner(username: string): boolean {
-//  return true;
-//}
-
 export const winnerSet = new Set<string>();
 
 export async function refreshWinners() {
@@ -92,15 +88,14 @@ async function getPatreonRewardTierForUser(
 }
 
 export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
-  console.log("getting the rewards");
   const rewardsSatisfied: RewardType[] = [];
-  //const patreonReward = await getAndUpdatePatreonRewardTierForUser(
-  //  user.username.toLowerCase(),
-  //);
+  const patreonReward = await getAndUpdatePatreonRewardTierForUser(
+    user.username.toLowerCase(),
+  );
 
-  //if (patreonReward) {
-  //  rewardsSatisfied.push(patreonReward);
-  //}
+  if (patreonReward) {
+    rewardsSatisfied.push(patreonReward);
+  }
 
   for (const key in AllRewardsExceptPatreon) {
     const hasReward = await userHasReward(user, key as RewardType);
@@ -108,7 +103,6 @@ export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
       rewardsSatisfied.push(key as RewardType);
     }
   }
-  console.log(rewardsSatisfied);
   return rewardsSatisfied;
 }
 

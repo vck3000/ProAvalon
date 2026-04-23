@@ -44,13 +44,13 @@ export class Log extends React.Component {
         break;
       case 'promote':
         logText = promoteText(this.props.log);
-        break
+        break;
       case 'demote':
         logText = demoteText(this.props.log);
-        break
+        break;
       case 'clear':
         logText = clearText(this.props.log);
-        break
+        break;
     }
 
     return (
@@ -276,7 +276,9 @@ function promoteText(props) {
   let whenPromoted = moment(props.dateCreated);
 
   return {
-    title: `${props.modWhoMade.username} has PROMOTED ${data.username} to ${data.role.toUpperCase()}.`,
+    title: `${props.modWhoMade.username} has PROMOTED ${
+      data.username
+    } to ${data.role.toUpperCase()}.`,
     body: (
       <span>
         <p>The promotion was made on: {whenPromoted.format('LLL')}.</p>
@@ -291,10 +293,14 @@ function demoteText(props) {
   let whenPromoted = moment(data.promotionDate);
 
   return {
-    title: `${props.modWhoMade.username} has DEMOTED ${data.username} from ${data.role.toUpperCase()}.`,
+    title: `${props.modWhoMade.username} has DEMOTED ${
+      data.username
+    } from ${data.role.toUpperCase()}.`,
     body: (
       <span>
-        <p>{data.username} was promoted on: {whenPromoted.format('LLL')}.</p>
+        <p>
+          {data.username} was promoted on: {whenPromoted.format('LLL')}.
+        </p>
         <p>The demotion was made on: {whenDemoted.format('LLL')}.</p>
       </span>
     ),
@@ -306,7 +312,9 @@ function clearText(props) {
   let whenCleared = moment(props.dateCreated);
 
   return {
-    title: `${props.modWhoMade.username} has CLEARED all players from the ${data.role.toUpperCase()} role.`,
+    title: `${
+      props.modWhoMade.username
+    } has CLEARED all players from the ${data.role.toUpperCase()} role.`,
     body: (
       <span>
         <p>The clear was executed on: {whenCleared.format('LLL')}.</p>

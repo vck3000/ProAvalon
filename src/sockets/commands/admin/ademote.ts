@@ -4,6 +4,7 @@ import ModLog from '../../../models/modLog';
 import { refreshMods } from '../../../modsadmins/mods';
 import { refreshPercivals } from '../../../modsadmins/percivals';
 import { refreshTOs } from '../../../modsadmins/tournamentOrganizers';
+import { refreshWinners } from '../../../rewards/getRewards';
 
 export const ademote: Command = {
   command: 'ademote',
@@ -17,10 +18,10 @@ export const ademote: Command = {
       return;
     } else if (
       !args[2] ||
-      !['moderator', 'to', 'percival'].includes(args[2].toLowerCase())
+      !['moderator', 'to', 'percival', 'winner'].includes(args[2].toLowerCase())
     ) {
       senderSocket.emit('messageCommandReturnStr', {
-        message: 'Specify a role: either Moderator, TO, or Percival.',
+        message: 'Specify a role: either Moderator, TO, Percival, or Winner.',
         classStr: 'server-text',
       });
       return;
@@ -73,6 +74,8 @@ export const ademote: Command = {
               refreshPercivals();
             } else if (targetRole === 'to') {
               refreshTOs();
+            } else if (targetRole === 'winner') {
+              refreshWinners();
             }
 
             senderSocket.emit('messageCommandReturnStr', {

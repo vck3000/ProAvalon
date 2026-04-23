@@ -14,7 +14,7 @@ export const tremoveaward: Command = {
       return;
     }
 
-    for (const arg of args) {
+    for (const arg of args.slice(1)) {
       ModOrg.findOne({ usernameLower: arg.toLowerCase(), role: 'winner' }).exec(
         (err, foundUser) => {
           if (err) {

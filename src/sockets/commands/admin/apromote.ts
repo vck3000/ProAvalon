@@ -5,6 +5,7 @@ import ModLog from '../../../models/modLog';
 import { isMod, refreshMods } from '../../../modsadmins/mods';
 import { isPercival, refreshPercivals } from '../../../modsadmins/percivals';
 import { isTO, refreshTOs } from '../../../modsadmins/tournamentOrganizers';
+import { isWinner, refreshWinners } from '../../../rewards/getRewards';
 
 export const apromote: Command = {
   command: 'apromote',
@@ -18,10 +19,10 @@ export const apromote: Command = {
       return;
     } else if (
       !args[2] ||
-      !['moderator', 'to', 'percival'].includes(args[2].toLowerCase())
+      !['moderator', 'to', 'percival', 'winner'].includes(args[2].toLowerCase())
     ) {
       senderSocket.emit('messageCommandReturnStr', {
-        message: 'Specify a role: either Moderator, TO, or Percival.',
+        message: 'Specify a role: either Moderator, TO, Percival, or Winner.',
         classStr: 'server-text',
       });
       return;
@@ -32,7 +33,8 @@ export const apromote: Command = {
     if (
       (targetRole === 'moderator' && isMod(args[1].toLowerCase())) ||
       (targetRole === 'percival' && isPercival(args[1].toLowerCase())) ||
-      (targetRole === 'to' && isTO(args[1].toLowerCase()))
+      (targetRole === 'to' && isTO(args[1].toLowerCase())) ||
+      (targetRole === 'winner' && isWinner(args[1].toLowerCase()))
     ) {
       senderSocket.emit('messageCommandReturnStr', {
         message: 'This user already has this role.',
@@ -66,6 +68,8 @@ export const apromote: Command = {
               refreshPercivals();
             } else if (targetRole === 'to') {
               refreshTOs();
+            } else if (targetRole === 'winner') {
+              refreshWinners();
             }
           });
 

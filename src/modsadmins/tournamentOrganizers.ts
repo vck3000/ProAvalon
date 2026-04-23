@@ -1,7 +1,6 @@
 // all in lower case
 // TO = Tournament Organizer
 import ModOrg from '../models/modOrg';
-export const TOsArray: string[] = ["pronub"];
 
 export const TOSet = new Set<string>();
 
@@ -25,11 +24,5 @@ export async function refreshTOs() {
 }
 
 export function isTO(username: string): boolean {
-  console.log("username is TO:")
-  console.log(TOSet.has(username.toLowerCase()));
   return TOSet.has(username.toLowerCase());
 }
-
-//export function isTO(username: string): boolean {
-//  return TOsArray.includes(username.toLowerCase());
-//}
