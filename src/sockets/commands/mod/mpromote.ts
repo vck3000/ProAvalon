@@ -10,7 +10,7 @@ export const mpromote: Command = {
   async run(args, senderSocket) {
     if (!args[1]) {
       senderSocket.emit('messageCommandReturnStr', {
-        message: 'Specify a username.',
+        message: 'Specify a role: either Moderator, TO, or Percival.',
         classStr: 'server-text',
       });
       return;
@@ -37,6 +37,7 @@ export const mpromote: Command = {
             role: 'to',
             username: foundUser.username,
             usernameLower: foundUser.usernameLower,
+            promotionDate: new Date(),
           };
 
           ModOrg.create(promoteData).then(

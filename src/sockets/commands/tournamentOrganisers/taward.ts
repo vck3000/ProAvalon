@@ -37,6 +37,7 @@ export const taward: Command = {
               role: 'winner',
               username: foundUser.username,
               usernameLower: foundUser.usernameLower,
+              promotionDate: new Date(),
             };
 
             ModOrg.create(promoteData).then((result) => {

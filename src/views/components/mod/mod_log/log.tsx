@@ -288,11 +288,13 @@ function promoteText(props) {
 function demoteText(props) {
   let data = props.data;
   let whenDemoted = moment(props.dateCreated);
+  let whenPromoted = moment(data.promotionDate);
 
   return {
     title: `${props.modWhoMade.username} has DEMOTED ${data.username} from ${data.role.toUpperCase()}.`,
     body: (
       <span>
+        <p>{data.username} was promoted on: {whenPromoted.format('LLL')}.</p>
         <p>The demotion was made on: {whenDemoted.format('LLL')}.</p>
       </span>
     ),

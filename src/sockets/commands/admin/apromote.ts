@@ -56,6 +56,7 @@ export const apromote: Command = {
             role: targetRole,
             username: foundUser.username,
             usernameLower: foundUser.usernameLower,
+            promotionDate: new Date(),
           };
 
           ModOrg.create(promoteData).then((results) => {

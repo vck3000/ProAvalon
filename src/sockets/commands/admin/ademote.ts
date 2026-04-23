@@ -44,6 +44,7 @@ export const ademote: Command = {
           role: targetRole,
           username: foundModOrg.username,
           usernameLower: foundModOrg.usernameLower,
+          promotionDate: foundModOrg.promotionDate,
         };
 
         foundModOrg.deleteOne((err) => {

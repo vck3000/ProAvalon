@@ -22,7 +22,7 @@ import {
 import { refreshMods } from '../modsadmins/mods';
 import { refreshPercivals } from '../modsadmins/percivals';
 import { refreshTOs } from '../modsadmins/tournamentOrganizers';
-import { refreshWinners } from '../rewards/getRewards'
+import { refreshWinners } from '../rewards/getRewards';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
 import uuid from 'uuid';
 import { captchaMiddleware } from '../util/captcha';
@@ -1022,7 +1022,14 @@ function escapeText(str) {
     .replace(/(?:\r\n|\r|\n)/g, ' <br>');
 }
 
+//Refreshing the role lists once per hour
 refreshMods();
 refreshPercivals();
 refreshTOs();
 refreshWinners();
+//setInterval(() => {
+//  refreshMods();
+//  refreshPercivals();
+//  refreshTOs();
+//  refreshWinners();
+//}, 60 * 60 * 1000);

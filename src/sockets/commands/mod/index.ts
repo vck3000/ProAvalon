@@ -23,6 +23,7 @@ import { mresettournamentaccounts } from './mresettournamentaccounts';
 import { mpromote } from './mpromote';
 import { mdemote } from './mdemote';
 import { mcleartos } from './mcleartos';
+import { mallrole } from './mallrole';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -37,6 +38,7 @@ export const modCommands: Commands = {
   [mpromote.command]: mpromote,
   [mdemote.command]: mdemote,
   [mcleartos.command]: mcleartos,
+  [mallrole.command]: mallrole,
   [mresettournamentaccounts.command]: mresettournamentaccounts,
   [mwhisper.command]: mwhisper,
   [msetavatar.command]: msetavatar,

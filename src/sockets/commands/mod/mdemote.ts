@@ -30,6 +30,7 @@ export const mdemote: Command = {
             role: 'to',
             username: foundModOrg.username,
             usernameLower: foundModOrg.usernameLower,
+            promotionDate: foundModOrg.promotionDate,
           };
 
           foundModOrg.deleteOne((err) => {
