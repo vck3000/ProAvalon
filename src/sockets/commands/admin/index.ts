@@ -8,6 +8,8 @@ import { adiscordmessage } from './adiscordmessage';
 import { acreatetestaccounts } from './acreatetestaccounts';
 import { ausernametoemail } from './ausernametoemail';
 import { asessions } from './asessions';
+import { apromote } from './apromote';
+import { ademote } from './ademote';
 
 // Delete the below following season update. Purely for testing purposes
 import { acreateseason } from './acreateseason';
@@ -36,5 +38,7 @@ export const adminCommands: Commands = {
   [asessions.command]: asessions,
   [ausernametoemail.command]: ausernametoemail,
   [atogglecreateroom.command]: atogglecreateroom,
+  [apromote.command]: apromote,
+  [ademote.command]: ademote,
   ...debugCommands,
 };

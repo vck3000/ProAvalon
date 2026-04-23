@@ -6,8 +6,8 @@ const obj: RewardData = {
   TOReq: false,
   devReq: false,
   percivalReq: false,
-  winnerReq: false,
-  gamesPlayedReq: 10,
+  winnerReq: true,
+  gamesPlayedReq: 0,
   donationReq: 0,
 };
 

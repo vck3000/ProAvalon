@@ -42,6 +42,15 @@ export class Log extends React.Component {
       case 'pmmod':
         logText = pmmodText(this.props.log);
         break;
+      case 'promote':
+        logText = promoteText(this.props.log);
+        break;
+      case 'demote':
+        logText = demoteText(this.props.log);
+        break;
+      case 'clear':
+        logText = clearText(this.props.log);
+        break;
     }
 
     return (
@@ -257,6 +266,59 @@ function pmmodText(props) {
     body: (
       <span>
         <p>{data.message}</p>
+      </span>
+    ),
+  };
+}
+
+function promoteText(props) {
+  let data = props.data;
+  let whenPromoted = moment(props.dateCreated);
+
+  return {
+    title: `${props.modWhoMade.username} has PROMOTED ${
+      data.username
+    } to ${data.role.toUpperCase()}.`,
+    body: (
+      <span>
+        <p>The promotion was made on: {whenPromoted.format('LLL')}.</p>
+      </span>
+    ),
+  };
+}
+
+function demoteText(props) {
+  let data = props.data;
+  let whenDemoted = moment(props.dateCreated);
+  let whenPromoted = moment(data.promotionDate);
+
+  return {
+    title: `${props.modWhoMade.username} has DEMOTED ${
+      data.username
+    } from ${data.role.toUpperCase()}.`,
+    body: (
+      <span>
+        <p>
+          {data.username} was promoted on: {whenPromoted.format('LLL')}.
+        </p>
+        <p>The demotion was made on: {whenDemoted.format('LLL')}.</p>
+      </span>
+    ),
+  };
+}
+
+function clearText(props) {
+  let data = props.data;
+  let whenCleared = moment(props.dateCreated);
+
+  return {
+    title: `${
+      props.modWhoMade.username
+    } has CLEARED all players from the ${data.role.toUpperCase()} role.`,
+    body: (
+      <span>
+        <p>The clear was executed on: {whenCleared.format('LLL')}.</p>
+        <p>Number of players cleared from role: {data.deletedCount}.</p>
       </span>
     ),
   };
