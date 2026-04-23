@@ -1,14 +1,16 @@
 import { Router } from 'express';
 import User from '../models/user';
-import { modsArray } from '../modsadmins/mods';
+import { getModArray } from '../modsadmins/mods';
 
 const router = Router();
 
-const filteredModsArray = modsArray.filter((mod) => mod != 'pronub');
 
 // Community route
 router.get('/community', async (req, res) => {
   const getall = req.query.getall !== undefined;
+
+  const modsArray = getModArray();
+  const filteredModsArray = modsArray.filter((mod) => mod != 'pronub');
 
   const users = await User.find({
     totalGamesPlayed: { $gt: 99 },

@@ -35,6 +35,10 @@ export function isMod(username: string): boolean {
   return modSet.has(username.toLowerCase());
 }
 
+export function getModArray() {
+  return Array.from(modSet);
+}
+
 //export function isMod(username: string): boolean {
 //  return modsArray.includes(username.toLowerCase());
 //}
