@@ -2,6 +2,7 @@ import { Command } from '../types';
 import ModOrg from '../../../models/modOrg';
 import ModLog from '../../../models/modLog';
 import { refreshTOs } from '../../../modsadmins/tournamentOrganizers';
+import { sendToDiscordMods } from '../../../clients/discord';
 
 export const mdemote: Command = {
   command: 'mdemote',
@@ -41,7 +42,6 @@ export const mdemote: Command = {
                 classStr: 'server-text',
               });
             } else {
-
               ModLog.create({
                 type: 'demote',
                 modWhoMade: {
@@ -55,6 +55,11 @@ export const mdemote: Command = {
               });
 
               refreshTOs();
+
+              sendToDiscordMods(
+                `Moderator ${senderUsername} has DEMOTED ${foundModOrg.username} from TO.`,
+                false,
+              );
 
               senderSocket.emit('messageCommandReturnStr', {
                 message: `Demoted ${foundModOrg.username} from TO successfully!`,

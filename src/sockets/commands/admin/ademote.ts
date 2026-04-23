@@ -5,6 +5,7 @@ import { refreshMods } from '../../../modsadmins/mods';
 import { refreshPercivals } from '../../../modsadmins/percivals';
 import { refreshTOs } from '../../../modsadmins/tournamentOrganizers';
 import { refreshWinners } from '../../../rewards/getRewards';
+import { sendToDiscordMods } from '../../../clients/discord';
 
 export const ademote: Command = {
   command: 'ademote',
@@ -77,6 +78,13 @@ export const ademote: Command = {
             } else if (targetRole === 'winner') {
               refreshWinners();
             }
+
+            sendToDiscordMods(
+              `Admin ${senderUsername} has DEMOTED ${
+                foundModOrg.username
+              } from ${targetRole.toUpperCase()}.`,
+              false,
+            );
 
             senderSocket.emit('messageCommandReturnStr', {
               message: `Demoted ${

@@ -6,6 +6,7 @@ import { isMod, refreshMods } from '../../../modsadmins/mods';
 import { isPercival, refreshPercivals } from '../../../modsadmins/percivals';
 import { isTO, refreshTOs } from '../../../modsadmins/tournamentOrganizers';
 import { isWinner, refreshWinners } from '../../../rewards/getRewards';
+import { sendToDiscordMods } from '../../../clients/discord';
 
 export const apromote: Command = {
   command: 'apromote',
@@ -84,6 +85,13 @@ export const apromote: Command = {
             data: promoteData,
             dateCreated: new Date(),
           });
+
+          sendToDiscordMods(
+            `Admin ${senderUsername} has PROMOTED ${
+              foundUser.username
+            } to ${targetRole.toUpperCase()}.`,
+            false,
+          );
 
           senderSocket.emit('messageCommandReturnStr', {
             message: `Promoted ${

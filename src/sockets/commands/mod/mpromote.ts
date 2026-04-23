@@ -3,20 +3,29 @@ import User from '../../../models/user';
 import ModOrg from '../../../models/modOrg';
 import ModLog from '../../../models/modLog';
 import { isTO, refreshTOs } from '../../../modsadmins/tournamentOrganizers';
+import { sendToDiscordMods } from '../../../clients/discord';
 
 export const mpromote: Command = {
   command: 'mpromote',
   help: '/mpromote <username>: Promotes a player to the Tournament Organizer role.',
   async run(args, senderSocket) {
-    if (!args[1]) {
+    const TOCount = await ModOrg.countDocuments({ role: 'to' });
+    if (TOCount > 9) {
       senderSocket.emit('messageCommandReturnStr', {
-        message: 'Specify a role: either Moderator, TO, or Percival.',
+        message:
+          'There are already 10 Tournament Organizers, please demote one.',
+        classStr: 'server-text',
+      });
+      return;
+    } else if (!args[1]) {
+      senderSocket.emit('messageCommandReturnStr', {
+        message: 'Specify a username.',
         classStr: 'server-text',
       });
       return;
     } else if (isTO(args[1].toLowerCase())) {
       senderSocket.emit('messageCommandReturnStr', {
-        message: 'This user is already a TO.',
+        message: 'This user is already a Tournament Organizer.',
         classStr: 'server-text',
       });
       return;
@@ -40,11 +49,9 @@ export const mpromote: Command = {
             promotionDate: new Date(),
           };
 
-          ModOrg.create(promoteData).then(
-            result => {
-              refreshTOs();
-            }
-          );
+          ModOrg.create(promoteData).then((result) => {
+            refreshTOs();
+          });
 
           ModLog.create({
             type: 'promote',
@@ -58,7 +65,10 @@ export const mpromote: Command = {
             dateCreated: new Date(),
           });
 
-          
+          sendToDiscordMods(
+            `Moderator ${senderUsername} has PROMOTED ${foundUser.username} to TO.`,
+            false,
+          );
 
           senderSocket.emit('messageCommandReturnStr', {
             message: `Promoted ${foundUser.username} to TO successfully!`,

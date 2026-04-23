@@ -2,6 +2,7 @@ import { Command } from '../types';
 import ModOrg from '../../../models/modOrg';
 import ModLog from '../../../models/modLog';
 import { refreshTOs } from '../../../modsadmins/tournamentOrganizers';
+import { sendToDiscordMods } from '../../../clients/discord';
 
 export const mcleartos: Command = {
   command: 'mcleartos',
@@ -26,6 +27,10 @@ export const mcleartos: Command = {
           data: { role: 'to', deletedCount: result.deletedCount },
           dateCreated: new Date(),
         });
+        sendToDiscordMods(
+          `Moderator ${senderUsername} has CLEARED all players from the TO role.`,
+          false,
+        );
       })
       .catch((err) => console.error(err));
   },
