@@ -899,37 +899,30 @@ export const updateCurrentGamesList = function () {
   // prepare room data to send to players.
   const gamesList = [];
   for (let i = 0; i < rooms.length; i++) {
-    // If the game exists
-    if (rooms[i]) {
-      // create new array to send
-      gamesList[i] = {};
-      // get status of game
-      gamesList[i].status = rooms[i].getStatus();
-
-      if (rooms[i].joinPassword !== undefined) {
-        gamesList[i].passwordLocked = true;
-      } else {
-        gamesList[i].passwordLocked = false;
-      }
-      // get room ID
-      gamesList[i].roomId = rooms[i].roomId;
-      gamesList[i].gameMode =
-        rooms[i].gameMode.charAt(0).toUpperCase() + rooms[i].gameMode.slice(1);
-      gamesList[i].gameType = rooms[i].ranked ? 'Ranked' : 'Unranked';
-      // console.log("Room " + rooms[i].roomId + " has host: " + rooms[i].host);
-      gamesList[i].hostUsername = rooms[i].host;
-      if (rooms[i].gameStarted === true) {
-        gamesList[i].numOfPlayersInside = rooms[i].playersInGame.length;
-        gamesList[i].missionHistory = rooms[i].missionHistory;
-        gamesList[i].missionNum = rooms[i].missionNum;
-        gamesList[i].pickNum = rooms[i].pickNum;
-      } else {
-        gamesList[i].numOfPlayersInside = rooms[i].socketsOfPlayers.length;
-      }
-      gamesList[i].maxNumPlayers = rooms[i].maxNumPlayers;
-      gamesList[i].numOfSpectatorsInside =
-        rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length;
+    if (!rooms[i]) {
+      continue;
     }
+    const game: any = {
+      status: rooms[i].getStatus(),
+      passwordLocked: rooms[i].joinPassword !== undefined,
+      roomId: rooms[i].roomId,
+      gameMode:
+        rooms[i].gameMode.charAt(0).toUpperCase() + rooms[i].gameMode.slice(1),
+      gameType: rooms[i].ranked ? 'Ranked' : 'Unranked',
+      hostUsername: rooms[i].host,
+      maxNumPlayers: rooms[i].maxNumPlayers,
+      numOfSpectatorsInside:
+        rooms[i].allSockets.length - rooms[i].socketsOfPlayers.length,
+    };
+    if (rooms[i].gameStarted === true) {
+      game.numOfPlayersInside = rooms[i].playersInGame.length;
+      game.missionHistory = rooms[i].missionHistory;
+      game.missionNum = rooms[i].missionNum;
+      game.pickNum = rooms[i].pickNum;
+    } else {
+      game.numOfPlayersInside = rooms[i].socketsOfPlayers.length;
+    }
+    gamesList.push(game);
   }
   allSockets.forEach((sock) => {
     sock.emit('update-current-games-list', gamesList);
