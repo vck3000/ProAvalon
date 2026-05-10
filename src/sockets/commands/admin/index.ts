@@ -7,6 +7,7 @@ import { atestgame } from './atestgame';
 import { adiscordmessage } from './adiscordmessage';
 import { acreatetestaccounts } from './acreatetestaccounts';
 import { ausernametoemail } from './ausernametoemail';
+import { averifyuseremail } from './averifyuseremail';
 import { asessions } from './asessions';
 
 // Delete the below following season update. Purely for testing purposes
@@ -35,6 +36,7 @@ export const adminCommands: Commands = {
   [atestgame.command]: atestgame,
   [asessions.command]: asessions,
   [ausernametoemail.command]: ausernametoemail,
+  [averifyuseremail.command]: averifyuseremail,
   [atogglecreateroom.command]: atogglecreateroom,
   ...debugCommands,
 };
