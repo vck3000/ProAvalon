@@ -20,10 +20,7 @@ import { mforcemove } from './mforcemove';
 import { mpushavatartolibrary } from './mpushavatartolibrary';
 import { msetavatar } from './msetavatar';
 import { mresettournamentaccounts } from './mresettournamentaccounts';
-import { mpromote } from './mpromote';
-import { mdemote } from './mdemote';
-import { mcleartos } from './mcleartos';
-import { mallrole } from './mallrole';
+import { msiterole } from './msiterole';
 
 export const modCommands: Commands = {
   [m.command]: m,
@@ -35,10 +32,7 @@ export const modCommands: Commands = {
   [mnotify.command]: mnotify,
   [mtoggleregistration.command]: mtoggleregistration,
   [mtempenableregistration.command]: mtempenableregistration,
-  [mpromote.command]: mpromote,
-  [mdemote.command]: mdemote,
-  [mcleartos.command]: mcleartos,
-  [mallrole.command]: mallrole,
+  [msiterole.command]: msiterole,
   [mresettournamentaccounts.command]: mresettournamentaccounts,
   [mwhisper.command]: mwhisper,
   [msetavatar.command]: msetavatar,

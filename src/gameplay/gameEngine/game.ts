@@ -6,8 +6,7 @@ import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 import User from '../../models/user';
 import GameRecord from '../../models/gameRecord';
 import RatingPeriodGameRecord from '../../models/RatingPeriodGameRecord';
-import { isMod } from '../../modsadmins/mods';
-import { isTO } from '../../modsadmins/tournamentOrganizers';
+import { ModStore, TOStore } from '../../modsadmins/roles';
 import { isDev } from '../../modsadmins/developers';
 import { modOrTOString } from '../../modsadmins/modOrTO';
 
@@ -2160,8 +2159,8 @@ class Game extends Room {
 
       return (
         playerUsernamesLower.includes(usernameLower) ||
-        isMod(usernameLower) ||
-        isTO(usernameLower) ||
+        ModStore.isRole(usernameLower) ||
+        TOStore.isRole(usernameLower) ||
         isDev(usernameLower)
       );
     }

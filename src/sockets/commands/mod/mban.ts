@@ -1,12 +1,12 @@
 import { Command } from '../types';
-import { isMod } from '../../../modsadmins/mods';
+import { ModStore } from '../../../modsadmins/roles';
 
 export const mban: Command = {
   command: 'mban',
   help: '/mban: Open the ban interface',
   run: async (data, senderSocket) => {
     // @ts-ignore
-    if (isMod(senderSocket.request.user.username)) {
+    if (ModStore.isRole(senderSocket.request.user.username)) {
       senderSocket.emit('openModModal');
 
       senderSocket.emit('messageCommandReturnStr', {

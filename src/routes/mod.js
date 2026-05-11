@@ -19,8 +19,7 @@ import ModLogComponent from '../views/components/mod/mod_log';
 import ReportLog from '../views/components/mod/report';
 import { MongoClient } from 'mongodb';
 import { SESSIONS_COLLECTION_NAME } from '../constants';
-import { isMod } from '../modsadmins/mods';
-import { isPercival } from '../modsadmins/percivals';
+import { ModStore, PercivalStore } from '../modsadmins/roles';
 import { sendToDiscordMods } from '../clients/discord';
 
 const router = new Router();
@@ -45,14 +44,14 @@ const requiredFields = [
 ];
 
 router.post('/ban', async (req, res) => {
-  if (!isMod(req.user.username) && !isPercival(req.user.username)) {
+  if (!ModStore.isRole(req.user.username) && !PercivalStore.isRole(req.user.username)) {
     res.status(401);
     res.send(`You are not a moderator or percival.`);
     return;
   }
 
-  const userIsMod = isMod(req.user.username);
-  const userIsPercy = isPercival(req.user.username);
+  const userIsMod = ModStore.isRole(req.user.username);
+  const userIsPercy = PercivalStore.isRole(req.user.username);
 
   if ((userIsMod ^ userIsPercy) !== 1) {
     throw Error('Expected requesting user to either be a mod or a Percy.');

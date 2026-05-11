@@ -12,9 +12,7 @@ import User from '../models/user';
 import JSON from 'circular-json';
 
 import { isAdmin } from '../modsadmins/admins';
-import { isMod } from '../modsadmins/mods';
-import { isPercival } from '../modsadmins/percivals';
-import { isTO } from '../modsadmins/tournamentOrganizers';
+import { ModStore, PercivalStore, TOStore } from '../modsadmins/roles';
 import {
   GAME_MODE_NAMES,
   GameMode,
@@ -557,7 +555,7 @@ export const server = function (io: SocketServer): void {
         socket.emit('adminCommands', adminCommands);
       }
 
-      if (isMod(socket.request.user.username)) {
+      if (ModStore.isRole(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('modCommands', modCommands);
 
@@ -608,12 +606,12 @@ export const server = function (io: SocketServer): void {
           });
       }
 
-      if (isPercival(socket.request.user.username)) {
+      if (PercivalStore.isRole(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('percivalCommands', percivalCommands);
       }
 
-      if (isTO(socket.request.user.username)) {
+      if (TOStore.isRole(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('TOCommands', TOCommands);
       }
@@ -1118,14 +1116,14 @@ function messageCommand(data) {
 
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
     adminCommands[data.command].run(data.args, this, ioGlobal);
-  } else if (modCommands[data.command] && isMod(this.request.user.username)) {
+  } else if (modCommands[data.command] && ModStore.isRole(this.request.user.username)) {
     modCommands[data.command].run(data.args, this, ioGlobal);
   } else if (
     percivalCommands[data.command] &&
-    isPercival(this.request.user.username)
+    PercivalStore.isRole(this.request.user.username)
   ) {
     dataToSend = percivalCommands[data.command].run(data.args, this, ioGlobal);
-  } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
+  } else if (TOCommands[data.command] && TOStore.isRole(this.request.user.username)) {
     dataToSend = TOCommands[data.command].run(data.args, this, ioGlobal);
   } else if (userCommands[data.command]) {
     dataToSend = userCommands[data.command].run(data.args, this, ioGlobal);

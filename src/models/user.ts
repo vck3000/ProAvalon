@@ -122,6 +122,8 @@ const UserSchema = new mongoose.Schema<IUser>({
     default: {},
   },
 
+  lastTourneyWinner: Boolean,
+
   notifications: [
     {
       type: mongoose.Schema.Types.ObjectId,

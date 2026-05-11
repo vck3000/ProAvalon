@@ -6,11 +6,8 @@ import {
 } from './indexRewards';
 
 import { isAdmin } from '../modsadmins/admins';
-import { isMod } from '../modsadmins/mods';
-import { isTO } from '../modsadmins/tournamentOrganizers';
-import { isPercival } from '../modsadmins/percivals';
+import { ModStore, PercivalStore, TOStore } from '../modsadmins/roles';
 import { isDev } from '../modsadmins/developers';
-import ModOrg from '../models/modOrg';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/gameEngine/types';
 import { PatreonController } from '../clients/patreon/patreonController';
@@ -32,31 +29,6 @@ export async function getAndUpdatePatreonRewardTierForUser(
   await updateUsersAvatarLibrary(usernameLower, patreonTier);
 
   return patreonTier;
-}
-
-export const winnerSet = new Set<string>();
-
-export async function refreshWinners() {
-  try {
-    const mods = await ModOrg.find(
-      { role: 'winner' },
-      { usernameLower: 1, _id: 0 }
-    ).lean();
-
-    winnerSet.clear();
-
-    for (const mod of mods) {
-      winnerSet.add(mod.usernameLower);
-    }
-
-    console.log(`[WINNER CACHE] Loaded ${winnerSet.size} winners`);
-  } catch (err) {
-    console.log("Failed to refresh winner cache:", err);
-  }
-}
-
-export function isWinner(username: string): boolean {
-  return winnerSet.has(username.toLowerCase());
 }
 
 async function getPatreonRewardTierForUser(
@@ -116,11 +88,11 @@ export async function userHasReward(
     return false;
   }
 
-  if (reward.modReq && !isMod(user.usernameLower)) {
+  if (reward.modReq && !ModStore.isRole(user.usernameLower)) {
     return false;
   }
 
-  if (reward.TOReq && !isTO(user.usernameLower)) {
+  if (reward.TOReq && !TOStore.isRole(user.usernameLower)) {
     return false;
   }
 
@@ -128,11 +100,11 @@ export async function userHasReward(
     return false;
   }
 
-  if (reward.percivalReq && !isPercival(user.usernameLower)) {
+  if (reward.percivalReq && !PercivalStore.isRole(user.usernameLower)) {
     return false;
   }
 
-  if (reward.winnerReq && !isWinner(user.usernameLower)) {
+  if (reward.winnerReq && !user.lastTourneyWinner) {
     return false;
   }
 
@@ -161,7 +133,7 @@ export async function getAvatarLibrarySizeForUser(
   };
 
   const modLibrarySize = () => {
-    return isMod(usernameLower) ? 5 : 0;
+    return ModStore.isRole(usernameLower) ? 5 : 0;
   };
 
   const patreonLibrarySize = async () => {
