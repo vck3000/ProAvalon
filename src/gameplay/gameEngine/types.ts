@@ -67,7 +67,6 @@ export interface IUser {
   timeZone?: string;
   biography?: string;
   roleStats?: Record<string, unknown>;
-  lastTourneyWinner?: boolean;
   notifications?: Types.ObjectId;
   expiredPatreonNotification?: boolean;
   modAction?: Types.ObjectId;
@@ -75,6 +74,7 @@ export interface IUser {
   IPAddresses?: string[];
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
+  lastTourneyWinner?: boolean;
 
   // Mongoose methods
   save: () => Promise<this>;

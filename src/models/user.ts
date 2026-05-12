@@ -122,8 +122,6 @@ const UserSchema = new mongoose.Schema<IUser>({
     default: {},
   },
 
-  lastTourneyWinner: Boolean,
-
   notifications: [
     {
       type: mongoose.Schema.Types.ObjectId,
@@ -146,6 +144,8 @@ const UserSchema = new mongoose.Schema<IUser>({
   lastIPAddress: String,
 
   matchmakingBlacklist: [String],
+
+  lastTourneyWinner: Boolean,
 });
 
 UserSchema.plugin(passportLocalMongoose, {

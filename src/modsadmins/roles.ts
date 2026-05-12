@@ -1,7 +1,9 @@
 import SiteRole from '../models/siteRole';
+import { PowerRole } from '../models/types/siteRole';
+import { isAdmin, adminsArray } from './admins';
 
 class RoleStore {
-  constructor(private role: string) {}
+  constructor(private role: PowerRole) {}
   private roleSet = new Set<string>();
 
   async refreshRole() {
@@ -23,14 +25,18 @@ class RoleStore {
   }
 
   isRole(username: string): boolean {
-    return this.roleSet.has(username.toLowerCase());
+    return isAdmin(username) || this.roleSet.has(username.toLowerCase());
   }
 
   getRoleArray(): string[] {
-    return Array.from(this.roleSet);
+    return [...Array.from(this.roleSet), ...adminsArray];
   }
 }
 
-export const ModStore = new RoleStore("moderator");
-export const PercivalStore = new RoleStore("percival");
-export const TOStore = new RoleStore("to");
+export const ModStore = new RoleStore(PowerRole.Moderator);
+export const PercivalStore = new RoleStore(PowerRole.Percival);
+export const TOStore = new RoleStore(PowerRole.TournamentOrganizer);
+
+ModStore.refreshRole();
+PercivalStore.refreshRole();
+TOStore.refreshRole();

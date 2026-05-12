@@ -1,9 +1,14 @@
 import mongoose from 'mongoose';
 import type { ISiteRole } from './types/siteRole';
+import { PowerRole } from './types/siteRole';
 
 // SCHEMA SETUP
 const siteRoleSchema = new mongoose.Schema<ISiteRole>({
-  role: String,
+  role: {
+    type: String,
+    enum: Object.values(PowerRole),
+    required: true,
+  },
   usernameLower: String,
 });
 

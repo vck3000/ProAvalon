@@ -19,7 +19,6 @@ import {
   rolesToAlliances,
   spyRoles,
 } from '../gameplay/gameEngine/roles/roles';
-import { ModStore, PercivalStore, TOStore } from '../modsadmins/roles';
 import { sendResetPassword } from '../myFunctions/sendResetPassword';
 import uuid from 'uuid';
 import { captchaMiddleware } from '../util/captcha';
@@ -1018,8 +1017,3 @@ function escapeText(str) {
     .replace(/"/g, '&quot;')
     .replace(/(?:\r\n|\r|\n)/g, ' <br>');
 }
-
-//Refreshing the role lists once per hour
-ModStore.refreshRole();
-PercivalStore.refreshRole();
-TOStore.refreshRole();
