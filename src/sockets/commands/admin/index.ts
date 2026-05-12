@@ -8,7 +8,6 @@ import { adiscordmessage } from './adiscordmessage';
 import { acreatetestaccounts } from './acreatetestaccounts';
 import { ausernametoemail } from './ausernametoemail';
 import { asessions } from './asessions';
-import { msiterole } from '../mod/msiterole';
 
 // Delete the below following season update. Purely for testing purposes
 import { acreateseason } from './acreateseason';
@@ -26,38 +25,8 @@ const debugCommands =
       }
     : {};
 
-export function convertModCommandToAdminCommand(
-  modCommand: Command,
-): Command {
-  const modPrefix = 'm';
-  const adminPrefix = 'a';
-
-  // Throw error if invalid command is passed
-  if (!modCommand.command.startsWith(modPrefix)) {
-    throw new Error(`Incorrect command prefix. Expected to start with: "${modPrefix}" Got: "${modCommand.command}"`);
-  }
-
-  if (!modCommand.help.startsWith(`/${modPrefix}`)) {
-    throw new Error(
-      `Incorrect command help prefix. Expected to start with: "/${modPrefix}" Got: "${modCommand.help}"`,
-    );
-  }
-
-  return {
-    command: modCommand.command.replace(
-      modPrefix,
-      adminPrefix,
-    ),
-    help: modCommand.help.replace(modPrefix, adminPrefix),
-    run: modCommand.run,
-  };
-}
-
-const asiterole = convertModCommandToAdminCommand(msiterole);
-
 export const adminCommands: Commands = {
   [a.command]: a,
-  [asiterole.command]: asiterole,
   [acreatetestaccounts.command]: acreatetestaccounts,
   [adiscordmessage.command]: adiscordmessage,
   [aemailtousername.command]: aemailtousername,
