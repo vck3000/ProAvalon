@@ -1,17 +1,11 @@
-function addAbbreviations(message) {
-  let jargonRegex = `\\b(${Object.keys(definitions).join('|')})\\b`;
 
-  const splitted = message.split(RegExp(jargonRegex, 'i'));
-
-  const abbreviatedSplitted = splitted.map(s => {
-    if (Object.prototype.hasOwnProperty.call(definitions, s.toLowerCase(),)) {
-      s = `<abbr title = \"${definitions[s.toLowerCase()]}\">${s}</abbr>`
-    }
-    return s
-  })
-
-  return abbreviatedSplitted.join('')
-}
+const htmlEscapes = {
+    '&' : "&amp;",
+    '<' : "&lt;",
+    '>' : "&gt;",
+    '"' : "&quot;",
+    '\'' : "&#39;",
+};
 
 const definitions = {
   'approve': '1. (Of a player) vote in favor of (a pick). 2. (Of the majority of players) vote in favor of (a pick). 3. A vote by a player in favor of a pick.',
@@ -141,3 +135,40 @@ const definitions = {
   '9p': 'A game with 9 players.',
   '10p': 'A game with 10 players.',
 };
+
+const chatFormatRegex = new RegExp([
+    // Bare URLs to be linkified
+    `(\\b(?:https?|mailto|ftps?|news|nntp):[a-zA-Z0-9&_\\-\\/@\\:\\%\\=\\+\\?\\.;#~,]*[a-zA-Z0-9&_\\-\\/@\\%\\=\\+])`,
+    // URLs in angle brackets
+    `(<(?:URL:)?((?:https?|mailto|ftps?|news|nntp):.*?)>)`,
+    // Glossary terms
+    `(\\b(?:${Object.keys(definitions).join('|')})\\b)`,
+    // Characters that need HTML-escaping
+    `([${Object.keys(htmlEscapes).join('')}])`
+].join('|'), 'gi');
+
+function formatChatMessage(message, doGlossary)
+{
+    // Note: the parameters on this lambda need to match the capturing groups in the regex exactly (plus an extra full-match parameter at the start).
+    return message.replace(chatFormatRegex, (match, url1, url2, term, ch) => {
+
+        // Bare URLs
+        if (typeof url1 !== 'undefined')
+            return `<a href='${url1}'>${url1}</a>`;
+
+        // URLs in angle brackets
+        if (typeof url2 !== 'undefined')
+            return `<a href='${url2}'>${url2}</a>`;
+
+        // Glossary terms — do this formatting only if doGlossary is true
+        if (typeof term !== 'undefined')
+            return doGlossary ? `<abbr title="${definitions[term.toLowerCase()]}">${term}</abbr>` : term;
+
+        // HTML-escape characters < > & ' "
+        if (typeof ch !== 'undefined')
+            return htmlEscapes[ch];
+
+        // This should never happen
+        return match;
+    });
+}
