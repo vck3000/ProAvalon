@@ -6,7 +6,7 @@ import {
   sendReplyToCommand,
   userCommands,
 } from '../../sockets';
-import { isMod } from '../../../modsadmins/mods';
+import { ModStore } from '../../../modsadmins/roles';
 import ModLog from '../../../models/modLog';
 
 const pmmodCooldowns: { [key: string]: Date } = {};
@@ -47,7 +47,7 @@ export const pmmod: Command = {
       sendReplyToCommand(socket, 'You cannot private message yourself!');
       return;
     }
-    if (!isMod(modUsernameLower)) {
+    if (!ModStore.isRole(modUsernameLower)) {
       sendReplyToCommand(
         socket,
         `${modUsernameLower} is not a mod. You may not private message them.`,

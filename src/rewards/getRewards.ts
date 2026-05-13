@@ -6,8 +6,7 @@ import {
 } from './indexRewards';
 
 import { isAdmin } from '../modsadmins/admins';
-import { isMod } from '../modsadmins/mods';
-import { isTO } from '../modsadmins/tournamentOrganizers';
+import { ModStore, PercivalStore, TOStore } from '../modsadmins/roles';
 import { isDev } from '../modsadmins/developers';
 import { PatreonAgent } from '../clients/patreon/patreonAgent';
 import { IUser } from '../gameplay/gameEngine/types';
@@ -76,7 +75,6 @@ export async function getAllRewardsForUser(user: IUser): Promise<RewardType[]> {
       rewardsSatisfied.push(key as RewardType);
     }
   }
-
   return rewardsSatisfied;
 }
 
@@ -90,15 +88,23 @@ export async function userHasReward(
     return false;
   }
 
-  if (reward.modReq && !isMod(user.usernameLower)) {
+  if (reward.modReq && !ModStore.isRole(user.usernameLower)) {
     return false;
   }
 
-  if (reward.TOReq && !isTO(user.usernameLower)) {
+  if (reward.TOReq && !TOStore.isRole(user.usernameLower)) {
     return false;
   }
 
   if (reward.devReq && !isDev(user.usernameLower)) {
+    return false;
+  }
+
+  if (reward.percivalReq && !PercivalStore.isRole(user.usernameLower)) {
+    return false;
+  }
+
+  if (reward.winnerReq && !user.lastTourneyWinner) {
     return false;
   }
 
@@ -127,7 +133,7 @@ export async function getAvatarLibrarySizeForUser(
   };
 
   const modLibrarySize = () => {
-    return isMod(usernameLower) ? 5 : 0;
+    return ModStore.isRole(usernameLower) ? 5 : 0;
   };
 
   const patreonLibrarySize = async () => {

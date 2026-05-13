@@ -12,10 +12,13 @@ import User from '../models/user';
 import JSON from 'circular-json';
 
 import { isAdmin } from '../modsadmins/admins';
-import { isMod } from '../modsadmins/mods';
-import { isPercival } from '../modsadmins/percivals';
-import { isTO } from '../modsadmins/tournamentOrganizers';
-import { GAME_MODE_NAMES, GameMode, isGameMode, strToGameMode } from '../gameplay/gameEngine/gameModes';
+import { ModStore, PercivalStore, TOStore } from '../modsadmins/roles';
+import {
+  GAME_MODE_NAMES,
+  GameMode,
+  isGameMode,
+  strToGameMode,
+} from '../gameplay/gameEngine/gameModes';
 
 import { ChatSpamFilter } from './filters/chatSpamFilter';
 import { MessageWithDate, Quote } from './quote';
@@ -38,14 +41,13 @@ import { JoinQueueFilter } from './filters/joinQueueFilter';
 import { Role } from '../gameplay/gameEngine/roles/types';
 import { Phase } from '../gameplay/gameEngine/phases/types';
 import { Card } from '../gameplay/gameEngine/cards/types';
-import { TOCommandsImported } from './commands/tournamentOrganisers';
+import { TOCommands } from './commands/tournamentOrganisers';
 import { uniqueLoginsMetric } from '../metrics/miscellaneousMetrics';
 
 const ONE_DAY_MILLIS = 24 * 60 * 60 * 1000; // 1 day
 
 let createNewRoomAllowed = true;
-export function ToggleCreateNewRoomAllowed()
-{
+export function ToggleCreateNewRoomAllowed() {
   createNewRoomAllowed = !createNewRoomAllowed;
 }
 
@@ -209,61 +211,6 @@ if (process.env.NODE_ENV !== 'test') {
     }
   }, 1000);
 }
-
-export const TOCommandsOLD = {
-  t: {
-    command: 't',
-    help: '/t: displays /thelp',
-    run(args: string[], senderSocket) {
-      return TOCommands.thelp.run(args, senderSocket);
-    },
-  },
-  thelp: {
-    command: 'thelp',
-    help: '/thelp: show commands.',
-    run(args: string[], senderSocket) {
-      // do stuff
-      const dataToSend = [];
-      let i = 0;
-      i++;
-
-      for (const key in TOCommands) {
-        if (TOCommands.hasOwnProperty(key)) {
-          dataToSend[i] = {
-            message: TOCommands[key].help,
-            classStr: 'server-text',
-          };
-          i++;
-        }
-      }
-      senderSocket.emit('messageCommandReturnStr', dataToSend);
-    },
-  },
-
-  tforcemove: {
-    command: 'tforcemove',
-    help: "/tforcemove <username> [button] [target]: Forces a player to make a move. To see what moves are available, enter the target's username. To force the move, input button and/or target.",
-    run: modCommands.mforcemove.run,
-  },
-
-  trevealallroles: {
-    command: 'trevealallroles',
-    help: '/trevealallroles : Reveals the roles of all players in the current room.',
-    run: mrevealallroles.run,
-  },
-
-  ttogglepause: {
-    command: 'ttogglepause',
-    help: '/ttogglepause: Pauses or unpauses the current room.',
-    run: mtogglepause.run,
-  },
-
-  twhisper: {
-    command: 'twhisper',
-    help: '/twhisper <player name> <text to send>: Sends a whisper to a player.',
-    run: modCommands.mwhisper.run,
-  },
-};
 
 export const userCommandsOLD = {
   buzz: {
@@ -532,7 +479,6 @@ export const userCommandsOLD = {
 };
 
 export const userCommands = { ...userCommandsImported, ...userCommandsOLD };
-export const TOCommands = { ...TOCommandsOLD, ...TOCommandsImported };
 
 function removeAllUserSockets(username: string) {
   for (const socket of allSockets) {
@@ -609,7 +555,7 @@ export const server = function (io: SocketServer): void {
         socket.emit('adminCommands', adminCommands);
       }
 
-      if (isMod(socket.request.user.username)) {
+      if (ModStore.isRole(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('modCommands', modCommands);
 
@@ -660,12 +606,12 @@ export const server = function (io: SocketServer): void {
           });
       }
 
-      if (isPercival(socket.request.user.username)) {
+      if (PercivalStore.isRole(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('percivalCommands', percivalCommands);
       }
 
-      if (isTO(socket.request.user.username)) {
+      if (TOStore.isRole(socket.request.user.username)) {
         // send the user the list of commands
         socket.emit('TOCommands', TOCommands);
       }
@@ -726,7 +672,7 @@ export const server = function (io: SocketServer): void {
       });
     }, 1000);
 
-    socket.rewards = await getAllRewardsForUser(socket.request.user);
+    socket.rewards = await getAllRewardsForUser(socket.request.user)
     socket = applyApplicableRewards(socket);
 
     if (
@@ -777,12 +723,15 @@ const applyApplicableRewards = function (socket) {
   // Moderator badge
   else if (socket.rewards.includes(REWARDS.MOD_BADGE)) {
     socket.request.badge = 'M';
-  } else if (isPercival(socket.request.user.username)) {
+  } else if (socket.rewards.includes(REWARDS.PERCIVAL_BADGE)) {
     socket.request.badge = 'P';
   }
   // TO badge
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
     socket.request.badge = 'T';
+  // Winner badge
+  } else if (socket.rewards.includes(REWARDS.WINNER_BADGE)) {
+    socket.request.badge = '🏆';
   }
   // Tier4 badge
   if (socket.rewards.includes(REWARDS.TIER4_BADGE)) {
@@ -1167,14 +1116,14 @@ function messageCommand(data) {
 
   if (adminCommands[data.command] && isAdmin(this.request.user.username)) {
     adminCommands[data.command].run(data.args, this, ioGlobal);
-  } else if (modCommands[data.command] && isMod(this.request.user.username)) {
+  } else if (modCommands[data.command] && ModStore.isRole(this.request.user.username)) {
     modCommands[data.command].run(data.args, this, ioGlobal);
   } else if (
     percivalCommands[data.command] &&
-    isPercival(this.request.user.username)
+    PercivalStore.isRole(this.request.user.username)
   ) {
     dataToSend = percivalCommands[data.command].run(data.args, this, ioGlobal);
-  } else if (TOCommands[data.command] && isTO(this.request.user.username)) {
+  } else if (TOCommands[data.command] && TOStore.isRole(this.request.user.username)) {
     dataToSend = TOCommands[data.command].run(data.args, this, ioGlobal);
   } else if (userCommands[data.command]) {
     dataToSend = userCommands[data.command].run(data.args, this, ioGlobal);
@@ -1392,9 +1341,11 @@ function outputSpamMessage(chat, user) {
 }
 
 function newRoom(dataObj) {
-  if (!createNewRoomAllowed)
-  {
-    sendReplyToCommand(this, "Creation of new rooms are temporarily blocked. A server restart is coming. Please wait until after the server restarts.");
+  if (!createNewRoomAllowed) {
+    sendReplyToCommand(
+      this,
+      'Creation of new rooms are temporarily blocked. A server restart is coming. Please wait until after the server restarts.',
+    );
     return;
   }
 

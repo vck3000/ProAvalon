@@ -10,7 +10,7 @@ import pinnedThread from '../models/pinnedThread';
 import { isModMiddleware, asyncMiddleware } from './middleware';
 import getTimeDiffInString from '../util/getTimeDiffInString';
 import { createNotification } from '../myFunctions/createNotification';
-import { isMod } from '../modsadmins/mods';
+import { ModStore } from '../modsadmins/roles';
 import forumThreadRoutes from '../routes/forum/forumThreadRoutes';
 import forumThreadCommentRoutes from '../routes/forum/forumThreadCommentRoutes';
 import forumThreadCommentReplyRoutes from '../routes/forum/forumThreadCommentReplyRoutes';
@@ -166,7 +166,7 @@ router.get(
       : 0;
 
     // if they're mod then allow them to see disabled posts.
-    const mod = isMod(req.user.username);
+    const mod = ModStore.isRole(req.user.username);
     const modSee = { disabled: mod };
 
     const allForumThreads = await forumThread

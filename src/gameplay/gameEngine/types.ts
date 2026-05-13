@@ -74,6 +74,7 @@ export interface IUser {
   IPAddresses?: string[];
   lastIPAddress?: string;
   matchmakingBlacklist?: string[];
+  lastTourneyWinner?: boolean;
 
   // Mongoose methods
   save: () => Promise<this>;

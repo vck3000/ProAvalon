@@ -1,11 +1,10 @@
-import { isMod } from './mods';
-import { isTO } from './tournamentOrganizers';
+import { ModStore, PercivalStore } from './roles';
 
 export function modOrTOString(username: string): string {
-  if (isMod(username)) {
+  if (ModStore.isRole(username)) {
     return 'Moderator';
   }
-  if (isTO(username)) {
+  if (PercivalStore.isRole(username)) {
     return 'Tournament Organizer';
   }
 
