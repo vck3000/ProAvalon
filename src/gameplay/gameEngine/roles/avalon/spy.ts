@@ -1,6 +1,7 @@
 import { Alliance, See } from '../../types';
 import { IRole, Role } from '../types';
 import Game from '../../game';
+import { Card } from '../../cards/types';
 
 class Spy implements IRole {
   room: Game;
@@ -27,7 +28,8 @@ class Spy implements IRole {
       const spies = [];
 
       for (let i = 0; i < this.room.playersInGame.length; i++) {
-        if (this.room.playersInGame[i].alliance === Alliance.Spy) {
+        if (this.room.playersInGame[i].alliance === Alliance.Spy
+          || i === this.room.specialCards[Card.Norebo].indexOfPlayerHolding) {
           if (this.room.playersInGame[i].role === Role.Oberon) {
             // don't add oberon
           } else {
