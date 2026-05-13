@@ -1,6 +1,6 @@
 import usernamesIndexes from '../../../../myFunctions/usernamesIndexes';
 import { ButtonSettings, IPhase, Phase } from '../types';
-import { MIN_PLAYERS, NUM_PLAYERS_ON_MISSION } from '../../game';
+import { MIN_PLAYERS } from '../../game';
 import { SocketUser } from '../../../../sockets/types';
 
 class PickingTeam implements IPhase {
@@ -52,7 +52,7 @@ class PickingTeam implements IPhase {
       this.thisRoom.publicVotes = [];
 
       const num =
-        NUM_PLAYERS_ON_MISSION[
+        this.thisRoom.NUM_PLAYERS_ON_MISSION[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
       // console.log("Num player for this.thisRoom mission : " + num);
@@ -140,7 +140,7 @@ class PickingTeam implements IPhase {
 
   numOfTargets(indexOfPlayer: number): number {
     const num =
-      NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
+      this.thisRoom.NUM_PLAYERS_ON_MISSION[this.thisRoom.playersInGame.length - MIN_PLAYERS][
         this.thisRoom.missionNum - 1
       ];
 
@@ -158,7 +158,7 @@ class PickingTeam implements IPhase {
       indexOfPlayer === this.thisRoom.teamLeader
     ) {
       const num =
-        NUM_PLAYERS_ON_MISSION[
+        this.thisRoom.NUM_PLAYERS_ON_MISSION[
           this.thisRoom.playersInGame.length - MIN_PLAYERS
         ][this.thisRoom.missionNum - 1];
 
@@ -178,6 +178,7 @@ class PickingTeam implements IPhase {
   getProhibitedIndexesToPick(indexOfPlayer: number): number[] {
     return [];
   }
+
 }
 
 export default PickingTeam;
