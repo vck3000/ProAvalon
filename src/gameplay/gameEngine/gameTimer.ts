@@ -179,8 +179,6 @@ export class GameTimer {
     }
 
     // Check for gamestates where all players should timer vote "yes" to avoid timer abuse
-    const hammerVote =
-      this.game.pickNum === 5 && phaseObject.phase === 'VotingTeam';
     const missionVote = phaseObject.phase === 'VotingMission';
     // Iterate over each user to figure out who hasn't acted.
     for (let i = 0; i < this.game.playersInGame.length; i++) {
@@ -190,7 +188,7 @@ export class GameTimer {
         phaseObject.getProhibitedIndexesToPick(i);
 
       const buttonsAvailable: string[] = [];
-      if (buttonSettings.red.hidden === false && !hammerVote && !missionVote) {
+      if (buttonSettings.red.hidden === false && !missionVote) {
         buttonsAvailable.push('no');
       }
 
