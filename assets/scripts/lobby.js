@@ -1428,7 +1428,26 @@ function drawVoteHistory(data) {
   //  ProNub -> Bot2 -> Bot123 ->
 }
 
+function getNewOptions() {
+  const labels = $(
+    '#spyRolesButtonGroup label, #resRolesButtonGroup label, #cardsButtonGroup label'
+  );
+
+  const selectedRolesCards = [];
+  for (let i = 0; i < labels.length; i++) {
+    if (labels[i].classList.contains('active')) {
+      selectedRolesCards.push(labels[i].dataset.name);
+    }
+  }
+  return selectedRolesCards;
+}
+
 function getOptions() {
+  const newCards = getNewOptions();
+  if (newCards.length > 0) {
+    return newCards;
+  }
+
   // console.log($("#rolesCardsButtonGroup label"));
   const rolesCards = $('#rolesCardsButtonGroup label');
 
