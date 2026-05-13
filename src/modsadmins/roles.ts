@@ -3,14 +3,14 @@ import { PowerRole } from '../models/types/siteRole';
 import { isAdmin, adminsArray } from './admins';
 
 class RoleStore {
-  constructor(private role: PowerRole) {}
+  constructor(private role: PowerRole) {
+    this.refreshRole();
+  }
   private roleSet = new Set<string>();
 
   async refreshRole() {
     try {
-      const foundRoles = await SiteRole.find(
-        { role: this.role }
-      ).lean();
+      const foundRoles = await SiteRole.find({ role: this.role }).lean();
 
       this.roleSet.clear();
 
@@ -18,7 +18,11 @@ class RoleStore {
         this.roleSet.add(foundRole.usernameLower);
       }
 
-      console.log(`[${this.role.toUpperCase()} CACHE] Loaded ${this.roleSet.size} ${this.role}s`);
+      console.log(
+        `[${this.role.toUpperCase()} CACHE] Loaded ${this.roleSet.size} ${
+          this.role
+        }s`,
+      );
     } catch (err) {
       console.log(`Failed to refresh ${this.role} cache:`, err);
     }
@@ -36,7 +40,3 @@ class RoleStore {
 export const ModStore = new RoleStore(PowerRole.Moderator);
 export const PercivalStore = new RoleStore(PowerRole.Percival);
 export const TOStore = new RoleStore(PowerRole.TournamentOrganizer);
-
-ModStore.refreshRole();
-PercivalStore.refreshRole();
-TOStore.refreshRole();

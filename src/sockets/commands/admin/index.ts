@@ -2,7 +2,7 @@ import { a } from './a';
 import { aemailtousername } from './aemailtousername';
 import { aip } from './aip';
 import { aresetpassword } from './aresetpassword';
-import { Command, Commands } from '../types';
+import { Commands } from '../types';
 import { atestgame } from './atestgame';
 import { adiscordmessage } from './adiscordmessage';
 import { acreatetestaccounts } from './acreatetestaccounts';

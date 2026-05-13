@@ -15,10 +15,8 @@ const roleAliases: Record<string, PowerRole> = {
 
   to: PowerRole.TournamentOrganizer,
   tournamentorganizer: PowerRole.TournamentOrganizer,
-  org: PowerRole.TournamentOrganizer,
 
   percival: PowerRole.Percival,
-  perc: PowerRole.Percival,
   percy: PowerRole.Percival,
 };
 
@@ -32,7 +30,7 @@ function parsePowerRole(value: string): PowerRole {
   }
 }
 
-function roleChooseRefresh(role: PowerRole) {
+function refreshRoleStore(role: PowerRole) {
   if (role === PowerRole.Moderator) {
     ModStore.refreshRole();
   } else if (role === PowerRole.Percival) {
@@ -91,21 +89,16 @@ export const msiterole: Command = {
     const role = parsePowerRole(args[2]);
     const winnerCase = args[2].toLowerCase() === 'winner';
 
-    if (
-      ![
-        PowerRole.Moderator,
-        PowerRole.Percival,
-        PowerRole.TournamentOrganizer,
-      ].includes(role) &&
-      !winnerCase
-    ) {
+    if (role == null && !winnerCase) {
       senderSocket.emit('messageCommandReturnStr', {
         message:
           'Invalid role name. Specify one of: "moderator", "tournamentOrganizer", "percival", or "winner".',
         classStr: 'server-text',
       });
       return;
-    } else if (!['promote', 'demote', 'list'].includes(action)) {
+    }
+
+    if (!['promote', 'demote', 'list'].includes(action)) {
       senderSocket.emit('messageCommandReturnStr', {
         message:
           'Invalid action. Specify one of: "promote", "demote", or "list".',
@@ -213,13 +206,11 @@ export const msiterole: Command = {
             await SiteRole.create(promoteData);
           }
 
-          roleChooseRefresh(role);
+          refreshRoleStore(role);
           logAndDiscord(senderSocket, true, foundUser.username, roleText);
 
           senderSocket.emit('messageCommandReturnStr', {
-            message: `Promoted ${
-              foundUser.username
-            } to ${roleText} successfully!`,
+            message: `Promoted ${foundUser.username} to ${roleText} successfully!`,
             classStr: 'server-text',
           });
         } else {
@@ -256,7 +247,7 @@ export const msiterole: Command = {
             await foundSiteRole.deleteOne();
           }
 
-          roleChooseRefresh(role);
+          refreshRoleStore(role);
           logAndDiscord(senderSocket, false, username, roleText);
 
           senderSocket.emit('messageCommandReturnStr', {
