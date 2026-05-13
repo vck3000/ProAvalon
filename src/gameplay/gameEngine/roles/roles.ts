@@ -15,6 +15,8 @@ import MordredAssassin from './avalon/mordredassassin';
 import Hitberon from './avalon/hitberon';
 import Melron from './avalon/melron';
 import Moregano from './avalon/moregano';
+import Lunatic from './avalon/lunatic';
+import Troublemaker from './avalon/troublemaker';
 
 
 type Class<I, Args extends any[] = any[]> = new (...args: Args) => I;
@@ -38,6 +40,9 @@ export const avalonRoles: Record<string, Class<IRole>> = {
 
   [Melron.role]: Melron,
   [Moregano.role]: Moregano,
+
+  [Lunatic.role]: Lunatic,
+  [Troublemaker.role]: Troublemaker,
 };
 
 export const rolesThatCantGuessMerlin = [
