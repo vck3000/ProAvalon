@@ -14,7 +14,7 @@ const roleAliases: Record<string, PowerRole> = {
   moderator: PowerRole.Moderator,
 
   to: PowerRole.TournamentOrganizer,
-  tournamentorganizer: PowerRole.TournamentOrganizer,
+  tournament_organizer: PowerRole.TournamentOrganizer,
 
   percival: PowerRole.Percival,
   percy: PowerRole.Percival,
@@ -92,7 +92,7 @@ export const msiterole: Command = {
     if (role == null && !winnerCase) {
       senderSocket.emit('messageCommandReturnStr', {
         message:
-          'Invalid role name. Specify one of: "moderator", "tournamentOrganizer", "percival", or "winner".',
+          'Invalid role name. Specify one of: "Moderator", "Tournament_Organizer", "Percival", or "Winner".',
         classStr: 'server-text',
       });
       return;
@@ -107,7 +107,7 @@ export const msiterole: Command = {
       return;
     }
 
-    const roleText = winnerCase ? 'WINNER' : role.toUpperCase();
+    const roleText = winnerCase ? 'WINNER' : role;
 
     if (action === 'list') {
       //Case for listing all members of a role

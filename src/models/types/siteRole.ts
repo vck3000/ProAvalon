@@ -1,7 +1,7 @@
 export enum PowerRole {
-  Moderator = 'moderator',
-  TournamentOrganizer = 'tournamentOrganizer',
-  Percival = 'percival'
+  Moderator = 'MODERATOR',
+  TournamentOrganizer = 'TOURNAMENT_ORGANIZER',
+  Percival = 'PERCIVAL'
 }
 
 export interface ISiteRole {

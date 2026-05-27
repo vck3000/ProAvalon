@@ -1,10 +1,10 @@
-import { ModStore, PercivalStore } from './roles';
+import { ModStore, TOStore } from './roles';
 
 export function modOrTOString(username: string): string {
   if (ModStore.isRole(username)) {
     return 'Moderator';
   }
-  if (PercivalStore.isRole(username)) {
+  if (TOStore.isRole(username)) {
     return 'Tournament Organizer';
   }
 

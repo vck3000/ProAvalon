@@ -6,10 +6,13 @@ import { PowerRole } from './types/siteRole';
 const siteRoleSchema = new mongoose.Schema<ISiteRole>({
   role: {
     type: String,
-    enum: Object.values(PowerRole),
+    enum: PowerRole,
     required: true,
   },
-  usernameLower: String,
+  usernameLower: {
+    type: String,
+    required: true,
+  },
 });
 
 // compile schema into a model

@@ -1,6 +1,5 @@
 import SiteRole from '../models/siteRole';
 import { PowerRole } from '../models/types/siteRole';
-import { isAdmin, adminsArray } from './admins';
 
 class RoleStore {
   constructor(private role: PowerRole) {
@@ -19,7 +18,7 @@ class RoleStore {
       }
 
       console.log(
-        `[${this.role.toUpperCase()} CACHE] Loaded ${this.roleSet.size} ${
+        `[${this.role} CACHE] Loaded ${this.roleSet.size} ${
           this.role
         }s`,
       );
@@ -29,11 +28,11 @@ class RoleStore {
   }
 
   isRole(username: string): boolean {
-    return isAdmin(username) || this.roleSet.has(username.toLowerCase());
+    return this.roleSet.has(username.toLowerCase());
   }
 
   getRoleArray(): string[] {
-    return [...Array.from(this.roleSet), ...adminsArray];
+    return Array.from(this.roleSet);
   }
 }
 
