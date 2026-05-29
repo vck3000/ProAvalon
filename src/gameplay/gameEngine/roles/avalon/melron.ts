@@ -47,6 +47,7 @@ class Melron implements IRole {
 
   private initialiseMelronView(): void {
     let visibleSpyCount = 0;
+    let visibleSpyUsernames = [];
 
     for (const p of this.room.playersInGame) {
       if (p.alliance !== Alliance.Spy) {
@@ -58,6 +59,7 @@ class Melron implements IRole {
       }
 
       visibleSpyCount++;
+      visibleSpyUsernames.push(p.username);
     }
 
     const k = visibleSpyCount;
@@ -66,9 +68,18 @@ class Melron implements IRole {
       .filter((p: any) => p.role !== Role.Melron)
       .map((p: any) => p.username);
 
-    shuffleArray(pool);
+    let melronViewArray = [];
+    const visibleSpySet = new Set(visibleSpyUsernames);
 
-    this.spiesThatMelronSees = pool.slice(0, k);
+    //Ensures that the Melron does not see the real Spy team
+    do {
+      shuffleArray(pool);
+      melronViewArray = pool.slice(0, k);
+    } while (
+      melronViewArray.every(item => visibleSpySet.has(item))
+    );
+    
+    this.spiesThatMelronSees = melronViewArray;
   }
 
   checkSpecialMove(): void {}
