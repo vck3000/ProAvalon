@@ -1,5 +1,5 @@
 import { Command } from '../types';
-import { modOrTOString } from '../../../modsadmins/modOrTO';
+import { modOrPercyOrTOString } from '../../../modsadmins/modOrTO';
 import { getIndexFromUsername, rooms } from '../../sockets';
 import { Alliance } from '../../../gameplay/gameEngine/types';
 import { Phase } from '../../../gameplay/gameEngine/phases/types';
@@ -147,7 +147,7 @@ export const mforcemove: Command = {
         );
       }
 
-      const rolePrefix = modOrTOString(senderSocket.request.user.username);
+      const rolePrefix = modOrPercyOrTOString(senderSocket.request.user.username);
 
       thisRoom.sendText(
         `${rolePrefix} ${senderSocket.request.user.username} has forced a move: `,

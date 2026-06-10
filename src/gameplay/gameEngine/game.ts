@@ -9,7 +9,7 @@ import GameRecord from '../../models/gameRecord';
 import RatingPeriodGameRecord from '../../models/RatingPeriodGameRecord';
 import { ModStore, TOStore } from '../../modsadmins/roles';
 import { isDev } from '../../modsadmins/developers';
-import { modOrTOString } from '../../modsadmins/modOrTO';
+import { modOrPercyOrTOString } from '../../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
@@ -1967,7 +1967,7 @@ class Game extends Room {
   }
 
   togglePause(modUsername) {
-    const rolePrefix = modOrTOString(modUsername);
+    const rolePrefix = modOrPercyOrTOString(modUsername);
 
     // if paused, we unpause
     if (this.phase === Phase.Paused) {
