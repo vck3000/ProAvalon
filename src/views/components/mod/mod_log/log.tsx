@@ -42,6 +42,9 @@ export class Log extends React.Component {
       case 'pmmod':
         logText = pmmodText(this.props.log);
         break;
+      case 'text':
+        logText = text(this.props.log);
+        break;
     }
 
     return (
@@ -261,3 +264,18 @@ function pmmodText(props) {
     ),
   };
 }
+
+function text(props) {
+  const titleText = props.data.title;
+  const bodyText = props.data.body;
+
+  return {
+    title: titleText,
+    body: (
+      <span>
+        <p>{bodyText}</p>
+      </span>
+    ),
+  };
+}
+

@@ -6,6 +6,8 @@ const obj: RewardData = {
   modReq: false,
   TOReq: false,
   devReq: false,
+  percivalReq: false,
+  lastTourneyWinnerReq: false,
   gamesPlayedReq: 0,
   donationReq: constants.tier4_donation,
 };

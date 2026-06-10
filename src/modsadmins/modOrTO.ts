@@ -1,12 +1,14 @@
-import { isMod } from './mods';
-import { isTO } from './tournamentOrganizers';
+import { ModStore, PercivalStore, TOStore } from './roles';
 
-export function modOrTOString(username: string): string {
-  if (isMod(username)) {
+export function modOrPercyOrTOString(username: string): string {
+  if (ModStore.isRole(username)) {
     return 'Moderator';
   }
-  if (isTO(username)) {
+  if (TOStore.isRole(username)) {
     return 'Tournament Organizer';
+  }
+  if (PercivalStore.isRole(username)) {
+    return 'Percival';
   }
 
   return 'Undefined';

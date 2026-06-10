@@ -4,7 +4,7 @@ import forumThreadComment from '../models/forumThreadComment';
 import forumThreadCommentReply from '../models/forumThreadCommentReply';
 import User from '../models/user';
 import Ban from '../models/ban';
-import { isMod } from '../modsadmins/mods';
+import { ModStore } from '../modsadmins/roles';
 import { isAdmin } from '../modsadmins/admins';
 
 import { RequestHandler } from 'express';
@@ -39,8 +39,8 @@ export const isLoggedIn = asyncMiddleware(async (req, res, next) => {
   // Pass on some variables for all ejs files to use, mainly header partial view
   res.locals.currentUser = user;
   res.locals.userNotifications = user.notifications;
-  res.locals.mod = isMod(user.username);
-  res.locals.isMod = isMod(user.username);
+  res.locals.mod = ModStore.isRole(user.username);
+  res.locals.isMod = ModStore.isRole(user.username);
 
   // Tag the session document in MongoDb with their username
   // to be able to look it up later when invalidating sessions.
@@ -203,7 +203,7 @@ export const checkForumThreadCommentReplyOwnership = checkOwnership(
 );
 
 export const isModMiddleware = (req, res, next) => {
-  if (isMod(req.user.username)) {
+  if (ModStore.isRole(req.user.username)) {
     next();
   } else {
     req.flash('error', 'You are not a moderator.');

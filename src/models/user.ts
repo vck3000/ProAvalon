@@ -144,6 +144,8 @@ const UserSchema = new mongoose.Schema<IUser>({
   lastIPAddress: String,
 
   matchmakingBlacklist: [String],
+
+  lastTourneyWinner: Boolean,
 });
 
 UserSchema.plugin(passportLocalMongoose, {
