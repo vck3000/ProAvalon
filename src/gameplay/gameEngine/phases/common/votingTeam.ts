@@ -148,53 +148,12 @@ class VotingTeam implements IPhase {
   }
 
   getStatusMessage(indexOfPlayer: number): string {
-    // If we are spectator
-    if (indexOfPlayer === -1) {
-      let str = '';
-      str += 'Waiting for votes: ';
-      for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-        str = `${
-          str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
-        }, `;
-      }
-      // Remove last , and replace with .
-      str = str.slice(0, str.length - 2);
-      str += '.';
-
-      return str;
-    }
-    // If user has voted already
-    if (
-      indexOfPlayer !== undefined &&
-      this.thisRoom.playersYetToVote.indexOf(
-        this.thisRoom.playersInGame[indexOfPlayer].username,
-      ) === -1
-    ) {
-      let str = '';
-      str += 'Waiting for votes: ';
-      for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
-        str = `${
-          str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
-        }, `;
-      }
-      // Remove last , and replace with .
-      str = str.slice(0, str.length - 2);
-      str += '.';
-
-      return str;
-    }
-    // User has not voted yet or user is a spectator
-
-    const teamLeaderUsername =
-      this.thisRoom.playersInGame[this.thisRoom.teamLeader].username;
-
     let str = '';
-    str += `${this.thisRoom.anonymizer.anon(teamLeaderUsername)} has picked: `;
-
-    for (let i = 0; i < this.thisRoom.proposedTeam.length; i++) {
-      str += `${this.thisRoom.anonymizer.anon(
-        this.thisRoom.proposedTeam[i],
-      )}, `;
+    str += 'Waiting for votes: ';
+    for (let i = 0; i < this.thisRoom.playersYetToVote.length; i++) {
+      str = `${
+        str + this.thisRoom.anonymizer.anon(this.thisRoom.playersYetToVote[i])
+      }, `;
     }
     // Remove last , and replace with .
     str = str.slice(0, str.length - 2);
