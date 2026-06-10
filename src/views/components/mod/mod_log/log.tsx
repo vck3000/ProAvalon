@@ -43,7 +43,7 @@ export class Log extends React.Component {
         logText = pmmodText(this.props.log);
         break;
       case 'text':
-        logText = justText(this.props.log);
+        logText = text(this.props.log);
         break;
     }
 
@@ -265,9 +265,9 @@ function pmmodText(props) {
   };
 }
 
-function justText(props) {
-  let titleText = props.data.title;
-  let bodyText = props.data.body;
+function text(props) {
+  const titleText = props.data.title;
+  const bodyText = props.data.body;
 
   return {
     title: titleText,

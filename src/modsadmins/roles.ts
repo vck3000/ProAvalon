@@ -5,7 +5,6 @@ class RoleStore {
   constructor(private role: PowerRole) {
     this.refreshRole();
   }
-  private roleSet = new Set<string>();
 
   async refreshRole() {
     try {
@@ -18,12 +17,10 @@ class RoleStore {
       }
 
       console.log(
-        `[${this.role} CACHE] Loaded ${this.roleSet.size} ${
-          this.role
-        }s`,
+        `[ROLE_STORE] Loaded ${this.roleSet.size} ${this.role}s`,
       );
     } catch (err) {
-      console.log(`Failed to refresh ${this.role} cache:`, err);
+      console.log(`[ROLE_STORE] Failed to refresh ${this.role} cache:`, err);
     }
   }
 
@@ -34,6 +31,8 @@ class RoleStore {
   getRoleArray(): string[] {
     return Array.from(this.roleSet);
   }
+
+  private roleSet = new Set<string>();
 }
 
 export const ModStore = new RoleStore(PowerRole.Moderator);

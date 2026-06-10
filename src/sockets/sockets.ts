@@ -672,7 +672,7 @@ export const server = function (io: SocketServer): void {
       });
     }, 1000);
 
-    socket.rewards = await getAllRewardsForUser(socket.request.user)
+    socket.rewards = await getAllRewardsForUser(socket.request.user);
     socket = applyApplicableRewards(socket);
 
     if (
@@ -730,7 +730,7 @@ const applyApplicableRewards = function (socket) {
   else if (socket.rewards.includes(REWARDS.TO_BADGE)) {
     socket.request.badge = 'T';
   // Winner badge
-  } else if (socket.rewards.includes(REWARDS.WINNER_BADGE)) {
+  } else if (socket.rewards.includes(REWARDS.LAST_TOURNEY_WINNER_BADGE)) {
     socket.request.badge = '🏆';
   }
   // Tier4 badge

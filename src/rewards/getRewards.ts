@@ -104,7 +104,7 @@ export async function userHasReward(
     return false;
   }
 
-  if (reward.winnerReq && !user.lastTourneyWinner) {
+  if (reward.lastTourneyWinnerReq && !user.lastTourneyWinner) {
     return false;
   }
 

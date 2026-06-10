@@ -6,7 +6,7 @@ import MOD_BADGE from './allRewards/MOD_BADGE';
 import TO_BADGE from './allRewards/TO_BADGE';
 import DEV_BADGE from './allRewards/DEV_BADGE';
 import PERCIVAL_BADGE from './allRewards/PERCIVAL_BADGE';
-import WINNER_BADGE from './allRewards/WINNER_BADGE';
+import LAST_TOURNEY_WINNER_BADGE from './allRewards/LAST_TOURNEY_WINNER_BADGE';
 import TIER1_BADGE from './allRewards/TIER1_BADGE';
 import TIER2_BADGE from './allRewards/TIER2_BADGE';
 import TIER3_BADGE from './allRewards/TIER3_BADGE';
@@ -18,7 +18,7 @@ export const UserBadgeRewards = {
   TO_BADGE: TO_BADGE,
   DEV_BADGE: DEV_BADGE,
   PERCIVAL_BADGE: PERCIVAL_BADGE,
-  WINNER_BADGE: WINNER_BADGE,
+  LAST_TOURNEY_WINNER_BADGE: LAST_TOURNEY_WINNER_BADGE,
 };
 
 export const PatreonRewards = {

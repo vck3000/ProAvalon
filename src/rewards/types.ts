@@ -4,7 +4,7 @@ export type RewardData = {
   TOReq: boolean;
   devReq: boolean;
   percivalReq: boolean;
-  winnerReq: boolean;
+  lastTourneyWinnerReq: boolean;
   gamesPlayedReq: number;
   donationReq: number;
 };
