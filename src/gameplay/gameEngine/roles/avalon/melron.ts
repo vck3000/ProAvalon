@@ -1,6 +1,7 @@
 import { Alliance, See } from '../../types';
 import { IRole, Role } from '../types';
 import Game from '../../game';
+import { Phase } from '../../phases/types';
 import shuffleArray from '../../../../util/shuffleArray';
 
 /**
@@ -73,6 +74,9 @@ class Melron implements IRole {
   checkSpecialMove(): void {}
 
   getPublicGameData() {
+    if (this.room.phase !== Phase.Finished) {
+      return null;
+    }
     return { spiesMelronSaw: this.spiesThatMelronSees ?? [] }; // real usernames
   }
 }

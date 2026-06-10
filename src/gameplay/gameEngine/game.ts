@@ -1,4 +1,5 @@
 // @ts-nocheck
+import { randomInt } from 'crypto';
 import _ from 'lodash';
 
 import Room, { RoomConfig } from './room';
@@ -1944,15 +1945,20 @@ class Game extends Room {
       return 'No such user is playing at your table.';
     }
 
-    // Check the guesser isnt Merlin/Percy
+    // Check the guesser isnt Merlin/Percy.
+    // Use displayRole so deceptive roles (Melron) cannot unmask themselves
+    // by probing this command — Melron must behave like Merlin here.
     const guesserPlayer = this.playersInGame.find(
       (player) => player.username === guesserUsername,
     );
+    const effectiveGuesserRole = guesserPlayer?.displayRole
+      ? guesserPlayer.displayRole
+      : guesserPlayer?.role;
     if (
       guesserPlayer !== undefined &&
-      rolesThatCantGuessMerlin.indexOf(guesserPlayer.role) !== -1
+      rolesThatCantGuessMerlin.indexOf(effectiveGuesserRole) !== -1
     ) {
-      return `${guesserPlayer.role} cannot submit a guess.`;
+      return `${effectiveGuesserRole} cannot submit a guess.`;
     }
 
     // Accept the guess
@@ -2352,7 +2358,7 @@ export default Game;
 export function getRandomInt(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min)) + min; // The maximum is exclusive and the minimum is inclusive
+  return randomInt(min, max); // The maximum is exclusive and the minimum is inclusive
 }
 
 function generateAssignmentOrders(num) {
