@@ -20,31 +20,61 @@ const roleAliases: Record<string, PowerRole> = {
   percy: PowerRole.Percival,
 };
 
-function parsePowerRole(value: string): PowerRole {
+function parsePowerRole(value: string): PowerRole | undefined {
   const normalized = value.trim().toLowerCase();
 
   if (normalized in roleAliases) {
     return roleAliases[normalized];
   } else {
-    return null;
+    return undefined;
   }
 }
 
 function refreshRoleStore(role: PowerRole) {
-  if (role === PowerRole.Moderator) {
-    ModStore.refreshRole();
-  } else if (role === PowerRole.Percival) {
-    PercivalStore.refreshRole();
-  } else if (role === PowerRole.TournamentOrganizer) {
-    TOStore.refreshRole();
+  switch (role) {
+    case PowerRole.Moderator:
+      ModStore.refreshRole();
+      break;
+    case PowerRole.Percival:
+      PercivalStore.refreshRole();
+      break;
+    case PowerRole.TournamentOrganizer:
+      TOStore.refreshRole();
+      break;
+    default: {
+      const _exhaustive: never = role;
+      throw new Error(`Unhandled PowerRole: ${_exhaustive}`);
+    }
   }
+}
+
+function isRoleHeld(role: PowerRole, usernameLower: string): boolean {
+  switch (role) {
+    case PowerRole.Moderator:
+      return ModStore.isRole(usernameLower);
+    case PowerRole.Percival:
+      return PercivalStore.isRole(usernameLower);
+    case PowerRole.TournamentOrganizer:
+      return TOStore.isRole(usernameLower);
+    default: {
+      const _exhaustive: never = role;
+      throw new Error(`Unhandled PowerRole: ${_exhaustive}`);
+    }
+  }
+}
+
+function reply(socket: SocketUser, message: string) {
+  socket.emit('messageCommandReturnStr', {
+    message,
+    classStr: 'server-text',
+  });
 }
 
 function logAndDiscord(
   senderSocket: SocketUser,
-  promoting: Boolean,
-  foundUsername: String,
-  roleText: String,
+  promoting: boolean,
+  foundUsername: string,
+  roleText: string,
 ) {
   const dateCreated = new Date();
   const senderUsername = senderSocket.request.user.username;
@@ -73,193 +103,216 @@ function logAndDiscord(
   console.log(titleText);
 }
 
+async function handleList(
+  role: PowerRole | undefined,
+  winnerCase: boolean,
+  roleText: string,
+  senderSocket: SocketUser,
+) {
+  const foundList = winnerCase
+    ? await User.find(
+        { lastTourneyWinner: true },
+        { usernameLower: 1, _id: 0 },
+      )
+    : await SiteRole.find({ role: role }, { usernameLower: 1, _id: 0 });
+
+  if (foundList.length === 0) {
+    reply(senderSocket, `Found no users in the ${roleText} role.`);
+    return;
+  }
+
+  const roleUsernames = foundList.map((doc) => doc.usernameLower);
+  reply(
+    senderSocket,
+    `Current members of the ${roleText} role:\n${roleUsernames.join(', ')}.`,
+  );
+}
+
+async function promoteRole(
+  role: PowerRole,
+  usernames: string[],
+  senderSocket: SocketUser,
+) {
+  let didPromote = false;
+
+  for (const username of usernames) {
+    const foundUser = await User.findOne({ usernameLower: username });
+
+    if (!foundUser) {
+      reply(senderSocket, `Could not find ${username}`);
+      continue;
+    }
+
+    if (isRoleHeld(role, foundUser.usernameLower)) {
+      reply(senderSocket, 'This user already has this role.');
+      continue;
+    }
+
+    await SiteRole.create({
+      role: role,
+      usernameLower: foundUser.usernameLower,
+    });
+
+    didPromote = true;
+
+    logAndDiscord(senderSocket, true, foundUser.username, role);
+    reply(
+      senderSocket,
+      `Promoted ${foundUser.username} to ${role}.`,
+    );
+  }
+
+  if (didPromote) {
+    refreshRoleStore(role);
+  }
+}
+
+async function promoteWinners(usernames: string[], senderSocket: SocketUser) {
+  for (const username of usernames) {
+    const foundUser = await User.findOne({ usernameLower: username });
+
+    if (!foundUser) {
+      reply(senderSocket, `Could not find ${username}`);
+      continue;
+    }
+
+    if (foundUser.lastTourneyWinner) {
+      reply(senderSocket, 'This user already has this role.');
+      continue;
+    }
+
+    foundUser.lastTourneyWinner = true;
+    await foundUser.save();
+
+    logAndDiscord(senderSocket, true, foundUser.username, 'WINNER');
+    reply(
+      senderSocket,
+      `Promoted ${foundUser.username} to WINNER.`,
+    );
+  }
+}
+
+async function demoteRole(
+  role: PowerRole,
+  usernames: string[],
+  senderSocket: SocketUser,
+) {
+  let didDemote = false;
+
+  for (const username of usernames) {
+    const foundSiteRole = await SiteRole.findOne({
+      usernameLower: username,
+      role: role,
+    });
+
+    if (!foundSiteRole) {
+      reply(senderSocket, `Could not find ${username} in list of ${role}s.`);
+      continue;
+    }
+
+    const foundUser = await User.findOne({ usernameLower: username });
+    const displayName = foundUser?.username ?? username;
+
+    await foundSiteRole.deleteOne();
+    didDemote = true;
+
+    logAndDiscord(senderSocket, false, displayName, role);
+    reply(senderSocket, `Demoted ${displayName} from ${role}.`);
+  }
+
+  if (didDemote) {
+    refreshRoleStore(role);
+  }
+}
+
+async function demoteWinners(usernames: string[], senderSocket: SocketUser) {
+  for (const username of usernames) {
+    const foundUser = await User.findOne({ usernameLower: username });
+
+    if (!foundUser) {
+      reply(senderSocket, `Could not find ${username}`);
+      continue;
+    }
+
+    if (!foundUser.lastTourneyWinner) {
+      reply(senderSocket, `Could not find ${username} in list of WINNERs.`);
+      continue;
+    }
+
+    foundUser.lastTourneyWinner = false;
+    await foundUser.save();
+
+    logAndDiscord(senderSocket, false, foundUser.username, 'WINNER');
+    reply(
+      senderSocket,
+      `Demoted ${foundUser.username} from WINNER.`,
+    );
+  }
+}
+
 export const msiterole: Command = {
   command: 'msiterole',
-  help: '/msiterole <action> <role> [<username> <username>...]: Promotes or demotes players from a role or shows all members of a role.',
+  help: '/msiterole <promote|demote|list> <mod|to|percy|winner> [<username> <username>...]: Promotes or demotes players from a role or shows all members of a role.',
   async run(args, senderSocket) {
-    if (args.length < 3 || (args[1] !== 'list' && args.length < 4)) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message: 'Please specify an action, a role, and a username.',
-        classStr: 'server-text',
-      });
+    // list needs <action> <role>; promote/demote also need at least one username
+    if (args.length < 3) {
+      reply(senderSocket, 'Please specify an action, a role, and a username.');
       return;
     }
 
     const action = args[1].toLowerCase();
+    if (!['promote', 'demote', 'list'].includes(action)) {
+      reply(
+        senderSocket,
+        'Invalid action. Specify one of: "promote", "demote", or "list".',
+      );
+      return;
+    }
+
     const role = parsePowerRole(args[2]);
     const winnerCase = args[2].toLowerCase() === 'winner';
-
-    if (role == null && !winnerCase) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message:
-          'Invalid role name. Specify one of: "Moderator", "Tournament_Organizer", "Percival", or "Winner".',
-        classStr: 'server-text',
-      });
+    if (role === undefined && !winnerCase) {
+      reply(
+        senderSocket,
+        'Invalid role name. Specify one of: "Moderator", "Tournament_Organizer", "Percival", or "Winner".',
+      );
       return;
     }
 
-    if (!['promote', 'demote', 'list'].includes(action)) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message:
-          'Invalid action. Specify one of: "promote", "demote", or "list".',
-        classStr: 'server-text',
-      });
-      return;
-    }
-
-    const roleText = winnerCase ? 'WINNER' : role;
+    const roleText = winnerCase ? 'WINNER' : (role as PowerRole);
 
     if (action === 'list') {
-      //Case for listing all members of a role
-      let foundList;
+      await handleList(role, winnerCase, roleText, senderSocket);
+      return;
+    }
 
-      if (winnerCase) {
-        foundList = await User.find(
-          { lastTourneyWinner: true },
-          { usernameLower: 1, _id: 0 },
-        );
-      } else {
-        foundList = await SiteRole.find(
-          { role: role },
-          { usernameLower: 1, _id: 0 },
-        );
-      }
+    if (args.length < 4) {
+      reply(senderSocket, 'Please specify at least one username.');
+      return;
+    }
 
-      if (foundList.length > 0) {
-        const roleUsernames = foundList.map((doc) => doc.usernameLower);
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Current members of the ${roleText} role:\n${roleUsernames.join(
-            ', ',
-          )}.`,
-          classStr: 'server-text',
-        });
-      } else {
-        senderSocket.emit('messageCommandReturnStr', {
-          message: `Found no users in the ${roleText} role.`,
-          classStr: 'server-text',
-        });
-      }
+    const senderUsername: string = senderSocket.request.user.username;
+    if (role === PowerRole.Moderator && !isAdmin(senderUsername)) {
+      reply(
+        senderSocket,
+        'Admin permissions are needed to modify the MODERATOR role.',
+      );
       return;
     }
 
     const usernames = args.slice(3).map((e) => e.toLowerCase());
-    const senderUsername: string = senderSocket.request.user.username;
-    const senderIsAdmin = isAdmin(senderUsername);
-
-    if (
-      [PowerRole.Moderator, PowerRole.Percival].includes(role) &&
-      !senderIsAdmin
-    ) {
-      senderSocket.emit('messageCommandReturnStr', {
-        message:
-          'Admin permissions are needed to assign MODERATOR or PERCIVAL roles.',
-        classStr: 'server-text',
-      });
-      return;
-    }
 
     if (action === 'promote') {
-      //Case for promotion
-      const TOCount = await SiteRole.countDocuments({
-        role: PowerRole.TournamentOrganizer,
-      });
-      if (
-        role === PowerRole.TournamentOrganizer &&
-        usernames.length + TOCount > 10
-      ) {
-        senderSocket.emit('messageCommandReturnStr', {
-          message:
-            'This would result in more than 10 TOURNAMENT ORGANIZERS; please demote some before promoting this many.',
-          classStr: 'server-text',
-        });
-        return;
+      if (winnerCase) {
+        await promoteWinners(usernames, senderSocket);
+      } else {
+        await promoteRole(role as PowerRole, usernames, senderSocket);
       }
-      for (const username of usernames) {
-        const foundUser = await User.findOne({
-          usernameLower: username,
-        });
-
-        if (foundUser) {
-          if (
-            (role === PowerRole.Moderator && ModStore.isRole(username)) ||
-            (role === PowerRole.Percival && PercivalStore.isRole(username)) ||
-            (role === PowerRole.TournamentOrganizer &&
-              TOStore.isRole(username)) ||
-            (winnerCase && foundUser.lastTourneyWinner)
-          ) {
-            senderSocket.emit('messageCommandReturnStr', {
-              message: 'This user already has this role.',
-              classStr: 'server-text',
-            });
-            continue;
-          }
-
-          const promoteData = {
-            role: role,
-            usernameLower: foundUser.usernameLower,
-          };
-
-          if (winnerCase) {
-            foundUser.lastTourneyWinner = true;
-            await foundUser.save();
-          } else {
-            await SiteRole.create(promoteData);
-          }
-
-          refreshRoleStore(role);
-          logAndDiscord(senderSocket, true, foundUser.username, roleText);
-
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Promoted ${foundUser.username} to ${roleText} successfully!`,
-            classStr: 'server-text',
-          });
-        } else {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Could not find ${username}`,
-            classStr: 'server-text',
-          });
-        }
-      }
-    } else if (action === 'demote') {
-      //Case for demotion
-      for (const username of usernames) {
-        let foundUser;
-        let foundSiteRole;
-        if (winnerCase) {
-          foundUser = await User.findOne({
-            usernameLower: username,
-          });
-        } else {
-          foundSiteRole = await SiteRole.findOne({
-            usernameLower: username,
-            role: role,
-          });
-        }
-
-        if (
-          (winnerCase && foundUser && foundUser.lastTourneyWinner) ||
-          (!winnerCase && foundSiteRole)
-        ) {
-          if (winnerCase) {
-            foundUser.lastTourneyWinner = false;
-            await foundUser.save();
-          } else {
-            await foundSiteRole.deleteOne();
-          }
-
-          refreshRoleStore(role);
-          logAndDiscord(senderSocket, false, username, roleText);
-
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Demoted ${username} from ${roleText} successfully!`,
-            classStr: 'server-text',
-          });
-        } else {
-          senderSocket.emit('messageCommandReturnStr', {
-            message: `Could not find ${username} in list of ${roleText}s.`,
-            classStr: 'server-text',
-          });
-        }
+    } else {
+      if (winnerCase) {
+        await demoteWinners(usernames, senderSocket);
+      } else {
+        await demoteRole(role as PowerRole, usernames, senderSocket);
       }
     }
   },
