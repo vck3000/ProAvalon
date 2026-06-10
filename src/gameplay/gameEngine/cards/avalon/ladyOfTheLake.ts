@@ -24,10 +24,8 @@ class LadyOfTheLake implements ICard {
     this.thisRoom = thisRoom;
   }
 
-  initialise(): void {
-    this.setHolder(
-      (this.thisRoom.teamLeader + 1) % this.thisRoom.playersInGame.length,
-    );
+  initialise(indexOfPlayerHolding: number): void {
+    this.setHolder(indexOfPlayerHolding);
   }
 
   setHolder(index: number): void {

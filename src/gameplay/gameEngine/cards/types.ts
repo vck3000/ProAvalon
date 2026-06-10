@@ -9,7 +9,7 @@ export enum Card {
 export interface ICard {
   card: Card;
 
-  initialise(): void;
+  initialise(indexOfPlayerHolding: number): void;
 
   setHolder(index: number): void;
 

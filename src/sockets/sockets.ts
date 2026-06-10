@@ -1578,6 +1578,7 @@ function startGame(data) {
   const options = data.options;
   const gameMode = data.gameMode;
   const anonymousMode = data.anonymousMode;
+  const randomizeCardPosition = data.randomizeCardPosition;
   const timeoutsStr = data.timeouts;
 
   // start the game
@@ -1614,11 +1615,13 @@ function startGame(data) {
   ) {
     rooms[this.request.user.inRoomId].configureTimeouts(timeouts);
     rooms[this.request.user.inRoomId].configureAnonymousMode(anonymousMode);
+    rooms[this.request.user.inRoomId].configurerandomizeCardPosition(randomizeCardPosition);
     rooms[this.request.user.inRoomId].hostTryStartGame(
       options,
       gameMode,
       timeouts,
       anonymousMode,
+      randomizeCardPosition,
     );
   }
 }
