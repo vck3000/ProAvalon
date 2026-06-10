@@ -603,6 +603,7 @@ class Room {
     gameMode: string,
     timeouts: Timeouts,
     anonymousMode: boolean,
+    randomizeCardPosition: boolean,
   ) {
     if (this.gameStarted === true) {
       return false;
@@ -651,6 +652,7 @@ class Room {
       timeouts.assassination,
     )}`;
     rolesInStr += `<br>Anonymous mode: ${anonymousMode}`;
+    rolesInStr += `<br>Randomize card position: ${randomizeCardPosition}`;
 
     this.sendText('The game is starting!', 'gameplay-text');
 

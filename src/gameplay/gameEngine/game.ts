@@ -119,6 +119,8 @@ class Game extends Room {
   anonymizer: Anonymizer = new Anonymizer();
   anonymousMode = false;
 
+  randomizeCardPosition = false;
+
   recoverableComponents: IRecoverable[] = [];
 
   constructor(gameConfig: GameConfig) {
@@ -171,6 +173,12 @@ class Game extends Room {
   configureAnonymousMode(anonymousMode: boolean): void {
     if (this.gameStarted === false) {
       this.anonymousMode = anonymousMode;
+    }
+  }
+
+  configurerandomizeCardPosition(randomizeCardPosition: boolean): void {
+    if (this.gameStarted == false) {
+      this.randomizeCardPosition = randomizeCardPosition;
     }
   }
 
@@ -580,14 +588,46 @@ class Game extends Room {
       }
     }
 
+    if (this.randomizeCardPosition) {
+      this.sendText('The game is running with randomized card positions.', 'gameplay-text');
+    }
+
     // seed the starting data into the VH
     for (let i = 0; i < this.playersInGame.length; i++) {
       this.voteHistory[this.playersInGame[i].request.user.username] = [];
     }
-
+    
     // Initialise all the Cards
-    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
-      this.specialCards[this.cardKeysInPlay[i]].initialise();
+    const cardPosition = {};
+    const numPlayers = this.playersInGame.length;
+
+    let availableIndexes = [];
+    for (let i = 0; i < numPlayers; i++) {
+      availableIndexes.push(i);
+    }
+
+    if (this.randomizeCardPosition) {
+      availableIndexes = shuffleArray(availableIndexes);
+    }
+
+    for (const cardKey of this.cardKeysInPlay) {
+      if (this.randomizeCardPosition) {
+        cardPosition[cardKey] = availableIndexes.shift();
+      }
+      else {
+        const firstCardPosition = (this.hammer + 5 + numPlayers) % numPlayers;
+        let offset = 0;
+        if (cardKey === Card.SireOfTheSea && this.cardKeysInPlay.includes(Card.LadyOfTheLake))
+          offset++;
+        if (cardKey === Card.RefOfTheRain && this.cardKeysInPlay.includes(Card.LadyOfTheLake))
+          offset++;
+        if (cardKey === Card.RefOfTheRain && this.cardKeysInPlay.includes(Card.SireOfTheSea))
+          offset++;
+        
+        cardPosition[cardKey] = (firstCardPosition + offset) % numPlayers;
+      }
+
+      this.specialCards[cardKey].initialise(cardPosition[cardKey]);
     }
 
     this.distributeGameData();
@@ -1378,6 +1418,7 @@ class Game extends Room {
       gameMode: this.gameMode,
       roomCreationType: this.roomCreationType,
       anonymousMode: this.anonymousMode,
+      randomizeCardPosition: this.randomizeCardPosition,
       botUsernames,
 
       playerUsernamesOrdered: getUsernamesOfPlayersInGame(this),
