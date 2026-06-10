@@ -79,7 +79,7 @@ function logAndDiscord(
   const dateCreated = new Date();
   const senderUsername = senderSocket.request.user.username;
   const titleText = `Moderator ${senderUsername} has ${
-    promoting ? 'PROMOTED' : 'DEMOTED'
+    promoting ? 'ADDED' : 'REMOVED'
   } ${foundUsername} ${promoting ? 'to' : 'from'} ${roleText}.`;
 
   ModLog.create({
@@ -92,7 +92,7 @@ function logAndDiscord(
     },
     data: {
       title: titleText,
-      body: `The ${promoting ? 'promotion' : 'demotion'} was made on: ${moment(
+      body: `The ${promoting ? 'addition' : 'removal'} was made on: ${moment(
         dateCreated,
       ).format('LLL')}`,
     },
@@ -158,7 +158,7 @@ async function promoteRole(
     logAndDiscord(senderSocket, true, foundUser.username, role);
     reply(
       senderSocket,
-      `Promoted ${foundUser.username} to ${role}.`,
+      `Added ${foundUser.username} to ${role}.`,
     );
   }
 
@@ -187,7 +187,7 @@ async function promoteWinners(usernames: string[], senderSocket: SocketUser) {
     logAndDiscord(senderSocket, true, foundUser.username, 'WINNER');
     reply(
       senderSocket,
-      `Promoted ${foundUser.username} to WINNER.`,
+      `Added ${foundUser.username} to WINNER.`,
     );
   }
 }
@@ -217,7 +217,7 @@ async function demoteRole(
     didDemote = true;
 
     logAndDiscord(senderSocket, false, displayName, role);
-    reply(senderSocket, `Demoted ${displayName} from ${role}.`);
+    reply(senderSocket, `Removed ${displayName} from ${role}.`);
   }
 
   if (didDemote) {
@@ -245,26 +245,26 @@ async function demoteWinners(usernames: string[], senderSocket: SocketUser) {
     logAndDiscord(senderSocket, false, foundUser.username, 'WINNER');
     reply(
       senderSocket,
-      `Demoted ${foundUser.username} from WINNER.`,
+      `Removed ${foundUser.username} from WINNER.`,
     );
   }
 }
 
 export const msiterole: Command = {
   command: 'msiterole',
-  help: '/msiterole <promote|demote|list> <mod|to|percy|winner> [<username> <username>...]: Promotes or demotes players from a role or shows all members of a role.',
+  help: '/msiterole <add|remove|list> <mod|to|percy|winner> [<username> <username>...]: Adds or removes players from a role or shows all members of a role.',
   async run(args, senderSocket) {
-    // list needs <action> <role>; promote/demote also need at least one username
+    // list needs <action> <role>; add/remove also need at least one username
     if (args.length < 3) {
       reply(senderSocket, 'Please specify an action, a role, and a username.');
       return;
     }
 
     const action = args[1].toLowerCase();
-    if (!['promote', 'demote', 'list'].includes(action)) {
+    if (!['add', 'remove', 'list'].includes(action)) {
       reply(
         senderSocket,
-        'Invalid action. Specify one of: "promote", "demote", or "list".',
+        'Invalid action. Specify one of: "add", "remove", or "list".',
       );
       return;
     }
@@ -302,7 +302,7 @@ export const msiterole: Command = {
 
     const usernames = args.slice(3).map((e) => e.toLowerCase());
 
-    if (action === 'promote') {
+    if (action === 'add') {
       if (winnerCase) {
         await promoteWinners(usernames, senderSocket);
       } else {
