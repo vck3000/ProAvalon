@@ -3,6 +3,8 @@ import Game from '../../game';
 import { Phase } from '../../phases/types';
 import { IRole, Role } from '../types';
 import Assassination from '../../phases/avalon/assassination';
+import { Card } from '../../cards/types';
+
 
 class Assassin implements IRole {
   room: Game;
@@ -30,9 +32,10 @@ class Assassin implements IRole {
   
     if (this.room.gameStarted === true) {
       const spies = [];
-
       for (let i = 0; i < this.room.playersInGame.length; i++) {
-        if (this.room.playersInGame[i].alliance === Alliance.Spy) {
+        if (this.room.playersInGame[i].alliance === Alliance.Spy
+          || i === this.room.specialCards[Card.Norebo].indexOfPlayerHolding
+        ) {
           if (this.room.playersInGame[i].role === Role.Oberon) {
             // don't add oberon
           } else {
