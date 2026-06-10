@@ -546,7 +546,34 @@ class Room {
     const cardDescriptions = [];
     const cardPriorities = [];
 
+    const rolesArray: {
+      role: Role;
+      description: string;
+      alliance: string;
+      orderPriorityInOptions: number;
+      isBeta: boolean;
+    }[] = [];
+
+    const cardsArray: {
+      card: string;
+      description: string;
+      orderPriorityInOptions: number;
+      isBeta: boolean;
+    }[] = [];
+
     const skipRoles = [Role.Resistance, Role.Spy];
+
+    const keys = Object.keys(this.specialRoles);
+    
+    for (let roleName of keys) {
+      rolesArray.push({
+        role: this.specialRoles[roleName].role,
+        description: this.specialRoles[roleName].description,
+        alliance: this.specialRoles[roleName].alliance,
+        orderPriorityInOptions: this.specialRoles[roleName].orderPriorityInOptions || 0,
+        isBeta: this.specialRoles[roleName].isBeta || false,
+      });
+    }
 
     for (let key in this.specialRoles) {
       if (this.specialRoles.hasOwnProperty(key) === true) {
@@ -575,6 +602,13 @@ class Room {
         } else {
           cardPriorities.push(this.specialCards[key].orderPriorityInOptions);
         }
+
+        cardsArray.push({
+          card: this.specialCards[key].card,
+          description: this.specialCards[key].description,
+          orderPriorityInOptions: this.specialCards[key].orderPriorityInOptions || 0,
+          isBeta: this.specialCards[key].isBeta || false,
+        });
       }
     }
 
@@ -592,6 +626,8 @@ class Room {
         descriptions: cardDescriptions,
         orderPriorities: cardPriorities,
       },
+      rolesArray,
+      cardsArray,
     };
 
     // Send the data to the socket.
