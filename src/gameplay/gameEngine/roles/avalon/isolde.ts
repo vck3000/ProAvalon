@@ -20,6 +20,11 @@ class Isolde implements IRole {
     const roleTags: Record<string, string> = {};
 
     for (let i = 0; i < this.room.playersInGame.length; i++) {
+       if(this.room.playersInGame[i].role === this.role) {
+       roleTags[
+          this.room.anonymizer.anon(this.room.playersInGame[i].username)
+        ] = this.role; 
+      }
       if (this.room.playersInGame[i].role === Role.Tristan) {
         roleTags[
           this.room.anonymizer.anon(this.room.playersInGame[i].username)
