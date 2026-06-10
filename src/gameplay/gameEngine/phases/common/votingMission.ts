@@ -26,12 +26,21 @@ class VotingMission implements IPhase {
     // if this.thisRoom vote is coming from someone who hasn't voted yet
     if (i !== -1) {
       if (buttonPressed === 'yes') {
-        this.thisRoom.missionVotes[
-          usernamesIndexes.getIndexFromUsername(
-            this.thisRoom.playersInGame,
-            socket.request.user.username,
-          )
-        ] = 'succeed';
+        const yesIndex = usernamesIndexes.getIndexFromUsername(
+          this.thisRoom.playersInGame,
+          socket.request.user.username,
+        );
+
+        // Lunatic must always fail — silently convert succeed to fail
+        if (this.thisRoom.playersInGame[yesIndex].role === Role.Lunatic) {
+          this.thisRoom.missionVotes[
+            yesIndex
+          ] = 'fail';
+        } else {
+          this.thisRoom.missionVotes[
+           yesIndex
+          ] = 'succeed';
+        }
         // console.log("received succeed from " + socket.request.user.username);
       } else if (buttonPressed === 'no') {
         // Determine the player index
@@ -205,11 +214,13 @@ class VotingMission implements IPhase {
 
     // Resistance (view) can't fail
     const redHidden = effectiveAlliance === Alliance.Resistance;
+    // Lunatic must fail
+    const greenHidden = player.role === Role.Lunatic;
 
     return {
       green: {
-        hidden: false,
-        disabled: false,
+        hidden: greenHidden,
+        disabled: greenHidden,
         setText: 'SUCCEED',
       },
       red: {
