@@ -2084,7 +2084,7 @@ class Game extends Room {
   private announceIllusionsIfAny() {
     // Melron
     const melronRole = this.specialRoles[Role.Melron];
-    if (melronRole) {
+    if (this.roleKeysInPlay.includes('Melron')) {
       const data = melronRole.getPublicGameData();
       if (data.spiesMelronSaw) {
         this.sendText(
@@ -2096,7 +2096,7 @@ class Game extends Room {
 
     // Moregano
     const moreganoRole = this.specialRoles[Role.Moregano];
-    if (moreganoRole) {
+    if (this.roleKeysInPlay.includes('Moregano')) {
       const data = moreganoRole.getPublicGameData();
       if (data.spiesMoreganoSaw)
       {
