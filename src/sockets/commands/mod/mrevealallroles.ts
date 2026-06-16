@@ -1,5 +1,5 @@
 import { Command } from '../types';
-import { modOrTOString } from '../../../modsadmins/modOrTO';
+import { modOrPercyOrTOString } from '../../../modsadmins/modOrTO';
 import { rooms } from '../../sockets';
 
 export const mrevealallroles: Command = {
@@ -24,7 +24,7 @@ export const mrevealallroles: Command = {
       return;
     }
 
-    const rolePrefix = modOrTOString(senderSocket.request.user.username);
+    const rolePrefix = modOrPercyOrTOString(senderSocket.request.user.username);
 
     rooms[roomId].sendText(
       `${rolePrefix} ${senderSocket.request.user.username} has learned all roles.`,

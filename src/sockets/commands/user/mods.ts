@@ -1,7 +1,7 @@
 import { Command } from '../types';
 import { SocketUser } from '../../types';
 import { allSockets, sendReplyToCommand } from '../../sockets';
-import { isMod } from '../../../modsadmins/mods';
+import { ModStore } from '../../../modsadmins/roles';
 
 export const mods: Command = {
   command: 'mods',
@@ -16,7 +16,7 @@ export const mods: Command = {
     }
 
     const modUsernames = allSockets
-      .filter((socket) => isMod(socket.request.user.username))
+      .filter((socket) => ModStore.isRole(socket.request.user.username))
       .map((socket) => socket.request.user.username);
 
     const msg = `Currently online mods: ${

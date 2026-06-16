@@ -1,12 +1,12 @@
 import { Command } from '../types';
-import { isPercival } from '../../../modsadmins/percivals';
+import { PercivalStore } from '../../../modsadmins/roles';
 
 export const pban: Command = {
   command: 'pban',
   help: '/pban: Open the ban interface',
   run: async (data, senderSocket) => {
     // @ts-ignore
-    if (isPercival(senderSocket.request.user.username)) {
+    if (PercivalStore.isRole(senderSocket.request.user.username)) {
       senderSocket.emit('openModModal');
 
       senderSocket.emit('messageCommandReturnStr', {

@@ -19,18 +19,6 @@ export const m: Command = {
       }
     }
 
-    // TODO remove this when all the stuff is migrated out.
-    for (const key in modCommands) {
-      if (modCommands.hasOwnProperty(key)) {
-        dataToSend[i] = {
-          // @ts-ignore
-          message: modCommands[key].help,
-          classStr: 'server-text',
-        };
-        i++;
-      }
-    }
-
     senderSocket.emit('messageCommandReturnStr', dataToSend);
   },
 };

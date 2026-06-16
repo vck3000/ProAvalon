@@ -7,10 +7,9 @@ import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 import User from '../../models/user';
 import GameRecord from '../../models/gameRecord';
 import RatingPeriodGameRecord from '../../models/RatingPeriodGameRecord';
-import { isMod } from '../../modsadmins/mods';
-import { isTO } from '../../modsadmins/tournamentOrganizers';
+import { ModStore, TOStore } from '../../modsadmins/roles';
 import { isDev } from '../../modsadmins/developers';
-import { modOrTOString } from '../../modsadmins/modOrTO';
+import { modOrPercyOrTOString } from '../../modsadmins/modOrTO';
 
 import { RoomCreationType } from './roomTypes';
 import { Phase } from './phases/types';
@@ -1968,7 +1967,7 @@ class Game extends Room {
   }
 
   togglePause(modUsername) {
-    const rolePrefix = modOrTOString(modUsername);
+    const rolePrefix = modOrPercyOrTOString(modUsername);
 
     // if paused, we unpause
     if (this.phase === Phase.Paused) {
@@ -2166,8 +2165,8 @@ class Game extends Room {
 
       return (
         playerUsernamesLower.includes(usernameLower) ||
-        isMod(usernameLower) ||
-        isTO(usernameLower) ||
+        ModStore.isRole(usernameLower) ||
+        TOStore.isRole(usernameLower) ||
         isDev(usernameLower)
       );
     }

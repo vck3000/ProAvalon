@@ -3,6 +3,7 @@ import { p } from './p';
 import { mdc } from '../mod/mdc';
 import { mforcemove } from '../mod/mforcemove';
 import { mclose } from '../mod/mclose';
+import { mtogglepause } from '../mod/mtogglepause';
 import { pban } from './pban';
 
 // Percival commands are intended to be a strict subset of mod commands.
@@ -37,6 +38,7 @@ export function convertModCommandToPercivalCommand(
 const pdc = convertModCommandToPercivalCommand(mdc);
 const pforcemove = convertModCommandToPercivalCommand(mforcemove);
 const pclose = convertModCommandToPercivalCommand(mclose);
+const ptogglepause = convertModCommandToPercivalCommand(mtogglepause);
 
 export const percivalCommands: Commands = {
   [p.command]: p,
@@ -44,4 +46,5 @@ export const percivalCommands: Commands = {
   [pdc.command]: pdc,
   [pforcemove.command]: pforcemove,
   [pclose.command]: pclose,
+  [ptogglepause.command]: ptogglepause,
 };

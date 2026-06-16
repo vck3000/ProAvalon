@@ -1,4 +1,3 @@
-import constants from '../constants';
 import { RewardData } from '../types';
 
 const obj: RewardData = {
@@ -6,10 +5,10 @@ const obj: RewardData = {
   modReq: false,
   TOReq: false,
   devReq: false,
-  percivalReq: false,
+  percivalReq: true,
   lastTourneyWinnerReq: false,
   gamesPlayedReq: 0,
-  donationReq: constants.tier1_donation,
+  donationReq: 0,
 };
 
 export default obj;
