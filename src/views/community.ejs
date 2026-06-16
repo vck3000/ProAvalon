@@ -199,6 +199,43 @@
       <% }); %>
     </table>
 
+    <table class="myTable">
+      <h4>Percivals</h4>
+      <tr>
+        <th>Username</th>
+        <th>Res Avatar</th>
+        <th>Spy Avatar</th>
+        <th class="nat">Nationality</th>
+        <th class="bio">Biography</th>
+        <th class="games">#Games</th>
+      </tr>
+
+      <% percivals.forEach(function(percival){ %>
+      <tr>
+        <td>
+          <a class="username" href="/profile/<%= percival.username %>">
+            <%= percival.username %>
+          </a>
+        </td>
+        <%if (percival.avatarImgRes===null) { %>
+        <td><img src="/avatars/base-res.svg" /></td>
+        <% } else { %>
+        <td><img src="<%= percival.avatarImgRes %>" /></td>
+        <% } %> <%if (percival.avatarImgSpy===null) { %>
+        <td><img src="/avatars/base-spy.svg" /></td>
+        <% } else { %>
+        <td><img src="<%= percival.avatarImgSpy %>" /></td>
+        <% } %> <%if (percival.nationality==="" ) { %>
+        <td class="nat">United Nations</td>
+        <% } else { %>
+        <td class="nat"><%= percival.nationality %></td>
+        <% } %>
+        <td class="cell"><%- percival.biography %></td>
+        <td class="games"><%= percival.totalGamesPlayed %></td>
+      </tr>
+      <% }); %>
+    </table>
+
     <table class="myTable" id="userTable">
       <h4>Players</h4>
       <tr>
