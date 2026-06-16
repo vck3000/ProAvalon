@@ -22,19 +22,24 @@ class Hitberon implements IRole {
   see(): See {
     if (this.room.gameStarted === true) {
       const spies = [];
-
+      const roleTags: Record<string, string> = {}
+      
       for (let i = 0; i < this.room.playersInGame.length; i++) {
         if (this.room.playersInGame[i].role === Role.Hitberon) {
           spies.push(
             this.room.anonymizer.anon(this.room.playersInGame[i].username),
           );
+          roleTags[
+          this.room.anonymizer.anon(this.room.playersInGame[i].username)
+        ] = this.role;
           break;
         }
       }
 
+
       return { spies, roleTags: {} };
+      }
     }
-  }
 
   checkSpecialMove() {}
 

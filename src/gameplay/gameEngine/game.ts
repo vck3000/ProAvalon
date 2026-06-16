@@ -2083,8 +2083,9 @@ class Game extends Room {
 
   private announceIllusionsIfAny() {
     // Melron
+    if(this.resRoles.includes(Role.Melron)) {
     const melronRole = this.specialRoles[Role.Melron];
-    if (melronRole) {
+    if (melronRole) { //TODO: is this if required now?
       const data = melronRole.getPublicGameData();
       if (data.spiesMelronSaw) {
         this.sendText(
@@ -2093,10 +2094,12 @@ class Game extends Room {
         );
       }
     }
+  }
 
     // Moregano
+  if(this.resRoles.includes(Role.Moregano)) {
     const moreganoRole = this.specialRoles[Role.Moregano];
-    if (moreganoRole) {
+    if (moreganoRole) { //TODO: is this if required now?
       const data = moreganoRole.getPublicGameData();
       if (data.spiesMoreganoSaw)
       {
@@ -2106,6 +2109,7 @@ class Game extends Room {
         );
       }
     }
+  }
   }
 
   private usernameIsPlayer(username: string) {

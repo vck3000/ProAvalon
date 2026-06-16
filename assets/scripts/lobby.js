@@ -1004,8 +1004,9 @@ function strOfAvatar(playerData, alliance) {
     role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${gameData.see.roles[getIndexFromUsername(playerData.username)]
       }</p>`;
   } else if (gameStarted === true && gameData !== undefined) {
-    // if rendering our own player, give it the role tag
-    if (playerData.username === gameData.username) {
+     //if rendering our own player, give it the role tag
+     //if he is vanilla resistance or vanilla spy
+    if (playerData.username === gameData.username && gameData.role === gameData.alliance) {
       var roleWid = ctx.measureText(gameData.role).width + 20;
       role = `<p class='role-p' style='width: ${roleWid}px; margin: auto;'>${gameData.role}</p>`;
     } else if (gameData.see && gameData.see.roleTags) {

@@ -20,10 +20,27 @@ class Merlin implements IRole {
   }
 
   see(): See {
+          const roleTags: Record<string, string> = {};
+
     if (this.room.gameStarted === true) {
       const spies = [];
 
+      let melronExists: Boolean = false;
+      for (let i = 0; i < this.room.playersInGame.length; i++)
+      {
+        if(this.room.playersInGame[i].role === Role.Melron){
+            melronExists = true;
+          break;
+        }
+        else continue;
+      }
+
       for (let i = 0; i < this.room.playersInGame.length; i++) {
+        if(this.room.playersInGame[i].role === this.role) {     
+        roleTags[
+          this.room.anonymizer.anon(this.room.playersInGame[i].username)
+        ] = melronExists ? "Merlin?" : this.role;
+      }
         if (this.room.playersInGame[i].alliance === Alliance.Spy) {
           if (
             this.room.playersInGame[i].role === Role.Mordred ||
@@ -38,7 +55,7 @@ class Merlin implements IRole {
         }
       }
 
-      return { spies, roleTags: {} };
+      return { spies, roleTags };
     }
   }
 
