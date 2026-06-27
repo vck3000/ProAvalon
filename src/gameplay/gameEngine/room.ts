@@ -11,7 +11,7 @@ import { Role } from './roles/types';
 import { Phase } from './phases/types';
 import { millisToStr } from '../../util/time';
 import { RoomPlayer } from './types';
-import { ModStore, TOStore } from '../../modsadmins/roles';
+import { ModStore, TOStore, PercivalStore } from '../../modsadmins/roles';
 import { isAdmin } from '../../modsadmins/admins';
 
 export class RoomConfig {
@@ -101,6 +101,7 @@ class Room {
 
     // Arrays containing lower cased usernames
     this.kickedPlayers = [];
+    this.loggedInPlayers = [];
 
     // Phases Cards and Roles to use
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
@@ -114,12 +115,14 @@ class Room {
       `${socket.request.user.username} has joined room ${this.roomId}`,
     );
 
-    // check if the player is a moderator or TO or admin, if so bypass
+    // check if the player is on the mod team, or already logged in, if so bypass
     if (
       !(
         ModStore.isRole(socket.request.user.username) ||
         TOStore.isRole(socket.request.user.username) ||
-        isAdmin(socket.request.user.username)
+        PercivalStore.isRole(socket.request.user.username) ||
+        isAdmin(socket.request.user.username) ||
+        this.loggedInPlayers.includes(socket.request.user.username.toLowerCase())
       )
     ) {
       // if the room has a password and user hasn't put one in yet
@@ -141,6 +144,7 @@ class Room {
       ) {
         if (this.joinPassword === inputPassword) {
           // console.log("Correct password!");
+          this.loggedInPlayers.push(socket.request.user.username.toLowerCase());
         } else {
           // console.log("Wrong password!");
 
