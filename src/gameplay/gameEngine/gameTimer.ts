@@ -178,6 +178,8 @@ export class GameTimer {
       phaseObject = this.game.specialPhases[this.game.phase];
     }
 
+    // Check for gamestates where all players should timer vote "yes" to avoid timer abuse
+    const missionVote = phaseObject.phase === 'VotingMission';
     // Iterate over each user to figure out who hasn't acted.
     for (let i = 0; i < this.game.playersInGame.length; i++) {
       const buttonSettings: ButtonSettings = phaseObject.buttonSettings(i);
@@ -186,7 +188,7 @@ export class GameTimer {
         phaseObject.getProhibitedIndexesToPick(i);
 
       const buttonsAvailable: string[] = [];
-      if (buttonSettings.red.hidden === false) {
+      if (buttonSettings.red.hidden === false && !missionVote) {
         buttonsAvailable.push('no');
       }
 
