@@ -41,6 +41,7 @@ const gameRecordSchema = new mongoose.Schema({
   numFailsHistory: [Number],
   voteHistory: Object,
   disableVoteHistory: Boolean,
+  enableSinadMode: Boolean,
   playerRoles: Object,
 
   melronSpiesSeen: [String],

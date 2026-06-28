@@ -862,6 +862,13 @@ $('.disableVoteHistory').on('change', (e) => {
   socket.emit('update-room-disableVoteHistory', e.target.checked);
 });
 
+$('.enableSinadMode').on('change', (e) => {
+  $('.enableSinadMode')[0].checked = e.target.checked;
+  $('.enableSinadMode')[1].checked = e.target.checked;
+
+  socket.emit('update-room-enableSinadMode', e.target.checked);
+});
+
 // Update the new room menu with the gameModes available.
 socket.on('leave-room-requested', () => {
   leaveRoom();
