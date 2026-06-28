@@ -71,7 +71,7 @@ class Melron implements IRole {
     let melronViewArray = [];
     const visibleSpySet = new Set(visibleSpyUsernames);
 
-    //Ensures that the Melron does not see the real Spy team
+    // Ensures that the Melron does not see the real Spy team
     do {
       shuffleArray(pool);
       melronViewArray = pool.slice(0, k);
