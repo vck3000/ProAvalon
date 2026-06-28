@@ -80,6 +80,10 @@ class Room {
   lockJoin = false;
   readyPrompt: ReadyPrompt;
 
+  // Arrays containing lower cased usernames
+  kickedPlayers: Set<string> = new Set();
+  playersWithRoomPassword: Set<string> = new Set();
+
   constructor(roomConfig: RoomConfig) {
     // Expand config
     this.host = roomConfig.host;
@@ -98,10 +102,6 @@ class Room {
     this.allSockets = [];
     this.socketsOfPlayers = [];
     this.botSockets = [];
-
-    // Arrays containing lower cased usernames
-    this.kickedPlayers = new Set();
-    this.loggedInPlayers = new Set();
 
     // Phases Cards and Roles to use
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
@@ -122,7 +122,7 @@ class Room {
         TOStore.isRole(socket.request.user.username) ||
         PercivalStore.isRole(socket.request.user.username) ||
         isAdmin(socket.request.user.username) ||
-        this.loggedInPlayers.has(socket.request.user.username.toLowerCase())
+        this.playersWithRoomPassword.has(socket.request.user.username.toLowerCase())
       )
     ) {
       // if the room has a password and user hasn't put one in yet
@@ -143,12 +143,8 @@ class Room {
         (socket.isBotSocket === undefined || socket.isBotSocket === false)
       ) {
         if (this.joinPassword === inputPassword) {
-          // console.log("Correct password!");
-          this.loggedInPlayers.add(socket.request.user.username.toLowerCase());
+          this.playersWithRoomPassword.add(socket.request.user.username.toLowerCase());
         } else {
-          // console.log("Wrong password!");
-
-          // socket.emit("danger-alert", "The password you have inputted is incorrect.");
           socket.emit('wrongRoomPassword');
           socket.emit('changeView', 'lobby');
           return false;
