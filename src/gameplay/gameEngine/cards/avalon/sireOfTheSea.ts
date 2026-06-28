@@ -24,16 +24,8 @@ class SireOfTheSea implements ICard {
     this.thisRoom = thisRoom;
   }
 
-  initialise(): void {
-    // If lady of the sea is in the game, give the card to the next person.
-    let addOne = 0;
-    if (this.thisRoom.options.includes('Lady of the Lake')) {
-      addOne = 1;
-    }
-    this.setHolder(
-      (this.thisRoom.teamLeader + 1 + addOne) %
-        this.thisRoom.playersInGame.length,
-    );
+  initialise(indexOfPlayerHolding: number): void {
+    this.setHolder(indexOfPlayerHolding);
   }
 
   setHolder(index: number): void {

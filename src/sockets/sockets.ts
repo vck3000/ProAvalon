@@ -1565,11 +1565,13 @@ function startGame(data) {
   ) {
     rooms[this.request.user.inRoomId].configureTimeouts(timeouts);
     rooms[this.request.user.inRoomId].configureAnonymousMode(anonymousMode);
+    rooms[this.request.user.inRoomId].configurerandomizeCardPosition(randomizeCardPosition);
     rooms[this.request.user.inRoomId].hostTryStartGame(
       options,
       gameMode,
       timeouts,
       anonymousMode,
+      randomizeCardPosition,
     );
   }
 }

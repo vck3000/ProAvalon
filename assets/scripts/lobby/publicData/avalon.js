@@ -16,8 +16,8 @@ function runPublicDataAvalon(gameDataInc) {
     }
 
     // Reset cards container
-    $('.playerDiv').find('.cardsContainer')[0].innerHTML = '';
-
+    $('.playerDiv').find('.cardsContainer').html = '';
+    
     // Draw cards:
     for (const key in gd.publicData.cards) {
       if (gd.publicData.cards.hasOwnProperty(key) === true) {
@@ -39,10 +39,24 @@ function runPublicDataAvalon(gameDataInc) {
 
         const padding =
           "<span class='cardObject glyphicon glyphicon-asterisk' style='visibility: hidden;'></span> ";
+        
+        const playerDiv = $('.playerDiv')[index];
+        if (!playerDiv) {
+          console.log('Card index out of bounds', {
+            index, card: key, playerDivCount: $('.playerDiv').length, cardData: gd.publicData.cards[key]
+          });
+          continue;
+        }
+        const cardsContainer = $(playerDiv).find('.cardsContainer')[0];
+        if (!cardsContainer) {
+          console.log('No cardsContainer found for player', {
+            index, card: key, playerDiv
+          });
+          continue;
+        }
 
-        $($('.playerDiv')[index]).find('.cardsContainer')[0].innerHTML += card;
-        $($('.playerDiv')[index]).find('.cardsContainer')[0].innerHTML +=
-          padding;
+        cardsContainer.innerHTML += card;
+        cardsContainer.innerHTML += padding;
 
         // Initialise the tooltip.
         $('.cardObject').tooltip();

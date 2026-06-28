@@ -600,10 +600,24 @@ class Game extends Room {
     for (let i = 0; i < this.playersInGame.length; i++) {
       this.voteHistory[this.playersInGame[i].request.user.username] = [];
     }
-
+    
     // Initialise all the Cards
-    for (let i = 0; i < this.cardKeysInPlay.length; i++) {
-      this.specialCards[this.cardKeysInPlay[i]].initialise();
+    const cardPosition = {};
+    const numPlayers = this.playersInGame.length;
+
+    for (const cardKey of this.cardKeysInPlay) {
+      const firstCardPosition = (this.hammer + 5 + numPlayers) % numPlayers;
+      let offset = 0;
+      // potentially refactor this so that the indexes of the cards matter rather than the cards themselves, would make life easier if a new card gets implemented
+      if (cardKey === Card.SireOfTheSea && this.cardKeysInPlay.includes(Card.LadyOfTheLake))
+        offset++;
+      if (cardKey === Card.RefOfTheRain && this.cardKeysInPlay.includes(Card.LadyOfTheLake))
+        offset++;
+      if (cardKey === Card.RefOfTheRain && this.cardKeysInPlay.includes(Card.SireOfTheSea))
+        offset++;
+      
+      cardPosition[cardKey] = (firstCardPosition + offset) % numPlayers;
+      this.specialCards[cardKey].initialise(cardPosition[cardKey]);
     }
 
     this.distributeGameData();
