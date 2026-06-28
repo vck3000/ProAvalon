@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import User from '../models/user';
-import { ModStore } from '../modsadmins/roles';
+import { ModStore, PercivalStore } from '../modsadmins/roles';
 
 const router = Router();
 
@@ -10,6 +10,7 @@ router.get('/community', async (req, res) => {
   const getall = req.query.getall !== undefined;
 
   const modsArray = ModStore.getRoleArray();
+  const percivalArray = PercivalStore.getRoleArray();
   const filteredModsArray = modsArray.filter((mod) => mod != 'pronub');
 
   const users = await User.find({
@@ -21,10 +22,12 @@ router.get('/community', async (req, res) => {
     .sort({ totalGamesPlayed: -1 });
 
   const mods = await User.find({ usernameLower: { $in: filteredModsArray } });
+  const percivals = await User.find({ usernameLower: { $in: percivalArray } });
 
   res.render('community', {
     users,
     mods,
+    percivals,
     // @ts-ignore
     currentUser: req.user,
     headerActive: 'community',

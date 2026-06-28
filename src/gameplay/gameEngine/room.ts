@@ -11,7 +11,7 @@ import { Role } from './roles/types';
 import { Phase } from './phases/types';
 import { millisToStr } from '../../util/time';
 import { RoomPlayer } from './types';
-import { ModStore, TOStore } from '../../modsadmins/roles';
+import { ModStore, TOStore, PercivalStore } from '../../modsadmins/roles';
 import { isAdmin } from '../../modsadmins/admins';
 
 export class RoomConfig {
@@ -80,6 +80,10 @@ class Room {
   lockJoin = false;
   readyPrompt: ReadyPrompt;
 
+  // Arrays containing lower cased usernames
+  kickedPlayers: Set<string> = new Set();
+  playersWithRoomPassword: Set<string> = new Set();
+
   constructor(roomConfig: RoomConfig) {
     // Expand config
     this.host = roomConfig.host;
@@ -99,9 +103,6 @@ class Room {
     this.socketsOfPlayers = [];
     this.botSockets = [];
 
-    // Arrays containing lower cased usernames
-    this.kickedPlayers = [];
-
     // Phases Cards and Roles to use
     this.commonPhases = this.initialiseGameDependencies(commonPhases);
     this.specialRoles = this.initialiseGameDependencies(avalonRoles);
@@ -114,12 +115,14 @@ class Room {
       `${socket.request.user.username} has joined room ${this.roomId}`,
     );
 
-    // check if the player is a moderator or TO or admin, if so bypass
+    // check if the player is on the mod team, or already logged in, if so bypass
     if (
       !(
         ModStore.isRole(socket.request.user.username) ||
         TOStore.isRole(socket.request.user.username) ||
-        isAdmin(socket.request.user.username)
+        PercivalStore.isRole(socket.request.user.username) ||
+        isAdmin(socket.request.user.username) ||
+        this.playersWithRoomPassword.has(socket.request.user.username.toLowerCase())
       )
     ) {
       // if the room has a password and user hasn't put one in yet
@@ -140,11 +143,8 @@ class Room {
         (socket.isBotSocket === undefined || socket.isBotSocket === false)
       ) {
         if (this.joinPassword === inputPassword) {
-          // console.log("Correct password!");
+          this.playersWithRoomPassword.add(socket.request.user.username.toLowerCase());
         } else {
-          // console.log("Wrong password!");
-
-          // socket.emit("danger-alert", "The password you have inputted is incorrect.");
           socket.emit('wrongRoomPassword');
           socket.emit('changeView', 'lobby');
           return false;
@@ -191,7 +191,7 @@ class Room {
     }
 
     // If they were kicked and banned
-    if (this.kickedPlayers.indexOf(socketUsername.toLowerCase()) !== -1) {
+    if (this.kickedPlayers.has(socketUsername.toLowerCase())) {
       socket.emit(
         'danger-alert',
         'The host has kicked you from this room. You cannot join.',
@@ -309,8 +309,8 @@ class Room {
         this.playerLeaveRoom(socketOfTarget);
       }
 
-      // Add to kickedPlayers array
-      this.kickedPlayers.push(username.toLowerCase());
+      // Add to kickedPlayers set
+      this.kickedPlayers.add(username.toLowerCase());
       const kickMsg = `Player ${username} has been kicked by ${this.host}.`;
       this.sendText(kickMsg, 'server-text');
       // console.log(kickMsg);
