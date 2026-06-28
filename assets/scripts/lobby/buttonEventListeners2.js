@@ -59,7 +59,6 @@ async function greenButtonFunction() {
         assassination: ((parseInt($('#startGameOptionsAssassinationPhaseTimeoutMin').val()) * 60 + parseInt($('#startGameOptionsAssassinationPhaseTimeoutSec').val())) * 1000).toString(),
       },
       anonymousMode: $('#startGameOptionsAnonymousMode')[0].checked,
-      randomizeCardPosition: $('#startGameOptionsRandomizeCardPosition')[0].checked,
     };
     socket.emit('startGame', startGameData);
   } else if (await confirmUserClick('yes')) {

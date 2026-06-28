@@ -1578,7 +1578,6 @@ function startGame(data) {
   const options = data.options;
   const gameMode = data.gameMode;
   const anonymousMode = data.anonymousMode;
-  const randomizeCardPosition = data.randomizeCardPosition;
   const timeoutsStr = data.timeouts;
 
   // start the game
