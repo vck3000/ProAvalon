@@ -2083,28 +2083,21 @@ class Game extends Room {
 
   private announceIllusionsIfAny() {
     // Melron
-    const melronRole = this.specialRoles[Role.Melron];
-    if (melronRole) {
-      const data = melronRole.getPublicGameData();
-      if (data.spiesMelronSaw) {
-        this.sendText(
-          `Melron saw as spies: ${data.spiesMelronSaw.join(', ')}`,
-          'gameplay-text-blue',
-        );
-      }
+    if (this.roleKeysInPlay.includes(Role.Melron)) {
+      const data = this.specialRoles[Role.Melron].getPublicGameData();
+      this.sendText(
+        `Melron saw as spies: ${data.spiesMelronSaw.join(', ')}`,
+        'gameplay-text-blue',
+      );
     }
 
     // Moregano
-    const moreganoRole = this.specialRoles[Role.Moregano];
-    if (moreganoRole) {
-      const data = moreganoRole.getPublicGameData();
-      if (data.spiesMoreganoSaw)
-      {
-        this.sendText(
-          `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
-          'gameplay-text-red',
-        );
-      }
+    if (this.roleKeysInPlay.includes(Role.Moregano)) {
+      const data = this.specialRoles[Role.Moregano].getPublicGameData();
+      this.sendText(
+        `Moregano saw as spies: ${data.spiesMoreganoSaw.join(', ')}`,
+        'gameplay-text-red',
+      );
     }
   }
 
