@@ -31,6 +31,7 @@ import forumRoutes from './routes/forum';
 import profileRoutes from './routes/profile';
 import patreonRoutes from './routes/patreon';
 import modRoutes from './routes/mod';
+import replayRoutes from './routes/replay';
 import staticifyFactory from 'staticify';
 // Create a MongoDB session store
 import MongoDBStoreFactory from 'connect-mongodb-session';
@@ -196,6 +197,7 @@ app.use('/patreon', patreonRoutes);
 app.use('/lobby', lobbyRoutes);
 app.use('/forum', forumRoutes);
 app.use('/profile', profileRoutes);
+app.use('/replay', replayRoutes);
 
 const IP = process.env.IP || '127.0.0.1';
 const server = app.listen(port, () => {

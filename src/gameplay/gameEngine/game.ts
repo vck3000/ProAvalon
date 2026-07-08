@@ -7,6 +7,9 @@ import usernamesIndexes from '../../myFunctions/usernamesIndexes';
 import User from '../../models/user';
 import GameRecord from '../../models/gameRecord';
 import RatingPeriodGameRecord from '../../models/RatingPeriodGameRecord';
+import Replay, { REPLAY_TTL_MS } from '../../models/replay';
+import { ReplayRecorder } from './replayRecorder';
+import { ReplayEventKind } from './replayTypes';
 import { isMod } from '../../modsadmins/mods';
 import { isTO } from '../../modsadmins/tournamentOrganizers';
 import { isDev } from '../../modsadmins/developers';
@@ -161,6 +164,7 @@ class Game extends Room {
     this.chatHistory = []; // Here because chatHistory records after game starts
     this.gameTimer = new GameTimer(this, gameConfig.getTimeFunc);
     this.voidGameTracker = new VoidGameTracker(this);
+    this.replayRecorder = new ReplayRecorder(gameConfig.getTimeFunc);
 
     this.setupRecoverableComponents();
   }
@@ -607,6 +611,31 @@ class Game extends Room {
       this.specialCards[this.cardKeysInPlay[i]].initialise();
     }
 
+    // Begin replay recording. Players are sent with their table-visible
+    // displayRole (Melron→Merlin, Moregano→Morgana); true roles are only
+    // surfaced via the GameFinished event at the end.
+    this.replayRecorder.start({
+      startedAt: this.startGameTime,
+      gameMode: this.gameMode,
+      anonymousMode: this.anonymousMode,
+      numberOfPlayers: this.playersInGame.length,
+      players: this.playersInGame.map((p) => ({
+        username: this.anonymizer.anon(p.username, false),
+        anonName: this.anonymousMode
+          ? this.anonymizer.anon(p.username, false)
+          : undefined,
+        alliance: p.displayAlliance || p.alliance,
+        role: p.displayRole || p.role,
+        displayRole: p.displayRole,
+        displayAlliance: p.displayAlliance,
+      })),
+      roles: this.roleKeysInPlay.slice(),
+      cards: this.cardKeysInPlay.slice(),
+    });
+    // Seatings are fixed for the whole game; record them once. In anonymous
+    // games getRoomPlayers() is already anonymized (names + nulled avatars).
+    this.replayRecorder.setRoomPlayers(this.getRoomPlayers() as any);
+
     this.distributeGameData();
 
     this.botIndexes = [];
@@ -782,6 +811,13 @@ class Game extends Room {
     }
     selectedPlayers = this.anonymizer.deAnonMany(selectedPlayers);
 
+    // Snapshot pre-move state so we can record what changed after the phase
+    // handler runs. This is a "diff after" approach: we don't tightly couple
+    // to each handler, just observe the transitions on the Game object.
+    const preMissionNum = this.missionNum;
+    const preMissionHistoryLen = this.missionHistory ? this.missionHistory.length : 0;
+    const prePhase = this.phase;
+
     // console.log(buttonPressed, selectedPlayers);
 
     // Common phases
@@ -816,16 +852,88 @@ class Game extends Room {
       );
     }
 
+    // Record replay events based on observed transitions.
+    if (this.replayRecorder && this.replayRecorder.isStarted()) {
+      this.recordReplayMoveEvents(prePhase, preMissionHistoryLen, preMissionNum);
+    }
+
     // RUN SPECIAL ROLE AND CARD CHECKS
     this.checkRoleCardSpecialMoves(socket, buttonPressed, selectedPlayers);
 
     this.distributeGameData();
   }
 
+  /**
+   * Record team proposals, vote reveals, mission results based on the phase
+   * transition that just happened in gameMove. Kept separate from gameMove
+   * to keep the hot-path readable.
+   */
+  recordReplayMoveEvents(prePhase: Phase, preMissionHistoryLen: number, preMissionNum: number) {
+    // PickingTeam → VotingTeam: a team was just proposed.
+    if (prePhase === Phase.PickingTeam && this.phase === Phase.VotingTeam) {
+      const teamIdxs = (this.proposedTeam || []).map((username: string) =>
+        this.playersInGame.findIndex((p: any) => p.username === username),
+      );
+      this.replayRecorder.recordEvent(ReplayEventKind.TeamProposed, {
+        leaderIdx: this.teamLeader,
+        teamIdxs,
+        missionNum: this.missionNum,
+        pickNum: this.pickNum,
+      });
+    }
+
+    // VotingTeam → (anything): votes were just revealed publicly.
+    if (
+      prePhase === Phase.VotingTeam &&
+      this.phase !== Phase.VotingTeam &&
+      Array.isArray(this.publicVotes) &&
+      this.publicVotes.length > 0
+    ) {
+      this.replayRecorder.recordEvent(ReplayEventKind.VotesRevealed, {
+        votes: this.publicVotes.slice(),
+        missionNum: preMissionNum,
+        pickNum: this.pickNum,
+      });
+    }
+
+    // missionHistory grew → a mission just resolved.
+    if (this.missionHistory && this.missionHistory.length > preMissionHistoryLen) {
+      const idx = this.missionHistory.length - 1;
+      const last = this.missionHistory[idx];
+      const success = last === 'succeeded';
+      const numFails = this.numFailsHistory[idx];
+      this.replayRecorder.recordEvent(ReplayEventKind.MissionResult, {
+        missionNum: idx + 1,
+        success,
+        numFails,
+        // missionVotes are the raw fail/success cards just played; omniscient-only.
+        cards: Array.isArray(this.missionVotes) ? this.missionVotes.slice() : [],
+      });
+    }
+  }
+
   changePhase(phase: Phase) {
+    const previousPhase = this.phase;
     this.phase = phase;
 
     this.dateTimerExpires = this.gameTimer.restartTimer();
+
+    // Record phase transitions on the replay timeline. We skip the very first
+    // PickingTeam→PickingTeam noop and pause/freeze housekeeping phases.
+    if (
+      this.replayRecorder &&
+      this.replayRecorder.isStarted() &&
+      previousPhase !== phase &&
+      phase !== Phase.Paused &&
+      phase !== Phase.Frozen &&
+      phase !== Phase.Voided
+    ) {
+      this.replayRecorder.recordEvent(ReplayEventKind.PhaseChanged, {
+        phase,
+        missionNum: this.missionNum,
+        pickNum: this.pickNum,
+      });
+    }
   }
 
   toShowGuns() {
@@ -1035,6 +1143,19 @@ class Game extends Room {
 
       const gameDataForSpectators = this.getGameDataForSpectators();
 
+      // Record the spectator view onto the replay timeline. This single hook
+      // captures every state change spectators saw live (proposals, each
+      // vote press via playersYetToVote, reveals, missions, finish). The
+      // recorder deep-copies and dedups internally; roomPlayers only attach
+      // to a snapshot when the seating display changed (start + the
+      // end-of-game de-anonymization).
+      if (this.replayRecorder && this.replayRecorder.isStarted()) {
+        this.replayRecorder.recordSnapshot(
+          gameDataForSpectators,
+          this.getRoomPlayers() as any,
+        );
+      }
+
       const sockOfSpecs = this.getSocketsOfSpectators();
       sockOfSpecs.forEach((sock) => {
         sock.emit('game-data', gameDataForSpectators);
@@ -1224,6 +1345,12 @@ class Game extends Room {
   addToChatHistory(data) {
     if (this.gameStarted === true) {
       this.chatHistory.push(data);
+      // Mirror into the replay recorder. This funnel sees both server-emitted
+      // text (sendText → addToChatHistory) and player room chat (sockets.ts
+      // sendToRoomChat → addToChatHistory).
+      if (this.replayRecorder && this.replayRecorder.isStarted()) {
+        this.replayRecorder.recordChat(data);
+      }
     }
   }
 
@@ -1447,12 +1574,13 @@ class Game extends Room {
       moreganoSpiesSeen,
     };
 
-    GameRecord.create(objectToStore, (err) => {
+    GameRecord.create(objectToStore, (err, createdGameRecord) => {
       if (err) {
         console.log(err);
-      } else {
-        console.log('Stored game data successfully.');
+        return;
       }
+      console.log('Stored game data successfully.');
+      this.storeReplay(createdGameRecord, timeFinished, playerRolesVar);
     });
 
     //FR2 - Rating system 1 - record games for rating updates
@@ -1752,6 +1880,92 @@ class Game extends Room {
     }
   }
 
+  /**
+   * Finalize the replay recorder and persist a Replay document tied to the
+   * gameRecord. Storage is bounded by a 7-day TTL index on `expiresAt`.
+   * Long-term archival is up to the user via the JSON export on the viewer.
+   */
+  storeReplay(gameRecordDoc: any, timeFinished: Date, playerRolesVar: Record<string, any>) {
+    if (!this.replayRecorder || !this.replayRecorder.isStarted()) {
+      return;
+    }
+    if (!gameRecordDoc || !gameRecordDoc._id) {
+      return;
+    }
+
+    const playersForDoc = this.playersInGame.map((p: any) => ({
+      // Post-game we can reveal the real name; the anonymizer is already in
+      // its "game finished" state at this point.
+      username: p.username,
+      anonName: this.anonymousMode
+        ? this.anonymizer.anon(p.username, false)
+        : undefined,
+      alliance: p.alliance,
+      role: p.role,
+      displayRole: p.displayRole,
+      displayAlliance: p.displayAlliance,
+    }));
+
+    let doc;
+    try {
+      doc = this.replayRecorder.finalize({
+        finishedAt: timeFinished,
+        winner: this.winner,
+        howTheGameWasWon: this.howWasWon || '',
+        fullRoles: playerRolesVar,
+        players: playersForDoc,
+      });
+    } catch (e) {
+      console.log('[Replay] finalize failed:', e);
+      return;
+    }
+
+    Replay.create(
+      {
+        gameRecordId: gameRecordDoc._id,
+        schemaVersion: doc.schemaVersion,
+        expiresAt: new Date(timeFinished.getTime() + REPLAY_TTL_MS),
+        timeGameStarted: doc.timeGameStarted,
+        timeGameFinished: doc.timeGameFinished,
+        gameMode: doc.gameMode,
+        anonymousMode: doc.anonymousMode,
+        numberOfPlayers: doc.numberOfPlayers,
+        players: doc.players,
+        roles: doc.roles,
+        cards: doc.cards,
+        winner: doc.winner,
+        howTheGameWasWon: doc.howTheGameWasWon,
+        events: doc.events,
+        chat: doc.chat,
+        snapshots: doc.snapshots,
+        roomPlayers: doc.roomPlayers,
+      },
+      (err: any, replayDoc: any) => {
+        if (err) {
+          console.log('[Replay] save failed:', err);
+          return;
+        }
+        // Size visibility: snapshots dominate doc size; watch this in prod
+        // and revisit dedup/gzip if typical games exceed ~2MB.
+        let approxBytes = -1;
+        try {
+          approxBytes = JSON.stringify(doc).length;
+        } catch (e) {
+          /* ignore */
+        }
+        console.log(
+          `[Replay] Stored replay ${replayDoc._id} (${doc.snapshots.length} snapshots, ~${approxBytes} bytes, expires in 7 days).`,
+        );
+        // Surface the link in the room chat at game-end. Players who want
+        // to keep it indefinitely should export the JSON.
+        this.sendText(
+          `Replay available at /replay/${gameRecordDoc._id} — expires in 7 days. Use the Export button to keep it.`,
+          'server-text',
+        );
+      },
+    );
+  }
+
   calcMissionVotes(votes) {
     let requiresTwoFails = false;
     if (this.playersInGame.length >= 7 && this.missionNum === 4) {
@@ -1964,6 +2178,21 @@ class Game extends Room {
 
     // Accept the guess
     this.merlinguesses[guesserUsername] = targetUsernameCase;
+
+    if (this.replayRecorder && this.replayRecorder.isStarted()) {
+      const merlinPlayer = this.playersInGame.find(
+        (p: any) => p.role === Role.Merlin,
+      );
+      const correct =
+        merlinPlayer !== undefined &&
+        merlinPlayer.username === targetUsernameCase;
+      this.replayRecorder.recordEvent(ReplayEventKind.MerlinGuess, {
+        guesser: this.anonymizer.anon(guesserUsername, false),
+        target: this.anonymizer.anon(targetUsernameCase, false),
+        correct,
+      });
+    }
+
     return `You have guessed that ${targetUsernameCase} is Merlin. Good luck!`;
   }
 

@@ -68,6 +68,14 @@
 					<li><a href="/statistics">Stats</a></li>
 					<% } %>
 
+					<!-- Replays -->
+					<% if(headerActive === "replays"){ %>
+					<li class="active"><a href="/replay">Replays</a></li>
+					<%} %>
+					<% if(headerActive !== "replays"){ %>
+					<li><a href="/replay">Replays</a></li>
+					<% } %>
+
 					<!-- Community dropdown -->
 					<!-- <li class="dropdown"> -->
 					<!-- 	<a class="dropdown-toggle wideNavbarLink" data-toggle="" role="button" aria-haspopup="true" aria-expanded="false">Community <span class="caret"></span></a> -->

@@ -1,0 +1,108 @@
+<%- include('partials/header') %>
+
+<style>
+  .replays-page {
+    padding: 16px;
+  }
+  .replays-page h2 {
+    margin-top: 0;
+  }
+  .replays-page .actions {
+    margin-bottom: 16px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .replays-table {
+    width: 100%;
+  }
+  .replays-table td,
+  .replays-table th {
+    vertical-align: middle !important;
+  }
+  .replays-table .players {
+    font-size: 12px;
+    color: #666;
+  }
+  .dark .replays-table .players {
+    color: #aaa;
+  }
+  .replays-table .winner-Spy {
+    color: #b00;
+    font-weight: bold;
+  }
+  .replays-table .winner-Resistance {
+    color: #06c;
+    font-weight: bold;
+  }
+  .replays-empty {
+    color: #888;
+    margin-top: 24px;
+  }
+</style>
+
+<div class="container replays-page">
+  <h2>Replays</h2>
+  <p class="text-muted">
+    Replays are kept on the server for <strong>7 days</strong> after each game.
+    Use the <strong>Export</strong> button on a replay to download a permanent
+    JSON copy, then come back via <strong>Import</strong> to view it any time.
+  </p>
+
+  <div class="actions">
+    <a class="btn btn-primary" href="/replay/import">Import a saved replay</a>
+    <span class="text-muted">Showing the <%= replays.length %> most recent game(s) (cap: <%= limit %>).</span>
+  </div>
+
+  <% if (replays.length === 0) { %>
+    <div class="replays-empty">
+      No replays yet. Finish a game and it'll show up here.
+    </div>
+  <% } else { %>
+    <table class="table table-bordered table-striped replays-table">
+      <thead>
+        <tr>
+          <th>Finished</th>
+          <th>Mode</th>
+          <th>Players</th>
+          <th>Winner</th>
+          <th>How won</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% replays.forEach(function(r){ %>
+          <tr>
+            <td>
+              <% if (r.timeGameFinished) { %>
+                <%= new Date(r.timeGameFinished).toLocaleString('en-GB', { hour12: true }) %>
+              <% } else { %>
+                —
+              <% } %>
+            </td>
+            <td><%= r.gameMode %></td>
+            <td>
+              <strong><%= r.numberOfPlayers %>p</strong>
+              <div class="players">
+                <% if (r.anonymousMode) { %>
+                  <em>anon</em>:
+                <% } %>
+                <%= r.players.join(', ') %>
+              </div>
+            </td>
+            <td>
+              <span class="winner-<%= r.winner %>"><%= r.winner || '—' %></span>
+            </td>
+            <td><%= r.howTheGameWasWon %></td>
+            <td style="white-space: nowrap;">
+              <a class="btn btn-default btn-sm" href="/replay/<%= r.id %>">View</a>
+              <a class="btn btn-default btn-sm" href="/replay/<%= r.id %>/export">Export</a>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<%- include('partials/footer') %>

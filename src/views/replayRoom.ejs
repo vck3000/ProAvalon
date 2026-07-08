@@ -1,0 +1,267 @@
+<%- include('partials/header') %>
+
+<script>
+  // The lobby scripts and the gameRoom partial reference images by RELATIVE
+  // path ('avatars/base-res.svg', 'pictures/gun.png'). From /lobby those
+  // resolve to the asset root; from /replay/:id they'd resolve to
+  // /replay/avatars/... and 404. A <base href="/"> restores lobby-identical
+  // resolution. Injected into <head> synchronously, before the room partial
+  // parses, so it covers both static and runtime-generated images. All
+  // hrefs/srcs in the shared partials are absolute (audited), so the base
+  // affects only these image paths.
+  document.head.appendChild(
+    Object.assign(document.createElement('base'), { href: '/' })
+  );
+</script>
+
+<script>
+  // ---------------------------------------------------------------------
+  // Replay mode: no socket.io connection. lobby.js declares
+  // `const socket = io();` at its top — so the shim replaces io(), handing
+  // lobby.js a fake socket. Every `socket.on(...)` registration in the
+  // lobby scripts lands here; the replay driver fires them locally via
+  // trigger(). Outbound emits are swallowed.
+  // ---------------------------------------------------------------------
+  var __replayFakeSocket = {
+    _h: {},
+    on: function (ev, fn) {
+      (this._h[ev] = this._h[ev] || []).push(fn);
+    },
+    emit: function () {
+      /* replay mode: swallow outbound traffic */
+    },
+    trigger: function (ev, data) {
+      var fns = this._h[ev] || [];
+      for (var i = 0; i < fns.length; i++) {
+        fns[i](data);
+      }
+    },
+  };
+  function io() {
+    return __replayFakeSocket;
+  }
+  var IS_REPLAY_MODE = true;
+  // Globals normally defined in sockets.js (not loaded in replay mode) that
+  // the loaded lobby scripts reference: spectator list, mute list, online
+  // players. Empty is correct for replays.
+  var oldSpectators = [];
+  var mutedPlayers = [];
+  var currentOnlinePlayers = [];
+</script>
+
+<script src="/libraries/cookies_min.js"></script>
+<script src="/libraries/jscolor.2.0.4.min.js"></script>
+
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="<%-getVersionedPath('/stylesheets/lobby.css')%>"
+/>
+<link
+  rel="stylesheet"
+  type="text/css"
+  href="<%-getVersionedPath('/libraries/jquery-ui-1.12.1/jquery-ui.min.css')%>"
+/>
+
+<script src="<%-getVersionedPath('/libraries/linkify.min.js')%>"></script>
+<script src="<%-getVersionedPath('/libraries/linkify-html.min.js')%>"></script>
+
+<style>
+  .avatarImgInRoom {
+    width: 128px;
+    height: 128px;
+  }
+
+  /* ------------------------------------------------------------------ *
+   * Replay mode: hide the live room's interactive controls. The markup
+   * is the SHARED gameRoom partial — never fork it, only restyle here.
+   * ------------------------------------------------------------------ */
+  .replay-mode #backButton,
+  .replay-mode #claimButton,
+  .replay-mode #green-button,
+  .replay-mode #red-button,
+  .replay-mode #options-button,
+  .replay-mode .gameTimer,
+  .replay-mode .gameInfoMaxPlayers,
+  .replay-mode .chat-bar,
+  .replay-mode .chat-message-input {
+    display: none !important;
+  }
+
+  .replay-toolbar {
+    margin: 8px auto;
+    max-width: 1200px;
+    padding: 8px 12px;
+  }
+  .replay-toolbar-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .replay-toolbar-row .btn {
+    margin: 0;
+  }
+  .replay-speed {
+    width: auto;
+    display: inline-block;
+  }
+  .replay-reveal-label {
+    margin: 0;
+    font-weight: normal;
+    white-space: nowrap;
+  }
+  .replay-import-label {
+    margin: 0;
+  }
+  .replay-caption {
+    margin-left: auto;
+    color: #888;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+  .replay-slider-wrap {
+    position: relative;
+    margin-top: 8px;
+    padding: 0 2px;
+  }
+  .replay-slider {
+    width: 100%;
+    margin: 0;
+  }
+  .replay-ticks {
+    position: relative;
+    height: 6px;
+  }
+  .replay-tick {
+    position: absolute;
+    top: 0;
+    width: 3px;
+    height: 6px;
+    margin-left: -1px;
+    background: #f4a300;
+    border-radius: 1px;
+  }
+
+  .replay-import-panel {
+    max-width: 640px;
+    margin: 32px auto;
+    padding: 24px;
+    border: 2px dashed #aaa;
+    border-radius: 8px;
+    text-align: center;
+  }
+  .replay-error {
+    color: #c33;
+    margin-top: 12px;
+  }
+  .replay-degraded {
+    max-width: 1200px;
+    margin: 4px auto;
+    padding: 6px 12px;
+    background: #fcf8e3;
+    border: 1px solid #faebcc;
+    border-radius: 4px;
+    color: #8a6d3b;
+    font-size: 13px;
+  }
+</style>
+
+<div id="replayDegradedBanner" class="replay-degraded hidden">
+  This replay was recorded by a different game version; some elements may not
+  display correctly.
+</div>
+
+<div id="replayToolbar" class="replay-toolbar well well-sm hidden"></div>
+
+<div id="replayImportPanel" class="replay-import-panel">
+  <h3>View a replay</h3>
+  <p>
+    Server-stored replays expire after 7 days — open one from the
+    <a href="/replay">replay list</a>. If you previously exported a
+    <code>.json</code> file, load it here; the file never leaves your
+    browser.
+  </p>
+  <input
+    id="replayImportInput"
+    type="file"
+    accept=".json,application/json"
+  />
+  <p id="replayImportError" class="replay-error hidden"></p>
+</div>
+
+<%- include('partials/gameRoom') %>
+
+<!-- Hidden stubs: nodes that live on the lobby page, which the shared lobby
+     scripts index unconditionally. chat.js indexes 3 all-chat inputs (the
+     partial has 2); lobby.js's viewport-resize timeout reads #col1 and
+     #all-chat-lobby-text offsetHeights. -->
+<div class="hidden" aria-hidden="true">
+  <input type="text" class="chat-message-input all-chat-message-input" />
+  <div id="col1"></div>
+  <span id="all-chat-lobby-text"></span>
+</div>
+
+<script>
+  window.__REPLAY__ = <%-replayJson%>;
+  window.__REPLAY_GAME_RECORD_ID__ = <%- JSON.stringify(gameRecordId) %>;
+</script>
+
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/libraries/jquery-ui-1.12.1/jquery-ui.min.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/libraries/axios.min.js')%>"
+></script>
+
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/icons.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/pics.js')%>"
+></script>
+
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby.js')%>"
+></script>
+
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/statusBarHeight.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/chat.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/options.js')%>"
+></script>
+
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/sockets/game.js')%>"
+></script>
+
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/publicData/avalon.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/helper.js')%>"
+></script>
+<script
+  type="text/javascript"
+  src="<%-getVersionedPath('/scripts/lobby/glossary.js')%>"
+></script>
+
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/runtime.bundle.js')%>"></script>
+<script type="text/javascript" src="<%-getVersionedPath('/dist_webpack/replayDriver.bundle.js')%>"></script>
+
+<%- include('partials/footer') %>
