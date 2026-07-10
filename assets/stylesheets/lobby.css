@@ -588,6 +588,45 @@ well {
     background-color: #e5e5e5;
 }
 
+.btn-mine-role {
+    color: black;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.btn-mine-role.active {
+    background-color: rgba(163, 244, 255, 0.6) !important;
+}
+
+.btn-mine-role.btn-danger.active {
+    background-color: #cd5c5c !important;
+}
+
+.btn-mine-role.btn-success.active {
+    background-color: #6fbd81 !important;
+}
+
+.btn-mine-role.btn-info.active {
+    background-color: #4ca2cd !important;
+}
+
+.popover {
+    min-width: 250px;
+}
+
+.badge-beta {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateX(40%);
+    background-color: transparent !important;
+    color: inherit !important;
+    border: 1px solid currentColor;
+}
+
 /* This is for the special text like lady, so users cannot select to copy paste */
 
 .noselect {
