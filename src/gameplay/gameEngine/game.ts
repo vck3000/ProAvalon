@@ -516,6 +516,8 @@ class Game extends Room {
       } else if (player.role === Role.Moregano) {
         player.displayRole = Role.Morgana;
         player.displayAlliance = Alliance.Spy;
+      } else if (player.role === Role.Troublemaker) {
+        player.cardedAlliance = Alliance.Spy;
       }
     }
 

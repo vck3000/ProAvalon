@@ -397,6 +397,114 @@ describe('Game Engine', () => {
     });
   });
 
+  describe('Lunatic', () => {
+    beforeEach(() => {
+      startGame(5, [Role.Lunatic]);
+    });
+
+    it('sees other spies', () => {
+      const lunatic = game.specialRoles[Role.Lunatic];
+      const { spies } = lunatic.see();
+
+      const spyUsername = getUsernamesOfAlliance(Alliance.Spy).find(
+        (u) => u !== getUsernameOfRole(Role.Lunatic),
+      );
+
+      expect(spies).toContain(getUsernameOfRole(Role.Lunatic));
+      expect(spies).toContain(spyUsername);
+    });
+
+    it('does not see resistance members', () => {
+      const lunatic = game.specialRoles[Role.Lunatic];
+      const { spies } = lunatic.see();
+
+      const resUsername = getUsernamesOfAlliance(Alliance.Resistance)[0];
+      expect(spies).not.toContain(resUsername);
+    });
+
+    it('mission fails when Lunatic presses succeed', () => {
+      const lunaticUsername = getUsernameOfRole(Role.Lunatic);
+      const resUsername = getUsernamesOfAlliance(Alliance.Resistance)[0];
+      const teamUsernames = [lunaticUsername, resUsername];
+
+      // Pick team containing Lunatic
+      game.gameMove(getSocketOfNextTeamPicker(), ['yes', teamUsernames]);
+      expect(game.phase).toEqual(Phase.VotingTeam);
+
+      // Everyone approves the team
+      for (const socket of testSockets) {
+        game.gameMove(socket, ['yes', []]);
+      }
+      expect(game.phase).toEqual(Phase.VotingMission);
+
+      // Both players press succeed — Lunatic's is silently converted to fail
+      for (const username of teamUsernames) {
+        game.gameMove(getSocketOfUsername(username), ['yes', []]);
+      }
+
+      expect(game.missionHistory[0]).toEqual('failed');
+    });
+  })
+
+  describe('Troublemaker', () => {
+    beforeEach(() => {
+      startGame(6, [Role.Troublemaker, Card.LadyOfTheLake]);
+    });
+
+    it('is on the Resistance alliance', () => {
+      const player = game.playersInGame.find(
+        (p) => p.role === Role.Troublemaker,
+      );
+      expect(player.alliance).toEqual(Alliance.Resistance);
+    });
+
+    it('sees nothing', () => {
+      const troublemaker = game.specialRoles[Role.Troublemaker];
+      const { spies, roleTags } = troublemaker.see();
+      expect(spies).toHaveLength(0);
+      expect(roleTags).toEqual({});
+    });
+
+    it('has cardedAlliance set to Spy', () => {
+      const player = game.playersInGame.find(
+        (p) => p.role === Role.Troublemaker,
+      );
+      expect(player.cardedAlliance).toEqual(Alliance.Spy);
+    });
+
+    it('Lady of the Lake reveals Spy when carding Troublemaker', () => {
+      playMission(true);
+      playMission(true);
+      expect(game.phase).toEqual(Phase.Lady);
+
+      const troublemakerUsername = getUsernameOfRole(Role.Troublemaker);
+      const ladyCard = game.specialCards[Card.LadyOfTheLake];
+
+      const holderIndex = ladyCard.indexOfPlayerHolding;
+      const holderUsername = anon(
+        game.playersInGame[holderIndex].request.user.username,
+      );
+
+      if (holderUsername === troublemakerUsername) {
+        // Edge case: Troublemaker holds the Lady so can't be carded.
+        // Verify cardedAlliance directly as a fallback.
+        expect(game.playersInGame[holderIndex].cardedAlliance).toEqual(
+          Alliance.Spy,
+        );
+        return;
+      }
+
+      const holderSocket = getSocketOfUsername(holderUsername);
+      game.gameMove(holderSocket, ['yes', [troublemakerUsername]]);
+
+      const ladyInfoCall = (holderSocket as any).emit.mock.calls.find(
+        ([event]: [string]) => event === 'lady-info',
+      );
+      expect(ladyInfoCall).toBeDefined();
+      expect(ladyInfoCall[1]).toContain(Alliance.Spy);
+    });
+  });
+
   describe('Check Options', () => {
     it('Allows fab 4', () => {
       const checkOptions = Game.checkOptions([
