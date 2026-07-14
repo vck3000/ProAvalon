@@ -93,6 +93,7 @@ class Game extends Room {
   missionNum = 0;
   pickNum = 0;
   roomCreationType: RoomCreationType;
+  options: string[] = [];
 
   // Game misc variables
   winner: Alliance = '';
@@ -1042,7 +1043,7 @@ class Game extends Room {
     }
   }
 
-  getGameData() {
+  getGameData(): Record<number, Object> {
     if (this.gameStarted == true) {
       const data = {};
       const playerRoles = this.playersInGame;

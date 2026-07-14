@@ -1,7 +1,22 @@
-import axios from 'axios';
+import axios, { AxiosResponse, AxiosError, Method } from 'axios';
+import Game from '../gameplay/gameEngine/game';
 import { Phase } from '../gameplay/gameEngine/phases/types';
+import { RoomPlayer } from '../gameplay/gameEngine/types';
+import { Role } from '../gameplay/gameEngine/roles/types';
 
-export const enabledBots = [];
+interface BotAPI {
+  name: string;
+  urlBase: string | undefined;
+  authorizationKey: string | undefined;
+}
+
+interface Capability {
+  numPlayers: number[];
+  roles: string[];
+  cards: string[];
+}
+
+export const enabledBots: BotAPI[] = [];
 enabledBots.push({
   name: 'SimpleBot',
   urlBase: undefined,
@@ -22,7 +37,16 @@ enabledBots.push({
 // }
 
 export class SimpleBotSocket {
-  constructor(username) {
+  isBotSocket: boolean;
+  request: {
+    user: {
+      username: string;
+      bot: boolean;
+    }
+  }
+  botAPI: BotAPI;
+
+  constructor(username: string) {
     this.isBotSocket = true;
     this.request = {
       user: {
@@ -38,7 +62,7 @@ export class SimpleBotSocket {
   // handleReadyNotReady: Called when the game is about to start.
   // if the bot is ready, call callback(true)
   // if the bot isn't ready, call callback(false) or callback(false, "<reason>")
-  handleReadyNotReady(game, callback) {
+  handleReadyNotReady(_game: Game, callback: Function) {
     // Simple bots are always ready.
     callback(true);
   }
@@ -46,7 +70,7 @@ export class SimpleBotSocket {
   // handleGameStart: Called when the game has commenced.
   // if the bot initialized successfully, call callback(true)
   // if the bot failed to initialize, call callback(false) or callback(false, "<reason>")
-  handleGameStart(game, callback) {
+  handleGameStart(_game: Game, callback: Function) {
     // Simple bots are always initialized.
     callback(true);
   }
@@ -55,11 +79,11 @@ export class SimpleBotSocket {
   // When you have a move available, call callback with the selected button and players
   // If you errored, call callback(false)
   handleRequestAction(
-    game,
-    availableButtons,
-    availablePlayers,
-    numOfTargets,
-    callback,
+    _game: Game,
+    availableButtons: string[],
+    availablePlayers: string[],
+    numOfTargets: number,
+    callback: Function,
   ) {
     // Simple bots play randomly
     const buttonPressed =
@@ -92,12 +116,12 @@ export class SimpleBotSocket {
   // handleGameOver: Called when the game finishes or closes
   // If you want to leave the room, call callback(true)
   // Otherwise, call callback(false)
-  handleGameOver(game, reason, callback) {
+  handleGameOver(_game: Game, _reason: string, callback: Function) {
     callback(true);
   }
 }
 
-export function makeBotAPIRequest(botAPI, method, endpoint, data, timeout) {
+export function makeBotAPIRequest(botAPI: BotAPI, method: Method, endpoint: string, data: any, timeout: number) {
   return axios.request({
     method,
     url: botAPI.urlBase + endpoint,
@@ -110,16 +134,16 @@ export function makeBotAPIRequest(botAPI, method, endpoint, data, timeout) {
   });
 }
 
-function checkBotCapabilities(game, capabilities) {
+function checkBotCapabilities(game: Game, capabilities: Capability[]) {
   // Check if any single capability matches.
-  return capabilities.some((capability) => {
+  return capabilities.some((capability: Capability) => {
     const numPlayers = game.socketsOfPlayers.length;
     if (capability.numPlayers.indexOf(numPlayers) === -1) {
       return false;
     }
 
     return game.options.every(
-      (option) =>
+      (option: Role) =>
         [Role.Assassin, Role.Merlin].indexOf(option) !== -1 ||
         capability.roles.indexOf(option) !== -1 ||
         capability.cards.indexOf(option) !== -1,
@@ -128,7 +152,17 @@ function checkBotCapabilities(game, capabilities) {
 }
 
 export class APIBotSocket {
-  constructor(username, botAPI) {
+  botAPI: BotAPI;
+  isBotSocket: boolean;
+  request: {
+    user: {
+      username: string;
+      bot: boolean;
+    }
+  }
+  sessionID: string | undefined;
+
+  constructor(username: string, botAPI: BotAPI) {
     this.isBotSocket = true;
     this.request = {
       user: {
@@ -145,10 +179,10 @@ export class APIBotSocket {
   // handleReadyNotReady: Called when the game is about to start.
   // if the bot is ready, call callback(true)
   // if the bot isn't ready, call callback(false) or callback(false, "<reason>")
-  handleReadyNotReady(game, callback) {
+  handleReadyNotReady(game: Game, callback: Function) {
     // Check if the API supports this game type. If yes, ready up.
     makeBotAPIRequest(this.botAPI, 'GET', '/v0/info', {}, 4000)
-      .then((response) => {
+      .then((response: AxiosResponse<{ capabilities: any }>) => {
         if (response.status !== 200) {
           callback(false, 'Bot returned an invalid response.');
           return;
@@ -162,7 +196,7 @@ export class APIBotSocket {
           callback(true);
         }
       })
-      .catch((error) => {
+      .catch((error: AxiosError) => {
         if (error.response) {
           callback(false, 'The bot crashed during request.');
         } else {
@@ -174,18 +208,18 @@ export class APIBotSocket {
   // handleGameStart: Called when the game has commenced.
   // if the bot initialized successfully, call callback(true)
   // if the bot failed to initialize, call callback(false) or callback(false, "<reason>")
-  handleGameStart(game, callback) {
+  handleGameStart(game: Game, callback: Function) {
     const thisSocket = this;
     const playerIndex = game.playersInGame.findIndex(
-      (player) => player.username == thisSocket.request.user.username,
+      (player: RoomPlayer) => player.username == thisSocket.request.user.username,
     );
     // console.log("Player " + thisSocket.request.user.username + " is at index: " + playerIndex); //Don't worry, the above line works perfectly...!
-    const gameData = game.getGameData()[playerIndex];
+    const gameData: any = game.getGameData()[playerIndex];
 
     const apiData = {
       numPlayers: gameData.playerUsernamesOrderedReversed.length,
       roles: gameData.roles.filter(
-        (role) => role != Role.Assassin && role != Role.Merlin,
+        (role: string) => role != Role.Assassin && role != Role.Merlin,
       ), // TODO: Is this needed?
       cards: gameData.cards,
       teamLeader: gameData.teamLeaderReversed,
@@ -196,7 +230,7 @@ export class APIBotSocket {
     };
 
     makeBotAPIRequest(this.botAPI, 'POST', '/v0/session', apiData, 3000)
-      .then((response) => {
+      .then((response: AxiosResponse<{ sessionID: string }>) => {
         if (response.status !== 200 || !response.data.sessionID) {
           callback(false, 'Bot returned an invalid response.');
           return;
@@ -205,7 +239,7 @@ export class APIBotSocket {
         thisSocket.sessionID = response.data.sessionID;
         callback(true);
       })
-      .catch((error) => {
+      .catch((error: AxiosError) => {
         if (error.response) {
           callback(false, 'The bot crashed during request.');
         } else {
@@ -218,15 +252,15 @@ export class APIBotSocket {
   // When you have a move available, call callback with the selected button and players
   // If you errored, call callback(false)
   handleRequestAction(
-    game,
-    availableButtons,
-    availablePlayers,
-    numOfTargets,
-    callback,
+    game: Game,
+    availableButtons: string[],
+    availablePlayers: string[],
+    numOfTargets: number,
+    callback: Function,
   ) {
     const thisSocket = this;
     const playerIndex = game.playersInGame.findIndex(
-      (player) => player.username == thisSocket.request.user.username,
+      (player: RoomPlayer) => player.username == thisSocket.request.user.username,
     );
     const gameData = game.getGameData()[playerIndex];
 
@@ -236,7 +270,7 @@ export class APIBotSocket {
     };
 
     makeBotAPIRequest(this.botAPI, 'POST', '/v0/session/act', apiData, 20000)
-      .then((response) => {
+      .then((response: AxiosResponse<{ buttonPressed: string, selectedPlayers: string[] }>) => {
         if (response.status !== 200) {
           callback(false, 'Bot returned an invalid response.');
           return;
@@ -244,7 +278,7 @@ export class APIBotSocket {
 
         callback(response.data);
       })
-      .catch((error) => {
+      .catch((error: AxiosError) => {
         if (error.response) {
           callback(false, 'The bot crashed during request.');
           // console.log(error.response);
@@ -257,7 +291,7 @@ export class APIBotSocket {
   // handleGameOver: Called when the game finishes or closes
   // If you want to leave the room, call callback(true)
   // Otherwise, call callback(false)
-  handleGameOver(game, reason, callback) {
+  handleGameOver(game: Game, reason: string, callback: Function) {
     const thisSocket = this;
     const playerIndex = game.playersInGame.findIndex(
       (player) => player.username == thisSocket.request.user.username,
