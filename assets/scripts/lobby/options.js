@@ -1199,7 +1199,7 @@ var userOptions = {
   //---------------------------------------------
 
   option_gameplay_prevent_misclicks: {
-    defaultValue: 'false',
+    defaultValue: 'true',
     onLoad() {
       if (docCookies.getItem('option_gameplay_prevent_misclicks') === 'true') {
         $('#option_gameplay_prevent_misclicks')[0].checked = true;
